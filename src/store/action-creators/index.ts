@@ -1,0 +1,155 @@
+import { Dispatch } from "redux";
+
+import { Conversation } from "@twilio/conversations/lib/conversation";
+import { Message } from "@twilio/conversations/lib/message";
+import { Participant } from "@twilio/conversations/lib/participant";
+
+import { ActionType } from "../action-types";
+import { Action } from "../actions";
+
+export const login = (token: string) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.LOGIN,
+      payload: token,
+    });
+  };
+};
+
+export const logout = () => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.LOGOUT,
+    });
+  };
+};
+
+export const listConversations = (convos: Conversation[]) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.LIST_CONVERSATIONS,
+      payload: convos,
+    });
+  };
+};
+
+export const updateCurrentConversation = (sid: string) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.UPDATE_CURRENT_CONVERSATION,
+      payload: sid,
+    });
+  };
+};
+
+export const setLastReadIndex = (index: number) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.CONVERSATION_LAST_READ_INDEX,
+      payload: index,
+    });
+  };
+};
+
+export const removeConversation = (sid: string) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.REMOVE_CONVERSATION,
+      payload: sid,
+    });
+  };
+};
+
+export const addMessages = (channelSid: string, messages: Message[]) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.ADD_MESSAGES,
+      payload: { channelSid, messages },
+    });
+  };
+};
+
+export const removeMessages = (channelSid: string, messages: Message[]) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.REMOVE_MESSAGES,
+      payload: { channelSid, messages },
+    });
+  };
+};
+
+export const updateLoadingState = (loadingStatus: boolean) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.UPDATE_LOADING_STATE,
+      payload: loadingStatus,
+    });
+  };
+};
+
+export const updateParticipants = (
+  participants: Participant[],
+  sid: string
+) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.UPDATE_PARTICIPANTS,
+      payload: { participants, sid },
+    });
+  };
+};
+
+export const updateUnreadMessages = (
+  channelSid: string,
+  unreadCount: number
+) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.UPDATE_UNREAD_MESSAGES,
+      payload: { channelSid, unreadCount },
+    });
+  };
+};
+
+export const updateConversation = (
+  channelSid: string,
+  parameters: Partial<Conversation>
+) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.UPDATE_CONVERSATION,
+      payload: { channelSid, parameters },
+    });
+  };
+};
+
+export const addAttachment = (
+  channelSid: string,
+  messageIndex: string,
+  attachment: Blob
+) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.ADD_ATTACHMENT,
+      payload: { channelSid, messageIndex, attachment },
+    });
+  };
+};
+
+export const startTyping = (channelSid: string, participant: string) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.TYPING_STARTED,
+      payload: { channelSid, participant },
+    });
+  };
+};
+
+export const endTyping = (channelSid: string, participant: string) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.TYPING_ENDED,
+      payload: { channelSid, participant },
+    });
+  };
+};

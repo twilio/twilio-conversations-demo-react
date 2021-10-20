@@ -1,0 +1,32 @@
+import { Message } from "@twilio/conversations/lib/message";
+import { Participant } from "@twilio/conversations/lib/participant";
+
+export type AddMessagesType = (channelSid: string, messages: Message[]) => void;
+export type SetSidType = (sid: string) => void;
+
+export type SetParticipantsType = (
+  participants: Participant[],
+  sid: string
+) => void;
+
+export type SetUreadMessagesType = (
+  channelSid: string,
+  unreadCount: number
+) => void;
+
+export enum ActionName {
+  Save = "Save",
+  Create = "Create",
+  Manage = "Manage",
+}
+
+export enum InputType {
+  Text = "text",
+  Password = "password",
+}
+
+export enum Content {
+  AddChat = "Add chat participant",
+  AddSMS = "Add SMS participant",
+  AddWhatsApp = "Add WhatsApp participant",
+}

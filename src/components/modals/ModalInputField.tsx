@@ -1,0 +1,109 @@
+import React, { Dispatch, SetStateAction } from "react";
+import { Label } from "@twilio-paste/label";
+import { Input } from "@twilio-paste/input";
+import { HelpText } from "@twilio-paste/help-text";
+import { Button } from "@twilio-paste/button";
+import { HideIcon } from "@twilio-paste/icons/esm/HideIcon";
+import { ShowIcon } from "@twilio-paste/icons/esm/ShowIcon";
+import { InputType } from "../../types";
+import { StyleSheet, Text } from "react-native";
+
+enum PrefixType {
+  SMS = "SMS",
+  WhatsApp = "WhatsApp",
+}
+
+function getPrefixType(prefixType: string | undefined) {
+  switch (prefixType) {
+    case PrefixType.SMS:
+      return "+";
+    case PrefixType.WhatsApp:
+      return "WhatsApp +";
+    default:
+      return undefined;
+  }
+}
+
+interface ModalInputProps {
+  label: string;
+  input: string;
+  onChange: (value: string) => void;
+  onBlur?: () => void;
+  error?: string;
+  placeholder?: string;
+  help_text?: string;
+  prefixType?: string;
+  inputType?: InputType;
+  showPassword?: boolean;
+  isFocused?: boolean;
+  setShowPassword?: Dispatch<SetStateAction<boolean>>;
+}
+
+const ModalInputField: React.FC<ModalInputProps> = (props: ModalInputProps) => {
+  const prefixType = getPrefixType(props.prefixType);
+
+  return (
+    <>
+      <Label htmlFor="modal-input">
+        <Text style={styles.label}>{props.label}</Text>
+      </Label>
+      <Input
+        autoFocus={props.isFocused ?? false}
+        type={props.inputType ?? InputType.Text}
+        value={props.input}
+        placeholder={props.placeholder}
+        onChange={(e: any) => props.onChange(e.currentTarget.value)}
+        hasError={!!props.error}
+        onBlur={props.onBlur}
+        insertBefore={prefixType}
+        insertAfter={
+          props.showPassword !== undefined && (
+            <>
+              <Button
+                variant="link"
+                onClick={() => {
+                  if (props.setShowPassword !== undefined) {
+                    props.setShowPassword(!props.showPassword);
+                  }
+                }}
+              >
+                {props.showPassword ? (
+                  <ShowIcon
+                    decorative={true}
+                    size="sizeIcon20"
+                    color="colorTextWeak"
+                  />
+                ) : (
+                  <HideIcon
+                    decorative={true}
+                    size="sizeIcon20"
+                    color="colorTextWeak"
+                  />
+                )}
+              </Button>
+            </>
+          )
+        }
+      />
+      {props.error && (
+        <HelpText id="error_help_text" variant="error">
+          {props.error}
+        </HelpText>
+      )}
+      {!props.error && props.help_text && (
+        <HelpText id="error_help_text">{props.help_text}</HelpText>
+      )}
+    </>
+  );
+};
+
+const styles = StyleSheet.create({
+  label: {
+    fontFamily: "Inter",
+    fontSize: 14,
+    fontWeight: "700",
+    lineHeight: 20,
+  },
+});
+
+export default ModalInputField;
