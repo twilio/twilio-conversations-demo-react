@@ -6,39 +6,58 @@ import { Participant } from "@twilio/conversations/lib/participant";
 import { Media } from "@twilio/conversations/lib";
 
 import { MessageStatus } from "./store/reducers/messageListReducer";
+import {
+  CONVERSATION_MESSAGES,
+  PARTICIPANT_MESSAGES,
+  UNEXPECTED_ERROR_MESSAGE,
+} from "./constants";
+import { NotificationsType } from "./store/reducers/notificationsReducer";
+import { successNotification, unexpectedErrorNotification } from "./helpers";
 
 export async function addConversation(
   name: string,
-  client?: Client
+  client?: Client,
+  addNotifications?: (notifications: NotificationsType) => void
 ): Promise<Conversation> {
   if (name.length > 0 && client !== undefined) {
-    const conversation = await client.createConversation({
-      friendlyName: name,
-    });
-    await conversation.join();
-    return conversation;
+    try {
+      const conversation = await client.createConversation({
+        friendlyName: name,
+      });
+      await conversation.join();
+
+      successNotification({
+        message: CONVERSATION_MESSAGES.CREATED,
+        addNotifications,
+      });
+
+      return conversation;
+    } catch (e) {
+      unexpectedErrorNotification(addNotifications);
+
+      return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+    }
   }
-  return Promise.reject("Unexpected error");
+  return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
 }
 
 export async function addParticipant(
   name: string,
   proxyName: string,
   chatParticipant: boolean,
-  convo?: Conversation
-): Promise<{
-  success: boolean;
-  errorText?: string;
-}> {
+  convo?: Conversation,
+  addNotifications?: (notifications: NotificationsType) => void
+): Promise<void> {
   if (chatParticipant && name.length > 0 && convo !== undefined) {
     try {
-      await convo.add(name);
-      return { success: true };
+      const result = await convo.add(name);
+      successNotification({
+        message: PARTICIPANT_MESSAGES.ADDED,
+        addNotifications,
+      });
+      return result;
     } catch (e) {
-      return {
-        success: false,
-        errorText: e.message,
-      };
+      return Promise.reject(e);
     }
   }
   if (
@@ -48,18 +67,22 @@ export async function addParticipant(
     convo !== undefined
   ) {
     try {
-      await convo.addNonChatParticipant(proxyName, name, {
+      const result = await convo.addNonChatParticipant(proxyName, name, {
         friendlyName: name,
       });
-      return { success: true };
+      successNotification({
+        message: PARTICIPANT_MESSAGES.ADDED,
+        addNotifications,
+      });
+
+      return result;
     } catch (e) {
-      return {
-        success: false,
-        errorText: e.message,
-      };
+      unexpectedErrorNotification(addNotifications);
+
+      return Promise.reject(e);
     }
   }
-  return Promise.reject("Unexpected error");
+  return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
 }
 
 export async function getToken(
@@ -155,13 +178,33 @@ export const getConversationParticipants = async (
 
 export const removeParticipant = async (
   conversation: Conversation,
-  participant: Participant
-): Promise<void> => await conversation.removeParticipant(participant);
+  participant: Participant,
+  addNotifications?: (notifications: NotificationsType) => void
+): Promise<void> => {
+  try {
+    await conversation.removeParticipant(participant);
+    successNotification({
+      message: PARTICIPANT_MESSAGES.REMOVED,
+      addNotifications,
+    });
+  } catch {
+    unexpectedErrorNotification(addNotifications);
+    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+  }
+};
 
-export const getBlobFile = async (media: Media): Promise<Blob> => {
-  const url = await getFileUrl(media);
-  const response = await fetch(url);
-  return response.blob();
+export const getBlobFile = async (
+  media: Media,
+  addNotifications?: (notifications: NotificationsType) => void
+): Promise<Blob> => {
+  try {
+    const url = await getFileUrl(media);
+    const response = await fetch(url);
+    return response.blob();
+  } catch (e) {
+    unexpectedErrorNotification(addNotifications);
+    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+  }
 };
 
 export const getFileUrl = async (media: Media): Promise<string> => {

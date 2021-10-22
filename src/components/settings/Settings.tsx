@@ -11,10 +11,19 @@ import AddWhatsAppParticipantModal from "../modals/addWhatsAppParticipant";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../../store";
-import NameChangeErrorModal from "../modals/NameChangeErrorModal";
-import { SMS_PREFIX, WHATSAPP_PREFIX } from "../../constants";
+import ActionErrorModal from "../modals/ActionErrorModal";
+import {
+  CONVERSATION_MESSAGES,
+  ERROR_MODAL_MESSAGES,
+  SMS_PREFIX,
+  WHATSAPP_PREFIX,
+} from "../../constants";
 import { Participant } from "@twilio/conversations/lib/participant";
 import { Box, Spinner } from "@twilio-paste/core";
+import {
+  successNotification,
+  unexpectedErrorNotification,
+} from "../../helpers";
 
 interface SettingsProps {
   participants: Participant[];
@@ -46,16 +55,26 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
   const [nameProxy, setNameProxy] = useState("");
   const [errorProxy, setErrorProxy] = useState("");
 
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [errorModal, setErrorModal] = useState();
+  const [showError, setErrorToShow] = useState<
+    | {
+        title: string;
+        description: string;
+      }
+    | false
+  >();
+  const [errorData, setErrorData] = useState<
+    | {
+        message: string;
+        code: number;
+      }
+    | undefined
+  >();
 
   const nameInputRef = createRef<HTMLInputElement>();
 
   const dispatch = useDispatch();
-  const { updateCurrentConversation, updateConversation } = bindActionCreators(
-    actionCreators,
-    dispatch
-  );
+  const { updateCurrentConversation, updateConversation, addNotifications } =
+    bindActionCreators(actionCreators, dispatch);
 
   function emptyData() {
     setName("");
@@ -73,27 +92,44 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
     <>
       <SettingsMenu
         onParticipantListOpen={() => setIsManageParticipantOpen(true)}
-        leaveConvo={() => {
-          props.convo.leave();
-          updateCurrentConversation("");
+        leaveConvo={async () => {
+          try {
+            await props.convo.leave();
+            successNotification({
+              message: CONVERSATION_MESSAGES.LEFT,
+              addNotifications,
+            });
+            updateCurrentConversation("");
+          } catch {
+            unexpectedErrorNotification(addNotifications);
+          }
         }}
         updateConvo={(val: string) =>
           props.convo
             .updateFriendlyName(val)
             .then((convo) => {
               updateConversation(convo.sid, convo);
+              successNotification({
+                message: CONVERSATION_MESSAGES.NAME_CHANGED,
+                addNotifications,
+              });
             })
             .catch((e) => {
-              setErrorModal(e);
-              setErrorModalOpen(true);
+              setErrorData(e);
+              setErrorToShow(ERROR_MODAL_MESSAGES.CHANGE_CONVERSATION_NAME);
             })
         }
         conversation={props.convo}
+        addNotifications={addNotifications}
       />
-      <NameChangeErrorModal
-        isOpened={errorModalOpen}
-        onClose={() => setErrorModalOpen(false)}
-        error={errorModal}
+      <ActionErrorModal
+        errorText={showError || ERROR_MODAL_MESSAGES.CHANGE_CONVERSATION_NAME}
+        isOpened={!!showError}
+        onClose={() => {
+          setErrorToShow(false);
+          setErrorData(undefined);
+        }}
+        error={errorData}
       />
       {isManageParticipantOpen && (
         <ManageParticipantsModal
@@ -119,7 +155,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
             }
           }}
           onParticipantRemove={async (participant: Participant) => {
-            await removeParticipant(props.convo, participant);
+            await removeParticipant(props.convo, participant, addNotifications);
           }}
         />
       )}
@@ -150,17 +186,19 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
             setIsManageParticipantOpen(true);
           }}
           action={async () => {
-            const result = await addParticipant(
-              SMS_PREFIX + name,
-              SMS_PREFIX + nameProxy,
-              false,
-              props.convo
-            );
-            if (result.success) {
+            try {
+              await addParticipant(
+                SMS_PREFIX + name,
+                SMS_PREFIX + nameProxy,
+                false,
+                props.convo,
+                addNotifications
+              );
               emptyData();
               handleSMSClose();
-            } else {
-              setErrors(result.errorText ?? "Enter a valid phone number");
+            } catch (e) {
+              setErrorData(e);
+              setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
             }
           }}
         />
@@ -192,17 +230,19 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
             setIsManageParticipantOpen(true);
           }}
           action={async () => {
-            const result = await addParticipant(
-              WHATSAPP_PREFIX + name,
-              WHATSAPP_PREFIX + nameProxy,
-              false,
-              props.convo
-            );
-            if (result.success) {
+            try {
+              await addParticipant(
+                WHATSAPP_PREFIX + name,
+                WHATSAPP_PREFIX + nameProxy,
+                false,
+                props.convo,
+                addNotifications
+              );
               emptyData();
               handleWhatsAppClose();
-            } else {
-              setErrors(result.errorText ?? "Enter a valid phone number");
+            } catch (e) {
+              setErrorData(e);
+              setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
             }
           }}
         />
@@ -228,16 +268,18 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
             setIsManageParticipantOpen(true);
           }}
           action={async () => {
-            const result = await addParticipant(
-              name,
-              nameProxy,
-              true,
-              props.convo
-            );
-            if (result.success) {
+            try {
+              await addParticipant(
+                name,
+                nameProxy,
+                true,
+                props.convo,
+                addNotifications
+              );
               emptyData();
-            } else {
-              setError(result.errorText ?? "Enter a valid username");
+            } catch (e) {
+              setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
+              setErrorData(e);
             }
           }}
         />

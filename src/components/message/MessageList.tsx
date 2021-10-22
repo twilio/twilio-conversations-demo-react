@@ -16,6 +16,10 @@ import MessageFile from "./MessageFile";
 import { actionCreators, AppState } from "../../store";
 import ImagePreviewModal from "../modals/ImagePreviewModal";
 import Horizon from "./Horizon";
+import {
+  successNotification,
+  unexpectedErrorNotification,
+} from "../../helpers";
 
 interface MessageListProps {
   messages: Message[];
@@ -65,7 +69,10 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   const messagesLength: number = messages.length;
 
   const dispatch = useDispatch();
-  const { addAttachment } = bindActionCreators(actionCreators, dispatch);
+  const { addAttachment, addNotifications } = bindActionCreators(
+    actionCreators,
+    dispatch
+  );
   const conversationAttachments = useSelector(
     (state: AppState) => state.attachments[conversation.sid]
   );
@@ -122,7 +129,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
 
   const onDownloadAttachment = async (message: Message) => {
     setFileLoading(Object.assign({}, fileLoading, { [message.sid]: true }));
-    const blob = await getBlobFile(message.media);
+    const blob = await getBlobFile(message.media, addNotifications);
     addAttachment(props.conversation.sid, message.sid, blob);
     setFileLoading(Object.assign({}, fileLoading, { [message.sid]: false }));
   };
@@ -197,7 +204,17 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                 message,
                 props.participants
               )}
-              onDeleteMessage={() => message.remove()}
+              onDeleteMessage={async () => {
+                try {
+                  await message.remove();
+                  successNotification({
+                    message: "Message deleted.",
+                    addNotifications,
+                  });
+                } catch {
+                  unexpectedErrorNotification(addNotifications);
+                }
+              }}
               topPadding={setTopPadding(index)}
               lastMessageBottomPadding={index === 0 ? 16 : 0}
               sameAuthorAsPrev={setTopPadding(index) !== theme.space.space20}

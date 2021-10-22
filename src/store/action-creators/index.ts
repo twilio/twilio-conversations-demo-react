@@ -6,6 +6,7 @@ import { Participant } from "@twilio/conversations/lib/participant";
 
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
+import { NotificationsType } from "../reducers/notificationsReducer";
 
 export const login = (token: string) => {
   return (dispatch: Dispatch<Action>): void => {
@@ -150,6 +151,24 @@ export const endTyping = (channelSid: string, participant: string) => {
     dispatch({
       type: ActionType.TYPING_ENDED,
       payload: { channelSid, participant },
+    });
+  };
+};
+
+export const addNotifications = (notifications: NotificationsType) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.ADD_NOTIFICATIONS,
+      payload: notifications,
+    });
+  };
+};
+
+export const removeNotifications = (toIndex: number) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.REMOVE_NOTIFICATIONS,
+      payload: toIndex,
     });
   };
 };

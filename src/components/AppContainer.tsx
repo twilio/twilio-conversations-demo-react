@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { bindActionCreators } from "redux";
 import { useDispatch, useSelector } from "react-redux";
-import { StyleSheet, View } from "react-native";
 
 import { Message } from "@twilio/conversations/lib/message";
 import Client from "@twilio/conversations";
 import { Conversation } from "@twilio/conversations/lib/conversation";
 import { Participant } from "@twilio/conversations/lib/participant";
+import { Box } from "@twilio-paste/core";
 
 import { actionCreators, AppState } from "../store";
 import ConversationContainer from "./conversations/ConversationContainer";
@@ -17,20 +17,19 @@ import {
   SetUreadMessagesType,
 } from "../types";
 import { getConversationParticipants, getToken } from "../api";
+import useAppAlert from "../hooks/useAppAlerts";
+import Notifications from "./Notifications";
+import stylesheet from "../styles";
+import { handlePromiseRejection } from "../helpers";
 
 type SetConvosType = (convos: Conversation[]) => void;
 
-function loadUnreadMessagesCount(
+async function loadUnreadMessagesCount(
   convo: Conversation,
   updateUnreadMessages: SetUreadMessagesType
 ) {
-  convo.getUnreadMessagesCount().then((count: number | null) => {
-    if (count === null) {
-      updateUnreadMessages(convo.sid, 0);
-    } else {
-      updateUnreadMessages(convo.sid, count);
-    }
-  });
+  const count = await convo.getUnreadMessagesCount();
+  updateUnreadMessages(convo.sid, count ?? 0);
 }
 
 async function handleParticipantsUpdate(
@@ -41,27 +40,24 @@ async function handleParticipantsUpdate(
   updateParticipants(result, participant.conversation.sid);
 }
 
-function updateConvoList(
+async function updateConvoList(
   client: Client,
   conversation: Conversation,
   setConvos: SetConvosType,
   addMessages: AddMessagesType,
   updateUnreadMessages: SetUreadMessagesType
 ) {
-  conversation
-    .getMessages()
-    .then((messages) => {
-      addMessages(conversation.sid, messages.items);
-    })
-    .catch(() => {
-      addMessages(conversation.sid, []);
-    });
+  try {
+    const messages = await conversation.getMessages();
+    addMessages(conversation.sid, messages.items);
+  } catch {
+    addMessages(conversation.sid, []);
+  }
 
   loadUnreadMessagesCount(conversation, updateUnreadMessages);
 
-  client.getSubscribedConversations().then((value) => {
-    setConvos(value.items);
-  });
+  const subscribedConversations = await client.getSubscribedConversations();
+  setConvos(subscribedConversations.items);
 }
 
 const AppContainer: React.FC = () => {
@@ -72,6 +68,7 @@ const AppContainer: React.FC = () => {
   const conversations = useSelector((state: AppState) => state.convos);
   const sid = useSelector((state: AppState) => state.sid);
   const sidRef = useRef("");
+  const [alertsExist, AlertsView] = useAppAlert();
   sidRef.current = sid;
 
 
@@ -88,6 +85,7 @@ const AppContainer: React.FC = () => {
       removeMessages,
     removeConversation,
     updateCurrentConversation,
+      addNotifications,
   } = bindActionCreators(actionCreators, dispatch);
 
   const updateTypingIndicator = (participant: Participant, sid: string, callback: (sid: string, user: string) => void) => {
@@ -107,63 +105,67 @@ const AppContainer: React.FC = () => {
       setClient(client);
       client.addListener("conversationAdded", async (conversation: Conversation) => {
         conversation.addListener("typingStarted", (participant) => {
-          updateTypingIndicator(participant, conversation.sid, startTyping);
+          handlePromiseRejection(() => updateTypingIndicator(participant, conversation.sid, startTyping), addNotifications);
         });
 
         conversation.addListener("typingEnded", (participant) => {
-          updateTypingIndicator(participant, conversation.sid, endTyping);
+          handlePromiseRejection(() => updateTypingIndicator(participant, conversation.sid, endTyping), addNotifications);
         });
 
-        updateConvoList(
+        handlePromiseRejection(async () => {
+          updateConvoList(
           client,
             conversation,
             listConversations,
           addMessages,
           updateUnreadMessages
         );
-        const result = await getConversationParticipants(conversation);
-        updateParticipants(result, conversation.sid);
+          const result = await getConversationParticipants(conversation);
+          updateParticipants(result, conversation.sid);
+          }, addNotifications);
       });
       client.addListener("conversationRemoved", (conversation: Conversation) => {
         updateCurrentConversation("");
-        removeConversation(conversation.sid);
-        updateParticipants([], conversation.sid);
+        handlePromiseRejection( () => {
+          removeConversation(conversation.sid);
+          updateParticipants([], conversation.sid);
+        }, addNotifications);
       });
       client.addListener("messageAdded", (event: Message) => {
         addMessage(event, addMessages, updateUnreadMessages);
       });
       client.addListener("participantLeft", (participant) => {
-        handleParticipantsUpdate(participant, updateParticipants);
+        handlePromiseRejection(() => handleParticipantsUpdate(participant, updateParticipants), addNotifications);
       });
       client.addListener("participantUpdated", (event) => {
-        handleParticipantsUpdate(event.participant, updateParticipants);
+        handlePromiseRejection(() => handleParticipantsUpdate(event.participant, updateParticipants), addNotifications);
       });
       client.addListener("participantJoined", (participant) => {
-        handleParticipantsUpdate(participant, updateParticipants);
+        handlePromiseRejection(() => handleParticipantsUpdate(participant, updateParticipants), addNotifications);
       });
       client.addListener("conversationUpdated", ({ conversation }) => {
-        updateConvoList(
+        handlePromiseRejection(() => updateConvoList(
             client,
             conversation,
             listConversations,
             addMessages,
             updateUnreadMessages
-        );
+        ), addNotifications);
       });
       client.addListener("messageUpdated", ({ message }) => {
-        updateConvoList(
+        handlePromiseRejection(() => updateConvoList(
             client,
             message.conversation,
             listConversations,
             addMessages,
             updateUnreadMessages
-        );
+        ), addNotifications);
       });
 
       client.addListener("messageRemoved", (message) => {
-        removeMessages(
+        handlePromiseRejection(() => removeMessages(
             message.conversation.sid, [message]
-        );
+        ), addNotifications);
       });
 
         client.addListener("tokenExpired", () => {
@@ -191,11 +193,13 @@ const AppContainer: React.FC = () => {
       updateUnreadMessages: SetUreadMessagesType,
   ) {
     //transform the message and add it to redux
-    if (sidRef.current === message.conversation.sid) {
-      message.conversation.updateLastReadMessageIndex(message.index);
-    }
-    addMessages(message.conversation.sid, [message]);
-    loadUnreadMessagesCount(message.conversation, updateUnreadMessages);
+    handlePromiseRejection( () => {
+      if (sidRef.current === message.conversation.sid) {
+        message.conversation.updateLastReadMessageIndex(message.index);
+      }
+      addMessages(message.conversation.sid, [message]);
+      loadUnreadMessagesCount(message.conversation, updateUnreadMessages);
+    }, addNotifications);
   }
 
   const openedConversation = useMemo(
@@ -204,37 +208,24 @@ const AppContainer: React.FC = () => {
   );
 
   return (
-    <View style={styles.appWrapper}>
-      <View style={styles.convosWrapper}>
-        <ConversationsContainer
-          client={client}
-        />
-      </View>
-      <View style={styles.messagesWrapper}>
-        <ConversationContainer
-          conversation={openedConversation}
-          client={client}
-        />
-      </View>
-    </View>
+    <Box style={stylesheet.appWrapper}>
+      <AlertsView />
+      <Notifications />
+      <Box style={stylesheet.appContainer(alertsExist)}>
+        <Box style={stylesheet.convosWrapper}>
+          <ConversationsContainer
+            client={client}
+          />
+        </Box>
+        <Box style={stylesheet.messagesWrapper}>
+          <ConversationContainer
+            conversation={openedConversation}
+            client={client}
+          />
+        </Box>
+      </Box>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  appWrapper: {
-    display: "flex",
-    height: "100%",
-    width: "100%",
-    flexDirection: "row",
-  },
-  convosWrapper: {
-    height: "100%",
-    width: 320,
-    backgroundColor: "#F4F4F6",
-  },
-  messagesWrapper: {
-    flex: 1,
-  },
-});
 
 export default AppContainer;
