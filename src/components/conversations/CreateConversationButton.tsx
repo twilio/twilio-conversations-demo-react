@@ -17,7 +17,7 @@ const CreateConversationButton: React.FC<NewConvoProps> = (
   props: NewConvoProps
 ) => {
   const dispatch = useDispatch();
-  const { updateCurrentConversation } = bindActionCreators(
+  const { updateCurrentConversation, addNotifications } = bindActionCreators(
     actionCreators,
     dispatch
   );
@@ -39,10 +39,12 @@ const CreateConversationButton: React.FC<NewConvoProps> = (
           setIsModalOpen(false);
         }}
         onSave={(title: string) =>
-          addConversation(title, props.client).then((convo: Conversation) => {
-            setIsModalOpen(false);
-            updateCurrentConversation(convo.sid);
-          })
+          addConversation(title, props.client, addNotifications).then(
+            (convo: Conversation) => {
+              setIsModalOpen(false);
+              updateCurrentConversation(convo.sid);
+            }
+          )
         }
       />
     </>

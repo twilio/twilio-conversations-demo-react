@@ -11,8 +11,8 @@ import { Text } from "@twilio-paste/text";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../../store";
-import { MAX_FILE_SIZE } from "../../constants";
-import { getTypingMessage } from "../../helpers";
+import { MAX_FILE_SIZE, UNEXPECTED_ERROR_MESSAGE } from "../../constants";
+import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
 import MessageInput from "./MessageInput";
 import SendMessageButton from "./SendMessageButton";
 
@@ -36,7 +36,10 @@ const MessageInputField: React.FC<SendMessageProps> = (
   const typingInfo = getTypingMessage(props.typingData);
 
   const dispatch = useDispatch();
-  const { addMessages } = bindActionCreators(actionCreators, dispatch);
+  const { addMessages, addNotifications } = bindActionCreators(
+    actionCreators,
+    dispatch
+  );
 
   useEffect(() => {
     setMessage("");
@@ -139,7 +142,8 @@ const MessageInputField: React.FC<SendMessageProps> = (
       }
       await convo.updateLastReadMessageIndex(Math.max(...indexes));
     } catch (e) {
-      // TODO: catch errors
+      unexpectedErrorNotification(addNotifications);
+      return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
     }
   };
 

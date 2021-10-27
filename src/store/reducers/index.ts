@@ -14,6 +14,9 @@ import attachmentsReducer, { AttachmentsState } from "./attachmentsReducer";
 import { ActionType } from "../action-types";
 import typingDataReducer, { TypingDataState } from "./typingDataReducer";
 import lastReadIndexReducer from "./lastReadIndexReducer";
+import notificationsReducer, {
+  NotificationsType,
+} from "./notificationsReducer";
 
 export type AppState = {
   token: string;
@@ -26,6 +29,7 @@ export type AppState = {
   attachments: AttachmentsState;
   typingData: TypingDataState;
   lastReadIndex: number;
+  notifications: NotificationsType;
 };
 
 export const initialState = {
@@ -39,6 +43,7 @@ export const initialState = {
   loadingStatus: true,
   typingData: {},
   lastReadIndex: -1,
+  notifications: [],
 };
 
 const reducers = (
@@ -65,6 +70,7 @@ const appReducer = combineReducers({
   unreadMessages: unreadMessagesReducer,
   attachments: attachmentsReducer,
   typingData: typingDataReducer,
+  notifications: notificationsReducer,
 });
 
 export default reducers;

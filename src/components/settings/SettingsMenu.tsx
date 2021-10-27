@@ -19,12 +19,15 @@ import { Text } from "@twilio-paste/text";
 import { StyleSheet, View } from "react-native";
 import ConversationTitleModal from "../modals/ConversationTitleModal";
 import { Conversation } from "@twilio/conversations/lib/conversation";
+import { unexpectedErrorNotification } from "../../helpers";
+import { NotificationsType } from "../../store/reducers/notificationsReducer";
 
 interface SettingsMenuProps {
   leaveConvo: () => void;
   updateConvo: (val: string) => Promise<void>;
   conversation: Conversation;
   onParticipantListOpen: () => void;
+  addNotifications: (messages: NotificationsType) => void;
 }
 
 const SettingsMenu: React.FC<SettingsMenuProps> = (
@@ -61,7 +64,11 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
                   setIsTitleModalOpen(false);
                 }}
                 onSave={async (title) => {
-                  await props.updateConvo(title);
+                  try {
+                    await props.updateConvo(title);
+                  } catch {
+                    unexpectedErrorNotification(props.addNotifications);
+                  }
                   setIsTitleModalOpen(false);
                 }}
               />

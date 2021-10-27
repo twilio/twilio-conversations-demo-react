@@ -9,16 +9,21 @@ import { ModalBody } from "@twilio-paste/core";
 import { Button } from "@twilio-paste/button";
 import React from "react";
 
-type NameChangeErrorModalProps = {
+type ActionErrorModalProps = {
   isOpened: boolean;
   onClose: () => void;
   error?: {
     code: number;
     message: string;
   };
+  errorText: {
+    title: string;
+    description: string;
+  };
 };
 
-const NameChangeErrorModal: React.FC<NameChangeErrorModalProps> = ({
+const ActionErrorModal: React.FC<ActionErrorModalProps> = ({
+  errorText,
   isOpened,
   onClose,
   error = {},
@@ -30,14 +35,18 @@ const NameChangeErrorModal: React.FC<NameChangeErrorModalProps> = ({
     onDismiss={onClose}
   >
     <ModalHeader>
-      <ModalHeading as="h3">Unable to save Conversation name</ModalHeading>
+      <ModalHeading as="h3">{errorText.title}</ModalHeading>
     </ModalHeader>
     <ModalBody>
       <div>
-        Only creators of the Conversation can edit the Conversation name.
-        <br />
-        <br />
-        Error code [{error.code}]: {error.message}
+        {errorText.description}
+        {error ? (
+          <>
+            <br />
+            <br />
+            Error code [{error.code}]: {error.message}
+          </>
+        ) : null}
       </div>
     </ModalBody>
     <ModalFooter>
@@ -50,4 +59,4 @@ const NameChangeErrorModal: React.FC<NameChangeErrorModalProps> = ({
   </Modal>
 );
 
-export default NameChangeErrorModal;
+export default ActionErrorModal;

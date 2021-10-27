@@ -3,6 +3,7 @@ import { Message } from "@twilio/conversations/lib/message";
 import { Participant } from "@twilio/conversations/lib/participant";
 
 import { ActionType } from "../action-types";
+import { NotificationsType } from "../reducers/notificationsReducer";
 
 interface LoginAction {
   type: ActionType.LOGIN;
@@ -78,6 +79,16 @@ interface TypingEnded {
   payload: { channelSid: string; participant: string };
 }
 
+interface AddNotifications {
+  type: ActionType.ADD_NOTIFICATIONS;
+  payload: NotificationsType;
+}
+
+interface RemoveNotifications {
+  type: ActionType.REMOVE_NOTIFICATIONS;
+  payload: number;
+}
+
 export type Action =
   | LoginAction
   | LogOutAction
@@ -93,4 +104,6 @@ export type Action =
   | RemoveConversation
   | AddAttachment
   | TypingStarted
-  | TypingEnded;
+  | TypingEnded
+  | AddNotifications
+  | RemoveNotifications;

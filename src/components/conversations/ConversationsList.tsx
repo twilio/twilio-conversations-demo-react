@@ -10,7 +10,8 @@ import {
   SetUreadMessagesType,
 } from "../../types";
 import { actionCreators, AppState } from "../../store";
-import { getTypingMessage } from "../../helpers";
+import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
+import { UNEXPECTED_ERROR_MESSAGE } from "../../constants";
 
 function getLastMessage(messages: Message[], typingData: string[]) {
   if (messages === undefined || messages === null) {
@@ -45,8 +46,12 @@ async function updateCurrentConvo(
 ) {
   setSid(convo.sid);
 
-  const participants = await convo.getParticipants();
-  updateParticipants(participants, convo.sid);
+  try {
+    const participants = await convo.getParticipants();
+    updateParticipants(participants, convo.sid);
+  } catch {
+    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+  }
 }
 
 function setUnreadMessagesCount(
@@ -79,6 +84,7 @@ const ConversationsList: React.FC = () => {
     updateParticipants,
     updateUnreadMessages,
     setLastReadIndex,
+    addNotifications,
   } = bindActionCreators(actionCreators, dispatch);
 
   if (conversations === undefined || conversations === null) {
@@ -110,20 +116,24 @@ const ConversationsList: React.FC = () => {
           participants={participants[convo.sid] ?? []}
           convo={convo}
           onClick={async () => {
-            setLastReadIndex(convo.lastReadMessageIndex ?? -1);
-            await updateCurrentConvo(
-              updateCurrentConversation,
-              convo,
-              updateParticipants
-            );
-            //update unread messages
-            updateUnreadMessages(convo.sid, 0);
-            //set messages to be read
-            const lastMessage =
-              messages[convo.sid].length &&
-              messages[convo.sid][messages[convo.sid].length - 1];
-            if (lastMessage && lastMessage.index !== -1) {
-              await convo.updateLastReadMessageIndex(lastMessage.index);
+            try {
+              setLastReadIndex(convo.lastReadMessageIndex ?? -1);
+              await updateCurrentConvo(
+                updateCurrentConversation,
+                convo,
+                updateParticipants
+              );
+              //update unread messages
+              updateUnreadMessages(convo.sid, 0);
+              //set messages to be read
+              const lastMessage =
+                messages[convo.sid].length &&
+                messages[convo.sid][messages[convo.sid].length - 1];
+              if (lastMessage && lastMessage.index !== -1) {
+                await convo.updateLastReadMessageIndex(lastMessage.index);
+              }
+            } catch {
+              unexpectedErrorNotification(addNotifications);
             }
           }}
         />
