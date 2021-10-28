@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo } from "react";
 
-import Client from "@twilio/conversations";
-import { Conversation } from "@twilio/conversations/lib/conversation";
-import { Paginator } from "@twilio/conversations/lib/interfaces/paginator";
-import { Message } from "@twilio/conversations/lib/message";
+import {
+  Client,
+  Conversation,
+  Paginator,
+  Message,
+  Participant,
+} from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
-import { Participant } from "@twilio/conversations/lib/participant";
 
 import MessageList from "./MessageList";
 import { AddMessagesType } from "../../types";

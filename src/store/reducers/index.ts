@@ -1,5 +1,5 @@
 import { Action, combineReducers } from "redux";
-import { Conversation } from "@twilio/conversations/lib/conversation";
+import { Conversation } from "@twilio/conversations";
 
 import tokenReducer from "./tokenReducer";
 import convoReducer from "./convoReducer";

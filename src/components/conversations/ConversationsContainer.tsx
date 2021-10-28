@@ -1,7 +1,7 @@
 import React from "react";
 import { bindActionCreators } from "redux";
 import { useDispatch } from "react-redux";
-import Client from "@twilio/conversations";
+import { Client } from "@twilio/conversations";
 import { actionCreators } from "../../store";
 import CreateConversationButton from "./CreateConversationButton";
 import ConversationsList from "./ConversationsList";

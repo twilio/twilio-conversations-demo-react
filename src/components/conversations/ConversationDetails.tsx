@@ -1,7 +1,6 @@
-import { Conversation } from "@twilio/conversations/lib/conversation";
+import { Conversation, Participant } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
-import { Participant } from "@twilio/conversations/lib/participant";
 
 import Settings from "../settings/Settings";
 

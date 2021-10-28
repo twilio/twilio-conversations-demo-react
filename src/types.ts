@@ -1,5 +1,4 @@
-import { Message } from "@twilio/conversations/lib/message";
-import { Participant } from "@twilio/conversations/lib/participant";
+import { Message, Participant } from "@twilio/conversations";
 
 export type AddMessagesType = (channelSid: string, messages: Message[]) => void;
 export type SetSidType = (sid: string) => void;

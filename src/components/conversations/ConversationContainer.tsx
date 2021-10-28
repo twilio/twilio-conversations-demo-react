@@ -2,8 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { StyleSheet, View } from "react-native";
 
-import { Conversation } from "@twilio/conversations/lib/conversation";
-import Client from "@twilio/conversations";
+import { Conversation, Client } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 

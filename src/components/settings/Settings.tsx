@@ -1,15 +1,17 @@
 import React, { useState, createRef } from "react";
-import Client from "@twilio/conversations";
+import { useDispatch } from "react-redux";
+import { bindActionCreators } from "redux";
+
+import { Conversation, Participant, Client } from "@twilio/conversations";
+import { Box, Spinner } from "@twilio-paste/core";
+
 import SettingsMenu from "./SettingsMenu";
-import { Conversation } from "@twilio/conversations/lib/conversation";
 import ManageParticipantsModal from "../modals/manageParticipantsModal";
 import { Content } from "../../types";
 import { addParticipant, removeParticipant } from "../../api";
 import AddChatParticipantModal from "../modals/addChatMemberModal";
 import AddSMSParticipantModal from "../modals/addSMSParticipantModal";
 import AddWhatsAppParticipantModal from "../modals/addWhatsAppParticipant";
-import { useDispatch } from "react-redux";
-import { bindActionCreators } from "redux";
 import { actionCreators } from "../../store";
 import ActionErrorModal from "../modals/ActionErrorModal";
 import {
@@ -18,8 +20,6 @@ import {
   SMS_PREFIX,
   WHATSAPP_PREFIX,
 } from "../../constants";
-import { Participant } from "@twilio/conversations/lib/participant";
-import { Box, Spinner } from "@twilio-paste/core";
 import {
   successNotification,
   unexpectedErrorNotification,

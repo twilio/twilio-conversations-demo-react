@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+
 import {
   MenuButton,
   Menu,
@@ -16,9 +18,9 @@ import { UserIcon } from "@twilio-paste/icons/esm/UserIcon";
 import { EditIcon } from "@twilio-paste/icons/esm/EditIcon";
 import { ArrowBackIcon } from "@twilio-paste/icons/esm/ArrowBackIcon";
 import { Text } from "@twilio-paste/text";
-import { StyleSheet, View } from "react-native";
+import { Conversation } from "@twilio/conversations";
+
 import ConversationTitleModal from "../modals/ConversationTitleModal";
-import { Conversation } from "@twilio/conversations/lib/conversation";
 import { unexpectedErrorNotification } from "../../helpers";
 import { NotificationsType } from "../../store/reducers/notificationsReducer";
 

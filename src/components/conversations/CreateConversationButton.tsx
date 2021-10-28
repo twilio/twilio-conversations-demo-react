@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import Client from "@twilio/conversations";
+import { Client, Conversation } from "@twilio/conversations";
+
 import ConversationTitleModal from "../modals/ConversationTitleModal";
 import { addConversation } from "../../api";
 import { Button } from "@twilio-paste/button";
@@ -7,7 +8,6 @@ import { PlusIcon } from "@twilio-paste/icons/esm/PlusIcon";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../../store";
-import { Conversation } from "@twilio/conversations/lib/conversation";
 
 interface NewConvoProps {
   client?: Client;
@@ -17,10 +17,8 @@ const CreateConversationButton: React.FC<NewConvoProps> = (
   props: NewConvoProps
 ) => {
   const dispatch = useDispatch();
-  const { updateCurrentConversation, addNotifications } = bindActionCreators(
-    actionCreators,
-    dispatch
-  );
+  const { updateCurrentConversation, addNotifications, updateParticipants } =
+    bindActionCreators(actionCreators, dispatch);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpen = () => setIsModalOpen(true);
@@ -38,14 +36,16 @@ const CreateConversationButton: React.FC<NewConvoProps> = (
         onCancel={() => {
           setIsModalOpen(false);
         }}
-        onSave={(title: string) =>
-          addConversation(title, props.client, addNotifications).then(
-            (convo: Conversation) => {
-              setIsModalOpen(false);
-              updateCurrentConversation(convo.sid);
-            }
-          )
-        }
+        onSave={async (title: string) => {
+          const convo = await addConversation(
+            title,
+            updateParticipants,
+            props.client,
+            addNotifications
+          );
+          setIsModalOpen(false);
+          updateCurrentConversation(convo.sid);
+        }}
       />
     </>
   );
