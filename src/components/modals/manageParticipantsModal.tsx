@@ -14,7 +14,7 @@ import { Text } from "@twilio-paste/text";
 import { ChevronDownIcon } from "@twilio-paste/icons/esm/ChevronDownIcon";
 import { Avatar } from "@twilio-paste/avatar";
 import { UserIcon } from "@twilio-paste/icons/cjs/UserIcon";
-import { Participant } from "@twilio/conversations/lib/participant";
+import { Participant } from "@twilio/conversations";
 
 import ConvoModal from "./ConvoModal";
 import { Content } from "../../types";

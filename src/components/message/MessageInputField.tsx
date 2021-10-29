@@ -1,15 +1,14 @@
 import { ChangeEvent, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { bindActionCreators } from "redux";
 import { debounce } from "lodash";
-import Client from "@twilio/conversations";
-import { Conversation } from "@twilio/conversations/lib/conversation";
+
+import { Conversation, Message, Client } from "@twilio/conversations";
 import { AttachIcon } from "@twilio-paste/icons/esm/AttachIcon";
 import { Box, Button } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
-import { Message } from "@twilio/conversations/lib/message";
 import { Text } from "@twilio-paste/text";
 
-import { useDispatch } from "react-redux";
-import { bindActionCreators } from "redux";
 import { actionCreators } from "../../store";
 import { MAX_FILE_SIZE, UNEXPECTED_ERROR_MESSAGE } from "../../constants";
 import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";

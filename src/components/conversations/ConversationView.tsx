@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Conversation } from "@twilio/conversations/lib/conversation";
+import { Conversation, Message, Participant } from "@twilio/conversations";
 import { SetSidType, SetUreadMessagesType } from "../../types";
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
@@ -9,8 +9,6 @@ import SendingIcon from "../icons/Sending";
 import DeliveredIcon from "../icons/Delivered";
 import ReadIcon from "../icons/Read";
 import FailedIcon from "../icons/Failed";
-import { Message } from "@twilio/conversations/lib/message";
-import { Participant } from "@twilio/conversations/lib/participant";
 
 interface SingleConvoProps {
   convoId: string;

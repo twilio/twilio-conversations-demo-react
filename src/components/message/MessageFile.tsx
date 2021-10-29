@@ -3,7 +3,7 @@ import { Box, Button, Spinner, Text, Truncate } from "@twilio-paste/core";
 import { ProductAssetsIcon } from "@twilio-paste/icons/cjs/ProductAssetsIcon";
 import { CloseIcon } from "@twilio-paste/icons/cjs/CloseIcon";
 import { DownloadIcon } from "@twilio-paste/icons/cjs/DownloadIcon";
-import { Media } from "@twilio/conversations/lib";
+import { Media } from "@twilio/conversations";
 
 import { getFileUrl } from "../../api";
 

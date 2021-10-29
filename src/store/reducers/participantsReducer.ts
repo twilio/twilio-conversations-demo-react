@@ -1,6 +1,7 @@
+import { Participant } from "@twilio/conversations";
+
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
-import { Participant } from "@twilio/conversations/lib/participant";
 
 export type ParticipantsType = Record<string, Participant[]>;
 const initialState: ParticipantsType = {};

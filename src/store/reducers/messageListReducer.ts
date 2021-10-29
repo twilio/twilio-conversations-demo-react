@@ -1,6 +1,7 @@
+import { Message } from "@twilio/conversations";
+
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
-import { Message } from "@twilio/conversations/lib/message";
 
 export enum MessageStatus {
   Sending = "Sending",

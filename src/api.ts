@@ -1,9 +1,11 @@
 import axios from "axios";
-import { Conversation } from "@twilio/conversations/lib/conversation";
-import Client from "@twilio/conversations";
-import { Message } from "@twilio/conversations/lib/message";
-import { Participant } from "@twilio/conversations/lib/participant";
-import { Media } from "@twilio/conversations/lib";
+import {
+  Conversation,
+  Message,
+  Participant,
+  Media,
+  Client,
+} from "@twilio/conversations";
 
 import { MessageStatus } from "./store/reducers/messageListReducer";
 import {
@@ -16,6 +18,7 @@ import { successNotification, unexpectedErrorNotification } from "./helpers";
 
 export async function addConversation(
   name: string,
+  updateParticipants: (participants: Participant[], sid: string) => void,
   client?: Client,
   addNotifications?: (notifications: NotificationsType) => void
 ): Promise<Conversation> {
@@ -25,6 +28,9 @@ export async function addConversation(
         friendlyName: name,
       });
       await conversation.join();
+
+      const participants = await getConversationParticipants(conversation);
+      updateParticipants(participants, conversation.sid);
 
       successNotification({
         message: CONVERSATION_MESSAGES.CREATED,

@@ -1,7 +1,6 @@
 import { bindActionCreators } from "redux";
 import { useDispatch, useSelector } from "react-redux";
-import { Conversation } from "@twilio/conversations/lib/conversation";
-import { Message } from "@twilio/conversations/lib/message";
+import { Conversation, Message } from "@twilio/conversations";
 
 import ConversationView from "./ConversationView";
 import {

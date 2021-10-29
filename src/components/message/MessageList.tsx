@@ -5,10 +5,12 @@ import { saveAs } from "file-saver";
 
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
-import { Conversation } from "@twilio/conversations/lib/conversation";
-import { Message } from "@twilio/conversations/lib/message";
-import { Media } from "@twilio/conversations/lib";
-import { Participant } from "@twilio/conversations/lib/participant";
+import {
+  Conversation,
+  Message,
+  Media,
+  Participant,
+} from "@twilio/conversations";
 
 import { getBlobFile, getMessageStatus } from "../../api";
 import MessageView from "./MessageView";

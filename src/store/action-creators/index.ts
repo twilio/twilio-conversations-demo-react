@@ -1,8 +1,6 @@
 import { Dispatch } from "redux";
 
-import { Conversation } from "@twilio/conversations/lib/conversation";
-import { Message } from "@twilio/conversations/lib/message";
-import { Participant } from "@twilio/conversations/lib/participant";
+import { Conversation, Message, Participant } from "@twilio/conversations";
 
 import { ActionType } from "../action-types";
 import { Action } from "../actions";

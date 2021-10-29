@@ -1,4 +1,4 @@
-import { Conversation } from "@twilio/conversations/lib/conversation";
+import { Conversation } from "@twilio/conversations";
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
 

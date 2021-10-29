@@ -2,10 +2,12 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { bindActionCreators } from "redux";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Message } from "@twilio/conversations/lib/message";
-import Client from "@twilio/conversations";
-import { Conversation } from "@twilio/conversations/lib/conversation";
-import { Participant } from "@twilio/conversations/lib/participant";
+import {
+  Message,
+  Conversation,
+  Participant,
+  Client,
+} from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
 
 import { actionCreators, AppState } from "../store";
@@ -47,10 +49,10 @@ async function updateConvoList(
   addMessages: AddMessagesType,
   updateUnreadMessages: SetUreadMessagesType
 ) {
-  try {
+  if (conversation.status === "joined") {
     const messages = await conversation.getMessages();
     addMessages(conversation.sid, messages.items);
-  } catch {
+  } else {
     addMessages(conversation.sid, []);
   }
 
@@ -113,6 +115,11 @@ const AppContainer: React.FC = () => {
         });
 
         handlePromiseRejection(async () => {
+            if (conversation.status === "joined") {
+              const result = await getConversationParticipants(conversation);
+              updateParticipants(result, conversation.sid);
+            }
+
           updateConvoList(
           client,
             conversation,
@@ -120,10 +127,9 @@ const AppContainer: React.FC = () => {
           addMessages,
           updateUnreadMessages
         );
-          const result = await getConversationParticipants(conversation);
-          updateParticipants(result, conversation.sid);
           }, addNotifications);
       });
+
       client.addListener("conversationRemoved", (conversation: Conversation) => {
         updateCurrentConversation("");
         handlePromiseRejection( () => {
@@ -152,6 +158,7 @@ const AppContainer: React.FC = () => {
             updateUnreadMessages
         ), addNotifications);
       });
+      
       client.addListener("messageUpdated", ({ message }) => {
         handlePromiseRejection(() => updateConvoList(
             client,

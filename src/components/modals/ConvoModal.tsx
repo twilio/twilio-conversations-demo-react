@@ -1,7 +1,6 @@
 import { createRef } from "react";
 import { Modal, ModalHeader, ModalHeading } from "@twilio-paste/modal";
-import { Conversation } from "@twilio/conversations/lib/conversation";
-import Client from "@twilio/conversations";
+import { Conversation, Client } from "@twilio/conversations";
 
 interface ConvoModalProps {
   handleClose: () => void;
