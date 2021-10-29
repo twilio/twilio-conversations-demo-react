@@ -19,19 +19,20 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import MessageList from "./MessageList";
 import { AddMessagesType } from "../../types";
 import styles from "../../styles";
+import { getMessages } from "../../api";
+import { CONVERSATION_PAGE_SIZE } from "../../constants";
 
-export function updateMessages(
+export async function loadMessages(
   conversation: Conversation,
   currentMessages: Message[],
   addMessage: AddMessagesType
-): void {
+): Promise<void> {
   const convoSid: string = conversation.sid;
   if (!(convoSid in currentMessages)) {
-    conversation.getMessages().then((value: Paginator<Message>) => {
-      const messages = value.items;
-      //save to redux
-      addMessage(convoSid, messages);
-    });
+    const paginator = await getMessages(conversation);
+    const messages = paginator.items;
+    //save to redux
+    addMessage(convoSid, messages);
   }
 }
 
@@ -48,19 +49,19 @@ interface MessageProps {
 
 const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
   const { messages, convo, loadingState, lastReadIndex, addMessage } = props;
-  const [hasMore, setHasMore] = useState(messages.length === 30);
+  const [hasMore, setHasMore] = useState(
+    messages.length === CONVERSATION_PAGE_SIZE
+  );
   const [loading, setLoading] = useState(false);
   const [height, setHeight] = useState(0);
   const [paginator, setPaginator] = useState<Paginator<Message> | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  if (
-    (messages === undefined || messages === null) &&
-    convo !== undefined &&
-    !loadingState
-  ) {
-    updateMessages(convo, messages, addMessage);
-  }
+  useEffect(() => {
+    if (!messages && convo && !loadingState) {
+      loadMessages(convo, messages, addMessage);
+    }
+  }, []);
 
   useLayoutEffect(() => {
     const currentHeight = listRef.current?.clientHeight;
@@ -74,8 +75,10 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
   }, [listRef.current?.clientHeight]);
 
   useEffect(() => {
-    setHasMore(messages.length === 30);
-    convo.getMessages().then((paginator) => setPaginator(paginator));
+    getMessages(convo).then((paginator) => {
+      setHasMore(paginator.hasPrevPage);
+      setPaginator(paginator);
+    });
   }, [convo]);
 
   useEffect(() => {
