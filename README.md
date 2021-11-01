@@ -100,7 +100,8 @@ exports.handler = function(context, event, callback) {
 
 ### Build
 
-Run `yarn build` to fetch Twilio SDK files and build the application.
+- Run `yarn` to fetch project dependencies.
+- Run `yarn build` to fetch Twilio SDK files and build the application.
 
 ### Run application
 
