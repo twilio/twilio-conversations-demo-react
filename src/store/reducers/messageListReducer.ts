@@ -18,6 +18,14 @@ const initialState: ChatMessagesState = {};
 
 const reducer = (state = initialState, action: Action): ChatMessagesState => {
   switch (action.type) {
+    case ActionType.PUSH_MESSAGES: {
+      const { channelSid, messages: messagesToAdd } = action.payload;
+      const existingMessages = state[channelSid] ?? [];
+
+      return Object.assign({}, state, {
+        [channelSid]: existingMessages.concat(messagesToAdd),
+      }) as ChatMessagesState;
+    }
     case ActionType.ADD_MESSAGES: {
       //get convo sid and messages to add from payload
       const { channelSid, messages: messagesToAdd } = action.payload;
