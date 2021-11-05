@@ -22,4 +22,10 @@ export default {
   messagesWrapper: {
     flex: 1,
   } as CSSProperties,
+  paginationSpinner: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  } as CSSProperties,
 };

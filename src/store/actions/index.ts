@@ -32,6 +32,11 @@ interface AddMessages {
   payload: { channelSid: string; messages: Message[] };
 }
 
+interface PushMessages {
+  type: ActionType.PUSH_MESSAGES;
+  payload: { channelSid: string; messages: Message[] };
+}
+
 interface RemoveMessages {
   type: ActionType.REMOVE_MESSAGES;
   payload: { channelSid: string; messages: Message[] };
@@ -94,6 +99,7 @@ export type Action =
   | UpdateCurrentConversation
   | SetLastReadIndex
   | AddMessages
+  | PushMessages
   | RemoveMessages
   | UpdateLoadingState
   | UpdateParticipants

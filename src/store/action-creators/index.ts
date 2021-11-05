@@ -68,6 +68,15 @@ export const addMessages = (channelSid: string, messages: Message[]) => {
   };
 };
 
+export const pushMessages = (channelSid: string, messages: Message[]) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.PUSH_MESSAGES,
+      payload: { channelSid, messages },
+    });
+  };
+};
+
 export const removeMessages = (channelSid: string, messages: Message[]) => {
   return (dispatch: Dispatch<Action>): void => {
     dispatch({

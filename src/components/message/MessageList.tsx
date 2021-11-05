@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { saveAs } from "file-saver";
 
-import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 import {
   Conversation,
@@ -67,7 +66,6 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
 
   const theme = useTheme();
   const myRef = useRef<HTMLInputElement>(null);
-  const messagesOrdered: Message[] = [...messages].reverse();
   const messagesLength: number = messages.length;
 
   const dispatch = useDispatch();
@@ -119,10 +117,9 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
 
   function setTopPadding(index: number) {
     if (
-      props.messages[messagesLength - (1 + index)] !== undefined &&
-      props.messages[messagesLength - (2 + index)] !== undefined &&
-      props.messages[messagesLength - (1 + index)].author ===
-        props.messages[messagesLength - (2 + index)].author
+      props.messages[index] !== undefined &&
+      props.messages[index - 1] !== undefined &&
+      props.messages[index].author === props.messages[index - 1].author
     ) {
       return theme.space.space20;
     }
@@ -141,14 +138,8 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   };
 
   return (
-    <Box
-      display="flex"
-      flexBasis="100%"
-      flexDirection="column-reverse"
-      overflow="scroll"
-      paddingRight="space50"
-    >
-      {messagesOrdered.map((message, index) => {
+    <>
+      {messages.map((message, index) => {
         const isImage = message.media?.contentType?.includes("image");
         const fileBlob = conversationAttachments?.[message.sid] ?? null;
 
@@ -218,7 +209,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                 }
               }}
               topPadding={setTopPadding(index)}
-              lastMessageBottomPadding={index === 0 ? 16 : 0}
+              lastMessageBottomPadding={index === messagesLength - 1 ? 16 : 0}
               sameAuthorAsPrev={setTopPadding(index) !== theme.space.space20}
               messageTime={getMessageTime(message)}
               updateAttributes={(attribute) =>
@@ -255,7 +246,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
             );
           })()
         : null}
-    </Box>
+    </>
   );
 };
 

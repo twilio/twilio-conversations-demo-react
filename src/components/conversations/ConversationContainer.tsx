@@ -31,7 +31,7 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
   const lastReadIndex = useSelector((state: AppState) => state.lastReadIndex);
 
   const dispatch = useDispatch();
-  const { addMessages } = bindActionCreators(actionCreators, dispatch);
+  const { pushMessages } = bindActionCreators(actionCreators, dispatch);
 
   return (
     <View style={styles.convosWrapper}>
@@ -44,11 +44,12 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
           />
 
           <MessagesBox
+            key={sid}
             convoSid={sid}
             convo={props.conversation}
-            addMessage={addMessages}
+            addMessage={pushMessages}
             client={props.client}
-            messages={messages}
+            messages={messages[sid]}
             loadingState={loadingStatus}
             participants={participants}
             lastReadIndex={lastReadIndex}
@@ -57,7 +58,7 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
           <MessageInputField
             convoSid={sid}
             client={props.client}
-            messages={messages}
+            messages={messages[sid]}
             convo={props.conversation}
             typingData={typingData}
           />

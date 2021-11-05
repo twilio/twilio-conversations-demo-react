@@ -18,7 +18,7 @@ import SendMessageButton from "./SendMessageButton";
 interface SendMessageProps {
   convoSid: string;
   client: Client;
-  messages: Record<string, Message[]>;
+  messages: Message[];
   convo: Conversation;
   typingData: string[];
 }
@@ -80,8 +80,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
   };
 
   const onMessageSend = async () => {
-    const { convo, client } = props;
-    const messages = props.messages[props.convoSid];
+    const { convo, client, messages } = props;
     const messagesToSend = [];
     const messagesData = [];
     const currentDate: Date = new Date();
