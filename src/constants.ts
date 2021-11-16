@@ -28,3 +28,5 @@ export const PARTICIPANT_MESSAGES = {
   ADDED: "Participant added.",
   REMOVED: "Participant removed.",
 };
+
+export const CONVERSATION_PAGE_SIZE = 30;

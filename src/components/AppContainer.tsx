@@ -23,6 +23,7 @@ import useAppAlert from "../hooks/useAppAlerts";
 import Notifications from "./Notifications";
 import stylesheet from "../styles";
 import { handlePromiseRejection } from "../helpers";
+import AppHeader from "./AppHeader";
 
 type SetConvosType = (convos: Conversation[]) => void;
 
@@ -73,6 +74,8 @@ const AppContainer: React.FC = () => {
   const [alertsExist, AlertsView] = useAppAlert();
   sidRef.current = sid;
 
+  const username = localStorage.getItem("username");
+  const password = localStorage.getItem("password");
 
   const dispatch = useDispatch();
   const {
@@ -80,14 +83,15 @@ const AppContainer: React.FC = () => {
     updateLoadingState,
     updateParticipants,
     updateUnreadMessages,
-      startTyping,
-      endTyping,
-      listConversations,
+    startTyping,
+    endTyping,
+    listConversations,
     login,
-      removeMessages,
+    removeMessages,
     removeConversation,
     updateCurrentConversation,
-      addNotifications,
+    addNotifications,
+    logout
   } = bindActionCreators(actionCreators, dispatch);
 
   const updateTypingIndicator = (participant: Participant, sid: string, callback: (sid: string, user: string) => void) => {
@@ -115,18 +119,18 @@ const AppContainer: React.FC = () => {
         });
 
         handlePromiseRejection(async () => {
-            if (conversation.status === "joined") {
-              const result = await getConversationParticipants(conversation);
+          if (conversation.status === "joined") {
+            const result = await getConversationParticipants(conversation);
               updateParticipants(result, conversation.sid);
-            }
+          }
 
           updateConvoList(
-          client,
+            client,
             conversation,
             listConversations,
-          addMessages,
-          updateUnreadMessages
-        );
+            addMessages,
+            updateUnreadMessages
+          );
           }, addNotifications);
       });
 
@@ -176,8 +180,6 @@ const AppContainer: React.FC = () => {
       });
 
         client.addListener("tokenExpired", () => {
-          const username = localStorage.getItem("username");
-          const password = localStorage.getItem("password");
           if (username && password) {
             getToken(username, password).then((token) => {
               login(token);
@@ -218,6 +220,9 @@ const AppContainer: React.FC = () => {
     <Box style={stylesheet.appWrapper}>
       <AlertsView />
       <Notifications />
+      <Box>
+        <AppHeader user={username ?? ""} onSignOut={logout} />
+      </Box>
       <Box style={stylesheet.appContainer(alertsExist)}>
         <Box style={stylesheet.convosWrapper}>
           <ConversationsContainer

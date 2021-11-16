@@ -5,11 +5,13 @@ import {
   Participant,
   Media,
   Client,
+  Paginator,
 } from "@twilio/conversations";
 
 import { MessageStatus } from "./store/reducers/messageListReducer";
 import {
   CONVERSATION_MESSAGES,
+  CONVERSATION_PAGE_SIZE,
   PARTICIPANT_MESSAGES,
   UNEXPECTED_ERROR_MESSAGE,
 } from "./constants";
@@ -216,3 +218,8 @@ export const getBlobFile = async (
 export const getFileUrl = async (media: Media): Promise<string> => {
   return await media.getContentTemporaryUrl().then();
 };
+
+export const getMessages = async (
+  conversation: Conversation
+): Promise<Paginator<Message>> =>
+  await conversation.getMessages(CONVERSATION_PAGE_SIZE);

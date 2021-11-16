@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Client, Conversation } from "@twilio/conversations";
+import { Client } from "@twilio/conversations";
 
 import ConversationTitleModal from "../modals/ConversationTitleModal";
 import { addConversation } from "../../api";
