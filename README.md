@@ -43,8 +43,8 @@ NOTE: No need for quotes around the URL, they will be added automatically.
 // If you do not want to pay for other people using your Twilio service for their benefit,
 // generate user and password pairs different from what is presented here
 let users = {
-    user00: "password00", !!! CHANGE THE PASSWORD AND REMOVE THIS NOTE !!!
-    user01: "password01"  !!! CHANGE THE PASSWORD AND REMOVE THIS NOTE !!!
+    user00: "", !!! SET NON-EMPTY PASSWORD AND REMOVE THIS NOTE, THIS GENERATOR WILL NOT WORK WITH EMPTY PASSWORD !!!
+    user01: ""  !!! SET NON-EMPTY PASSWORD AND REMOVE THIS NOTE, THIS GENERATOR WILL NOT WORK WITH EMPTY PASSWORD !!!
 };
 
 let response = new Twilio.Response();
