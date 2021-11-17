@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
-
+import { Box } from "@twilio-paste/core";
 import {
   MenuButton,
   Menu,
@@ -18,11 +17,15 @@ import { UserIcon } from "@twilio-paste/icons/esm/UserIcon";
 import { EditIcon } from "@twilio-paste/icons/esm/EditIcon";
 import { ArrowBackIcon } from "@twilio-paste/icons/esm/ArrowBackIcon";
 import { Text } from "@twilio-paste/text";
-import { Conversation } from "@twilio/conversations";
+import { Conversation, NotificationLevel } from "@twilio/conversations";
 
 import ConversationTitleModal from "../modals/ConversationTitleModal";
 import { unexpectedErrorNotification } from "../../helpers";
 import { NotificationsType } from "../../store/reducers/notificationsReducer";
+import { NOTIFICATION_LEVEL } from "../../constants";
+import Bell from "../icons/Bell";
+import BellMuted from "../icons/BellMuted";
+import styles from "../../styles";
 
 interface SettingsMenuProps {
   leaveConvo: () => void;
@@ -37,15 +40,24 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
 ) => {
   const menu = useMenuState();
   const [isTitleModalOpen, setIsTitleModalOpen] = useState(false);
-  const { friendlyName } = props.conversation;
+  const { friendlyName, notificationLevel } = props.conversation;
+  const muted = notificationLevel === NOTIFICATION_LEVEL.MUTED;
+
+  const toggleMuteConversation = () => {
+    props.conversation.setUserNotificationLevel(
+      muted
+        ? (NOTIFICATION_LEVEL.DEFAULT as NotificationLevel)
+        : (NOTIFICATION_LEVEL.MUTED as NotificationLevel)
+    );
+  };
 
   return (
-    <View style={styles.settingsWrapper}>
+    <Box style={styles.settingsWrapper}>
       <MenuButton {...menu} variant="link" size="reset">
         <MoreIcon decorative={false} title="Settings" />
       </MenuButton>
       <Menu {...menu} aria-label="Preferences">
-        <View style={styles.optionWrapper}>
+        <Box style={styles.optionWrapper}>
           <MenuItem {...menu}>
             <MediaObject verticalAlign="center">
               <MediaFigure spacing="space20">
@@ -76,15 +88,15 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
               />
             </MediaObject>
           </MenuItem>
-        </View>
-        {/*<MenuItem {...menu}>*/}
-        {/*  <MediaObject verticalAlign="center">*/}
-        {/*    <MediaFigure spacing="space20">*/}
-        {/*      <img src="NotificationsOn.png" />*/}
-        {/*    </MediaFigure>*/}
-        {/*    <MediaBody>Unmute Conversation</MediaBody>*/}
-        {/*  </MediaObject>*/}
-        {/*</MenuItem>*/}
+        </Box>
+        <MenuItem {...menu}>
+          <MediaObject verticalAlign="center" onClick={toggleMuteConversation}>
+            <MediaFigure spacing="space20">
+              {muted ? <Bell /> : <BellMuted />}
+            </MediaFigure>
+            <MediaBody>{muted ? "Unmute" : "Mute"} Conversation</MediaBody>
+          </MediaObject>
+        </MenuItem>
         <MenuItem {...menu} onClick={props.onParticipantListOpen}>
           <MediaObject verticalAlign="center">
             <MediaFigure spacing="space20">
@@ -115,18 +127,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
           </MediaObject>
         </MenuItem>
       </Menu>
-    </View>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  settingsWrapper: {
-    zIndex: 1,
-    paddingTop: 22,
-  },
-  optionWrapper: {
-    width: 232,
-  },
-});
 
 export default SettingsMenu;

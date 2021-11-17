@@ -224,11 +224,9 @@ const AppContainer: React.FC = () => {
         <AppHeader user={username ?? ""} onSignOut={logout} />
       </Box>
       <Box style={stylesheet.appContainer(alertsExist)}>
-        <Box style={stylesheet.convosWrapper}>
           <ConversationsContainer
             client={client}
           />
-        </Box>
         <Box style={stylesheet.messagesWrapper}>
           <ConversationContainer
             conversation={openedConversation}

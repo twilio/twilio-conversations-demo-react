@@ -6,7 +6,7 @@ import { Button } from "@twilio-paste/button";
 import { HideIcon } from "@twilio-paste/icons/esm/HideIcon";
 import { ShowIcon } from "@twilio-paste/icons/esm/ShowIcon";
 import { InputType } from "../../types";
-import { StyleSheet, Text } from "react-native";
+import styles from "../../styles";
 
 enum PrefixType {
   SMS = "SMS",
@@ -45,7 +45,7 @@ const ModalInputField: React.FC<ModalInputProps> = (props: ModalInputProps) => {
   return (
     <>
       <Label htmlFor="modal-input">
-        <Text style={styles.label}>{props.label}</Text>
+        <div style={styles.modalInputLabel}>{props.label}</div>
       </Label>
       <Input
         autoFocus={props.isFocused ?? false}
@@ -96,14 +96,5 @@ const ModalInputField: React.FC<ModalInputProps> = (props: ModalInputProps) => {
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  label: {
-    fontFamily: "Inter",
-    fontSize: 14,
-    fontWeight: "700",
-    lineHeight: 20,
-  },
-});
 
 export default ModalInputField;

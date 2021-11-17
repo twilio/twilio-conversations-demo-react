@@ -1,26 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./components/App";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { Theme } from "@twilio-paste/core/theme";
-import { StyleSheet, View } from "react-native";
+import { Box } from "@twilio-paste/core";
 
-const styles = StyleSheet.create({
-  app: {
-    flex: 1,
-    height: "100%",
-    width: "100%",
-    position: "absolute",
-  },
-});
+import App from "./components/App";
+import styles from "../src/styles";
 
 ReactDOM.render(
-  <View style={styles.app}>
+  <Box style={styles.app}>
     <React.StrictMode>
       <Provider store={store}>
         <Theme.Provider theme="default">
-          <View style={styles.app}>
+          <Box style={styles.app}>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" />
             <link
@@ -28,10 +21,10 @@ ReactDOM.render(
               rel="stylesheet"
             ></link>
             <App />
-          </View>
+          </Box>
         </Theme.Provider>
       </Provider>
     </React.StrictMode>
-  </View>,
+  </Box>,
   document.getElementById("root")
 );

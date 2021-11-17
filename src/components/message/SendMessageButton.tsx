@@ -1,5 +1,6 @@
 import { Button } from "@twilio-paste/button";
-import { StyleSheet, View } from "react-native";
+import { Box } from "@twilio-paste/core";
+import styles from "../../styles";
 
 interface SendMessageButtonProps {
   message: string;
@@ -10,7 +11,7 @@ const SendMessageButton: React.FC<SendMessageButtonProps> = (
   props: SendMessageButtonProps
 ) => {
   return (
-    <View style={styles.buttonWrapper}>
+    <Box style={styles.buttonWrapper}>
       <Button
         variant="primary"
         onClick={() => {
@@ -19,15 +20,8 @@ const SendMessageButton: React.FC<SendMessageButtonProps> = (
       >
         Send
       </Button>
-    </View>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  buttonWrapper: {
-    flexDirection: "row",
-    paddingRight: 16,
-  },
-});
 
 export default SendMessageButton;

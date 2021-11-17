@@ -1,5 +1,4 @@
 import React from "react";
-import { View } from "react-native";
 
 import {
   Menu,
@@ -17,7 +16,7 @@ import {
 import { Text } from "@twilio-paste/text";
 import { DeleteIcon } from "@twilio-paste/icons/cjs/DeleteIcon";
 import { CopyIcon } from "@twilio-paste/icons/cjs/CopyIcon";
-import { Toaster, useToaster } from "@twilio-paste/core";
+import { Box, Toaster, useToaster } from "@twilio-paste/core";
 import { COPY_SUCCESS_MESSAGE } from "../../constants";
 
 type MessageActionsProps = {
@@ -33,7 +32,7 @@ const MessageActions = ({
   const toaster = useToaster();
 
   return (
-    <View
+    <Box
       style={{
         zIndex: 6,
         paddingLeft: 6,
@@ -93,7 +92,7 @@ const MessageActions = ({
           </MediaObject>
         </MenuItem>
       </Menu>
-    </View>
+    </Box>
   );
 };
 

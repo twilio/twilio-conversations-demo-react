@@ -30,3 +30,8 @@ export const PARTICIPANT_MESSAGES = {
 };
 
 export const CONVERSATION_PAGE_SIZE = 30;
+
+export const NOTIFICATION_LEVEL = {
+  DEFAULT: "default",
+  MUTED: "muted",
+};
