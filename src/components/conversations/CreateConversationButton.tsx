@@ -11,6 +11,7 @@ import { actionCreators } from "../../store";
 
 interface NewConvoProps {
   client?: Client;
+  collapsed: boolean;
 }
 
 const CreateConversationButton: React.FC<NewConvoProps> = (
@@ -25,9 +26,9 @@ const CreateConversationButton: React.FC<NewConvoProps> = (
 
   return (
     <>
-      <Button variant="secondary" onClick={handleOpen}>
+      <Button fullWidth variant="secondary" onClick={handleOpen}>
         <PlusIcon decorative={false} title="Add convo" />
-        Create New Conversation
+        {!props.collapsed ? "Create New Conversation" : null}
       </Button>
       <ConversationTitleModal
         title=""

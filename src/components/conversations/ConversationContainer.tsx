@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
-import { StyleSheet, View } from "react-native";
 
 import { Conversation, Client } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
@@ -10,6 +9,7 @@ import { actionCreators, AppState } from "../../store";
 import ConversationDetails from "./ConversationDetails";
 import MessagesBox from "../message/MessagesBox";
 import MessageInputField from "../message/MessageInputField";
+import styles from "../../styles";
 
 interface ConvoContainerProps {
   conversation?: Conversation;
@@ -34,7 +34,7 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
   const { pushMessages } = bindActionCreators(actionCreators, dispatch);
 
   return (
-    <View style={styles.convosWrapper}>
+    <Box style={styles.convosWrapperBox}>
       {sid && props.conversation && props.client ? (
         <>
           <ConversationDetails
@@ -75,7 +75,7 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
               fontFamily: "Inter",
               fontSize: theme.fontSizes.fontSize30,
               fontWeight: theme.fontWeights.fontWeightNormal,
-              lineHeight: 20,
+              lineHeight: "20px",
               color: theme.textColors.colorTextIcon,
             }}
           >
@@ -83,16 +83,8 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
           </Box>
         </>
       )}
-    </View>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  convosWrapper: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-  },
-});
 
 export default ConversationContainer;

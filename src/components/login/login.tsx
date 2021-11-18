@@ -1,12 +1,14 @@
 import { useState } from "react";
+import axios from "axios";
+import { Button } from "@twilio-paste/button";
+import { Box } from "@twilio-paste/core";
+import { ProductConversationsIcon } from "@twilio-paste/icons/esm/ProductConversationsIcon";
+
 import { getToken } from "../../api";
 import { InputType } from "../../types";
-import { ProductConversationsIcon } from "@twilio-paste/icons/esm/ProductConversationsIcon";
 import ModalInputField from "../modals/ModalInputField";
-import { Button } from "@twilio-paste/button";
-import { StyleSheet, View, Text } from "react-native";
-import { Box } from "@twilio-paste/core";
-import axios from "axios";
+import styles from "../../styles";
+import TwilioLogo from "../icons/TwilioLogo";
 
 type SetTokenType = (token: string) => void;
 
@@ -50,20 +52,20 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
   const [password, setPassword] = useState("");
 
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <View>
+    <Box style={styles.loginContainer}>
+      <Box style={styles.loginContent}>
+        <Box>
           <ProductConversationsIcon
             decorative={true}
             size="sizeIcon90"
             style={styles.logo}
             color="colorTextInverse"
           />
-        </View>
-        <Text style={styles.title}>Twilio Conversations</Text>
-        <Text style={styles.subTitle}>Demo experience</Text>
-        <View style={styles.form}>
-          <View style={styles.userInput}>
+        </Box>
+        <div style={styles.loginTitle}>Twilio Conversations</div>
+        <div style={styles.subTitle}>Demo experience</div>
+        <Box style={styles.loginForm}>
+          <Box style={styles.userInput}>
             <ModalInputField
               label="Username"
               placeholder=""
@@ -77,8 +79,8 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
               onBlur={() => setFormDirty(true)}
               onChange={setUsername}
             />
-          </View>
-          <View style={styles.passwordInput}>
+          </Box>
+          <Box style={styles.passwordInput}>
             <ModalInputField
               label="Password"
               placeholder=""
@@ -93,9 +95,10 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
               showPassword={showPassword}
               setShowPassword={setShowPassword}
             />
-          </View>
-          <View style={styles.button}>
+          </Box>
+          <Box style={styles.loginButton}>
             <Button
+              fullWidth
               disabled={!username || !password}
               variant="primary"
               onClick={async () => {
@@ -107,10 +110,13 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
             >
               Sign in
             </Button>
-          </View>
-        </View>
-      </View>
-      <View style={styles.background}>
+          </Box>
+        </Box>
+        <Box style={{ paddingTop: 40 }}>
+          <TwilioLogo />
+        </Box>
+      </Box>
+      <Box style={styles.loginBackground}>
         <Box
           style={{
             height: "100%",
@@ -120,73 +126,9 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
             transformOrigin: "top right",
           }}
         />
-      </View>
-    </View>
+      </Box>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    height: "100%",
-    backgroundColor: "#001489",
-  },
-  logo: {
-    width: "42px",
-  },
-  title: {
-    paddingTop: 2,
-    color: "#FFFFFF",
-    fontFamily: "Inter",
-    fontSize: 20,
-    lineHeight: 28,
-    fontWeight: "500",
-  },
-  subTitle: {
-    color: "#AEB2C1",
-    fontFamily: "Inter",
-    fontSize: 14,
-    lineHeight: 20,
-    paddingBottom: 40,
-  },
-  content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  form: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-  },
-  userInput: {
-    paddingTop: 24,
-    width: 320,
-    marginLeft: 24,
-    marginRight: 24,
-  },
-  passwordInput: {
-    paddingTop: 16,
-    width: 320,
-    marginLeft: 24,
-    marginRight: 24,
-  },
-  button: {
-    width: 320,
-    fontFamily: "Inter",
-    paddingTop: 32,
-    paddingBottom: 24,
-    marginLeft: 24,
-    marginRight: 24,
-  },
-  background: {
-    position: "absolute",
-    alignSelf: "flex-end",
-    top: "50%",
-    height: "50%",
-    width: "100%",
-    backgroundColor: "#001489",
-    overflow: "hidden",
-    zIndex: -1,
-  },
-});
 
 export default Login;

@@ -122,7 +122,6 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
         display: "flex",
         flexDirection: "column-reverse",
         width: "100%",
-        zIndex: -1,
         overflow: "scroll",
         paddingLeft: 16,
         height: "100%",

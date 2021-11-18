@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { Conversation, Message, Participant } from "@twilio/conversations";
-import { SetSidType, SetUreadMessagesType } from "../../types";
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
+
 import { MessageStatus } from "../../store/reducers/messageListReducer";
-import { getMessageStatus } from "../../api";
 import SendingIcon from "../icons/Sending";
 import DeliveredIcon from "../icons/Delivered";
 import ReadIcon from "../icons/Read";
 import FailedIcon from "../icons/Failed";
+import BellMuted from "../icons/BellMuted";
+
+import { NOTIFICATION_LEVEL } from "../../constants";
+import { SetSidType, SetUreadMessagesType } from "../../types";
+import { getMessageStatus } from "../../api";
 
 interface SingleConvoProps {
   convoId: string;
@@ -106,31 +110,33 @@ function getLastMessageTime(messages: Message[]) {
 const ConversationView: React.FC<SingleConvoProps> = (
   props: SingleConvoProps
 ) => {
+  const { convo, convoId, myMessage, lastMessage, unreadMessagesCount } = props;
   const [backgroundColor, setBackgroundColor] = useState();
   const title = truncateMiddle(
-    props.convo.friendlyName ?? props.convo.sid,
-    calculateUnreadMessagesWidth(props.unreadMessagesCount)
+    convo.friendlyName ?? convo.sid,
+    calculateUnreadMessagesWidth(unreadMessagesCount)
   );
   const theme = useTheme();
   const textColor =
-    props.unreadMessagesCount > 0
+    unreadMessagesCount > 0
       ? theme.textColors.colorText
       : theme.textColors.colorTextIcon;
+  const muted = convo.notificationLevel === NOTIFICATION_LEVEL.MUTED;
 
   const [lastMsgStatus, setLastMsgStatus] = useState("");
   const time = getLastMessageTime(props.messages);
 
   useEffect(() => {
-    if (props.currentConvoSid === props.convo.sid) {
+    if (props.currentConvoSid === convo.sid) {
       setBackgroundColor(theme.backgroundColors.colorBackgroundStrong);
       return;
     }
     setBackgroundColor(theme.backgroundColors.colorBackgroundRowStriped);
-  }, [props.currentConvoSid, props.convo.sid]);
+  }, [props.currentConvoSid, convo.sid]);
 
   useEffect(() => {
-    if (props.myMessage && !props.typingInfo.length) {
-      getMessageStatus(props.convo, props.myMessage, props.participants).then(
+    if (myMessage && !props.typingInfo.length) {
+      getMessageStatus(convo, myMessage, props.participants).then(
         (statuses) => {
           if (statuses[MessageStatus.Read]) {
             setLastMsgStatus(MessageStatus.Read);
@@ -151,13 +157,7 @@ const ConversationView: React.FC<SingleConvoProps> = (
         }
       );
     }
-  }, [
-    props.convo,
-    props.myMessage,
-    props.lastMessage,
-    props.participants,
-    props.typingInfo,
-  ]);
+  }, [convo, myMessage, lastMessage, props.participants, props.typingInfo]);
 
   return (
     <Box
@@ -170,16 +170,16 @@ const ConversationView: React.FC<SingleConvoProps> = (
         cursor: "pointer",
         backgroundColor: backgroundColor,
       }}
-      id={props.convoId}
+      id={convoId}
       className="name"
       onMouseOver={() => {
-        if (props.convo.sid === props.currentConvoSid) {
+        if (convo.sid === props.currentConvoSid) {
           return;
         }
         setBackgroundColor(theme.backgroundColors.colorBackgroundStrong);
       }}
       onMouseOut={() => {
-        if (props.convo.sid === props.currentConvoSid) {
+        if (convo.sid === props.currentConvoSid) {
           return;
         }
         setBackgroundColor(theme.backgroundColors.colorBackgroundRowStriped);
@@ -198,12 +198,17 @@ const ConversationView: React.FC<SingleConvoProps> = (
               fontFamily: "Inter",
               fontWeight: theme.fontWeights.fontWeightMedium,
               fontSize: 14,
-              color: theme.textColors.colorText,
+              color: muted
+                ? theme.textColors.colorTextInverseWeaker
+                : theme.textColors.colorText,
             }}
           >
-            {title}
+            {muted ? <BellMuted /> : null}
+            <span style={{ verticalAlign: "top", paddingLeft: muted ? 4 : 0 }}>
+              {title}
+            </span>
           </Box>
-          {props.unreadMessagesCount > 0 && (
+          {unreadMessagesCount > 0 && (
             <Box paddingLeft="space30">
               <Box
                 backgroundColor="colorBackgroundBrandStronger"
@@ -214,9 +219,9 @@ const ConversationView: React.FC<SingleConvoProps> = (
                 lineHeight="lineHeight30"
                 paddingLeft="space30"
                 paddingRight="space30"
-                style={{ borderRadius: 12 }}
+                style={{ borderRadius: 12, opacity: muted ? 0.2 : 1 }}
               >
-                {props.unreadMessagesCount}
+                {unreadMessagesCount}
               </Box>
             </Box>
           )}
@@ -271,7 +276,7 @@ const ConversationView: React.FC<SingleConvoProps> = (
                 textOverflow: "ellipsis",
               }}
             >
-              {props.lastMessage}
+              {lastMessage}
             </Box>
           </Box>
           <Box style={{ whiteSpace: "nowrap", paddingLeft: 4 }}>{time}</Box>
