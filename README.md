@@ -1,6 +1,6 @@
 # Conversations Demo Web Application Overview
 
-SDK version of this demo app: ![](https://img.shields.io/badge/SDK%20version-1.2.3-blue.svg)
+SDK version of this demo app: ![](https://img.shields.io/badge/SDK%20version-2.0.0-blue.svg)
 
 The latest available SDK version of this demo app: ![](https://img.shields.io/badge/SDK%20version-2.0.0-green.svg)
 
