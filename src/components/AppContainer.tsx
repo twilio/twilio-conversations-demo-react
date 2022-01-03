@@ -131,7 +131,7 @@ const AppContainer: React.FC = () => {
             addMessages,
             updateUnreadMessages
           );
-          }, addNotifications);
+        }, addNotifications);
       });
 
       client.addListener("conversationRemoved", (conversation: Conversation) => {
@@ -179,13 +179,13 @@ const AppContainer: React.FC = () => {
         ), addNotifications);
       });
 
-        client.addListener("tokenExpired", () => {
-          if (username && password) {
-            getToken(username, password).then((token) => {
-              login(token);
-            });
-          }
-        });
+      client.addListener("tokenExpired", () => {
+        if (username && password) {
+          getToken(username, password).then((token) => {
+            login(token);
+          });
+        }
+      });
 
       updateLoadingState(false);
     });
