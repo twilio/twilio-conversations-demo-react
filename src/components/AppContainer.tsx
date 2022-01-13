@@ -25,7 +25,10 @@ import stylesheet from "../styles";
 import { handlePromiseRejection } from "../helpers";
 import AppHeader from "./AppHeader";
 
-import { initFcmServiceWorker } from "./firebase-support";
+import {
+  initFcmServiceWorker,
+  subscribeFcmNotifications,
+} from "./firebase-support";
 
 initFcmServiceWorker();
 
@@ -112,6 +115,8 @@ const AppContainer: React.FC = () => {
   }
   useEffect(() => {
     Conversations.Client.create(token).then((client: Client) => {
+      subscribeFcmNotifications(client);
+
       setClient(client);
       client.addListener("conversationAdded", async (conversation: Conversation) => {
         conversation.addListener("typingStarted", (participant) => {
