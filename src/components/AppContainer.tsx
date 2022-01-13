@@ -25,6 +25,10 @@ import stylesheet from "../styles";
 import { handlePromiseRejection } from "../helpers";
 import AppHeader from "./AppHeader";
 
+import { initFcmServiceWorker } from "./firebase-support";
+
+initFcmServiceWorker();
+
 type SetConvosType = (convos: Conversation[]) => void;
 
 async function loadUnreadMessagesCount(
