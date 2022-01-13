@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/messaging";
-import { Client } from "@twilio/conversations";
+import { Client, PushNotification } from "@twilio/conversations";
 
 export const initFcmServiceWorker = async () => {
   firebase.initializeApp((window as any).firebaseConfig);
@@ -37,4 +37,20 @@ export const subscribeFcmNotifications = async (convoClient: Client) => {
       convoClient.handlePushNotification(payload);
     }
   });
+};
+
+export const showNotification = (pushNotification: PushNotification) => {
+  const notificationTitle = "Notification: " + pushNotification.type;
+  const notificationOptions = {
+    body: pushNotification.body,
+    icon: "favicon.ico",
+  };
+
+  const notification = new Notification(notificationTitle, notificationOptions);
+  notification.onclick = (event) => {
+    console.log("notification.onclick", event);
+    event.preventDefault(); // prevent the browser from focusing the Notification's tab
+    // TODO: navigate to the corresponding conversation
+    notification.close();
+  };
 };

@@ -28,6 +28,7 @@ import AppHeader from "./AppHeader";
 import {
   initFcmServiceWorker,
   subscribeFcmNotifications,
+  showNotification,
 } from "./firebase-support";
 
 initFcmServiceWorker();
@@ -186,6 +187,14 @@ const AppContainer: React.FC = () => {
         handlePromiseRejection(() => removeMessages(
             message.conversation.sid, [message]
         ), addNotifications);
+      });
+
+      client.addListener("pushNotification", (event) => {
+        if (Notification.permission === "granted") {
+          showNotification(event);
+        } else {
+          console.log("Push notification is skipped", Notification.permission);
+        }
       });
 
       client.addListener("tokenExpired", () => {
