@@ -101,11 +101,7 @@ export async function getToken(
 
   try {
     const response = await axios.get(requestAddress as string, {
-      params: {
-        identity: username,
-        password: password,
-        mobile_platform: "web",
-      },
+      params: { identity: username, password: password },
     });
     return response.data;
   } catch (error) {
