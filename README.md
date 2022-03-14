@@ -33,6 +33,23 @@ REACT_APP_ACCESS_TOKEN_SERVICE_URL=http://example.com/get-token/
 
 NOTE: No need for quotes around the URL, they will be added automatically.
 
+### Save Firebase project configuration to `firebase_config.js` file in the `public` folder
+
+It should contain definition of the `firebaseConfig` variable like in the code below:
+
+```
+var firebaseConfig = {
+  apiKey: "sample__key12345678901234567890",
+  authDomain: "convo-demo-app-internal.firebaseapp.com",
+  projectId: "convo-demo-app-internal",
+  storageBucket: "convo-demo-app-internal.appspot.com",
+  messagingSenderId: "1234567890",
+  appId: "1:1234567890:web:1234abcd",
+  measurementId: "EXAMPLE_ID"
+};
+```
+Read more about Firebase project configuration: https://firebase.google.com/docs/web/learn-more#config-object
+
 ### For testing purposes, it is possible to create a simple token generator using a Twilio function:
 
 1. Create a new function in [Twilio functions](https://www.twilio.com/console/functions/manage) using template `Blank`

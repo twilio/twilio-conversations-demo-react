@@ -25,6 +25,12 @@ import stylesheet from "../styles";
 import { handlePromiseRejection } from "../helpers";
 import AppHeader from "./AppHeader";
 
+import {
+  initFcmServiceWorker,
+  subscribeFcmNotifications,
+  showNotification,
+} from "../firebase-support";
+
 type SetConvosType = (convos: Conversation[]) => void;
 
 async function loadUnreadMessagesCount(
@@ -107,7 +113,10 @@ const AppContainer: React.FC = () => {
     );
   }
   useEffect(() => {
-    Conversations.Client.create(token).then((client: Client) => {
+    Conversations.Client.create(token).then(async (client: Client) => {
+      await initFcmServiceWorker();
+      await subscribeFcmNotifications(client);
+
       setClient(client);
       client.addListener("conversationAdded", async (conversation: Conversation) => {
         conversation.addListener("typingStarted", (participant) => {
@@ -179,13 +188,26 @@ const AppContainer: React.FC = () => {
         ), addNotifications);
       });
 
-        client.addListener("tokenExpired", () => {
-          if (username && password) {
-            getToken(username, password).then((token) => {
-              login(token);
-            });
-          }
-        });
+      client.addListener("pushNotification", (event) => {
+        // @ts-ignore
+        if (event.type === "twilio.channel.consumption_update") {
+          return;
+        }
+
+        if (Notification.permission === "granted") {
+          showNotification(event);
+        } else {
+          console.log("Push notification is skipped", Notification.permission);
+        }
+      });
+
+      client.addListener("tokenExpired", () => {
+        if (username && password) {
+          getToken(username, password).then((token) => {
+            login(token);
+          });
+        }
+      });
 
       updateLoadingState(false);
     });
