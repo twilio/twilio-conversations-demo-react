@@ -33,7 +33,7 @@ REACT_APP_ACCESS_TOKEN_SERVICE_URL=http://example.com/get-token/
 
 NOTE: No need for quotes around the URL, they will be added automatically.
 
-### Save Firebase project configuration to `firebase_config.js` file in the `public` folder
+### Save Firebase project configuration to `firebase-config.js` file in the `public` folder
 
 It should contain definition of the `firebaseConfig` variable like in the code below:
 
