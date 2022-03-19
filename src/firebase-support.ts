@@ -40,7 +40,7 @@ export const subscribeFcmNotifications = async (convoClient: Client) => {
 };
 
 export const showNotification = (pushNotification: PushNotification) => {
-  const notificationTitle = pushNotification.data.conversationTitle;
+  const notificationTitle = pushNotification.title;
   const notificationOptions = {
     body: pushNotification.body,
     icon: "favicon.ico",
