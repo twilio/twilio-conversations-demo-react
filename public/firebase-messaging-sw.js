@@ -11,7 +11,7 @@ if (firebaseConfig) {
   );
 
   firebase.messaging().setBackgroundMessageHandler((payload) => {
-    if (payload.type === "twilio.channel.consumption_update") {
+    if (payload.type !== "twilio.conversations.new_message") {
       return;
     }
 
