@@ -40,7 +40,10 @@ export const subscribeFcmNotifications = async (convoClient: Client) => {
 };
 
 export const showNotification = (pushNotification: PushNotification) => {
-  const notificationTitle = pushNotification.data.conversationTitle;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const notificationTitle = pushNotification.data.conversationTitle || "";
+
   const notificationOptions = {
     body: pushNotification.body,
     icon: "favicon.ico",

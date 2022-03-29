@@ -97,134 +97,165 @@ const AppContainer: React.FC = () => {
     removeConversation,
     updateCurrentConversation,
     addNotifications,
-    logout
+    logout,
   } = bindActionCreators(actionCreators, dispatch);
 
-  const updateTypingIndicator = (participant: Participant, sid: string, callback: (sid: string, user: string) => void) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const { attributes: { friendlyName }, identity } = participant;
+  const updateTypingIndicator = (
+    participant: Participant,
+    sid: string,
+    callback: (sid: string, user: string) => void
+  ) => {
+    const {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      attributes: { friendlyName },
+      identity,
+    } = participant;
     if (identity === localStorage.getItem("username")) {
       return;
     }
-    callback(
-        sid,
-        identity || friendlyName || "",
-    );
-  }
+    callback(sid, identity || friendlyName || "");
+  };
   useEffect(() => {
-    Conversations.Client.create(token).then(async (client: Client) => {
+    const client = new Client(token);
+    setClient(client);
+
+    const fcMInit = async () => {
       await initFcmServiceWorker();
       await subscribeFcmNotifications(client);
+    };
 
-      setClient(client);
-      client.addListener("conversationAdded", async (conversation: Conversation) => {
-        conversation.addListener("typingStarted", (participant) => {
-          handlePromiseRejection(() => updateTypingIndicator(participant, conversation.sid, startTyping), addNotifications);
-        });
+    fcMInit();
+    client.on("conversationAdded", async (conversation: Conversation) => {
+      conversation.on("typingStarted", (participant) => {
+        handlePromiseRejection(
+          () =>
+            updateTypingIndicator(participant, conversation.sid, startTyping),
+          addNotifications
+        );
+      });
 
-        conversation.addListener("typingEnded", (participant) => {
-          handlePromiseRejection(() => updateTypingIndicator(participant, conversation.sid, endTyping), addNotifications);
-        });
+      conversation.on("typingEnded", (participant) => {
+        handlePromiseRejection(
+          () => updateTypingIndicator(participant, conversation.sid, endTyping),
+          addNotifications
+        );
+      });
 
-        handlePromiseRejection(async () => {
-          if (conversation.status === "joined") {
-            const result = await getConversationParticipants(conversation);
-              updateParticipants(result, conversation.sid);
-          }
+      handlePromiseRejection(async () => {
+        if (conversation.status === "joined") {
+          const result = await getConversationParticipants(conversation);
+          updateParticipants(result, conversation.sid);
+        }
 
+        updateConvoList(
+          client,
+          conversation,
+          listConversations,
+          addMessages,
+          updateUnreadMessages
+        );
+      }, addNotifications);
+    });
+
+    client.on("conversationRemoved", (conversation: Conversation) => {
+      updateCurrentConversation("");
+      handlePromiseRejection(() => {
+        removeConversation(conversation.sid);
+        updateParticipants([], conversation.sid);
+      }, addNotifications);
+    });
+    client.on("messageAdded", (event: Message) => {
+      addMessage(event, addMessages, updateUnreadMessages);
+    });
+    client.on("participantLeft", (participant) => {
+      handlePromiseRejection(
+        () => handleParticipantsUpdate(participant, updateParticipants),
+        addNotifications
+      );
+    });
+    client.on("participantUpdated", (event) => {
+      handlePromiseRejection(
+        () => handleParticipantsUpdate(event.participant, updateParticipants),
+        addNotifications
+      );
+    });
+    client.on("participantJoined", (participant) => {
+      handlePromiseRejection(
+        () => handleParticipantsUpdate(participant, updateParticipants),
+        addNotifications
+      );
+    });
+    client.on("conversationUpdated", ({ conversation }) => {
+      handlePromiseRejection(
+        () =>
           updateConvoList(
             client,
             conversation,
             listConversations,
             addMessages,
             updateUnreadMessages
-          );
-          }, addNotifications);
-      });
+          ),
+        addNotifications
+      );
+    });
 
-      client.addListener("conversationRemoved", (conversation: Conversation) => {
-        updateCurrentConversation("");
-        handlePromiseRejection( () => {
-          removeConversation(conversation.sid);
-          updateParticipants([], conversation.sid);
-        }, addNotifications);
-      });
-      client.addListener("messageAdded", (event: Message) => {
-        addMessage(event, addMessages, updateUnreadMessages);
-      });
-      client.addListener("participantLeft", (participant) => {
-        handlePromiseRejection(() => handleParticipantsUpdate(participant, updateParticipants), addNotifications);
-      });
-      client.addListener("participantUpdated", (event) => {
-        handlePromiseRejection(() => handleParticipantsUpdate(event.participant, updateParticipants), addNotifications);
-      });
-      client.addListener("participantJoined", (participant) => {
-        handlePromiseRejection(() => handleParticipantsUpdate(participant, updateParticipants), addNotifications);
-      });
-      client.addListener("conversationUpdated", ({ conversation }) => {
-        handlePromiseRejection(() => updateConvoList(
-            client,
-            conversation,
-            listConversations,
-            addMessages,
-            updateUnreadMessages
-        ), addNotifications);
-      });
-      
-      client.addListener("messageUpdated", ({ message }) => {
-        handlePromiseRejection(() => updateConvoList(
+    client.on("messageUpdated", ({ message }) => {
+      handlePromiseRejection(
+        () =>
+          updateConvoList(
             client,
             message.conversation,
             listConversations,
             addMessages,
             updateUnreadMessages
-        ), addNotifications);
-      });
-
-      client.addListener("messageRemoved", (message) => {
-        handlePromiseRejection(() => removeMessages(
-            message.conversation.sid, [message]
-        ), addNotifications);
-      });
-
-      client.addListener("pushNotification", (event) => {
-        // @ts-ignore
-        if (event.type === "twilio.channel.consumption_update") {
-          return;
-        }
-
-        if (Notification.permission === "granted") {
-          showNotification(event);
-        } else {
-          console.log("Push notification is skipped", Notification.permission);
-        }
-      });
-
-      client.addListener("tokenExpired", () => {
-        if (username && password) {
-          getToken(username, password).then((token) => {
-            login(token);
-          });
-        }
-      });
-
-      updateLoadingState(false);
+          ),
+        addNotifications
+      );
     });
+
+    client.on("messageRemoved", (message) => {
+      handlePromiseRejection(
+        () => removeMessages(message.conversation.sid, [message]),
+        addNotifications
+      );
+    });
+
+    client.on("pushNotification", (event) => {
+      // @ts-ignore
+      if (event.type != "twilio.conversations.new_message") {
+        return;
+      }
+
+      if (Notification.permission === "granted") {
+        showNotification(event);
+      } else {
+        console.log("Push notification is skipped", Notification.permission);
+      }
+    });
+
+    client.on("tokenExpired", () => {
+      if (username && password) {
+        getToken(username, password).then((token) => {
+          login(token);
+        });
+      }
+    });
+
+    updateLoadingState(false);
 
     return () => {
       client?.removeAllListeners();
-    }
+    };
   }, []);
 
-
   function addMessage(
-      message: Message,
-      addMessages: AddMessagesType,
-      updateUnreadMessages: SetUreadMessagesType,
+    message: Message,
+    addMessages: AddMessagesType,
+    updateUnreadMessages: SetUreadMessagesType
   ) {
     //transform the message and add it to redux
-    handlePromiseRejection( () => {
+    handlePromiseRejection(() => {
       if (sidRef.current === message.conversation.sid) {
         message.conversation.updateLastReadMessageIndex(message.index);
       }
@@ -234,8 +265,8 @@ const AppContainer: React.FC = () => {
   }
 
   const openedConversation = useMemo(
-      () => conversations.find((convo) => convo.sid === sid),
-      [sid, conversations]
+    () => conversations.find((convo) => convo.sid === sid),
+    [sid, conversations]
   );
 
   return (
@@ -243,12 +274,22 @@ const AppContainer: React.FC = () => {
       <AlertsView />
       <Notifications />
       <Box>
-        <AppHeader user={username ?? ""} onSignOut={logout} />
+        <AppHeader
+          user={username ?? ""}
+          onSignOut={async () => {
+            logout();
+
+            // unregister service workers
+            const registrations =
+              await navigator.serviceWorker.getRegistrations();
+            for (let registration of registrations) {
+              registration.unregister();
+            }
+          }}
+        />
       </Box>
       <Box style={stylesheet.appContainer(alertsExist)}>
-          <ConversationsContainer
-            client={client}
-          />
+        <ConversationsContainer client={client} />
         <Box style={stylesheet.messagesWrapper}>
           <ConversationContainer
             conversation={openedConversation}

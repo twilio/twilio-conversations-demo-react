@@ -71,7 +71,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
                 Edit Conversation name
               </MediaBody>
               <ConversationTitleModal
-                title={friendlyName}
+                title={friendlyName ?? ""}
                 type="edit"
                 isModalOpen={isTitleModalOpen}
                 onCancel={() => {
