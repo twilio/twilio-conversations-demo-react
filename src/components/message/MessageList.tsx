@@ -21,6 +21,7 @@ import {
   successNotification,
   unexpectedErrorNotification,
 } from "../../helpers";
+import type { ReactionsType } from "./Reactions";
 
 interface MessageListProps {
   messages: Message[];
@@ -30,7 +31,12 @@ interface MessageListProps {
 }
 
 function getMessageTime(message: Message) {
-  const dateCreated: Date = message.dateCreated;
+  const dateCreated: Date | null = message.dateCreated;
+
+  if (!dateCreated) {
+    return "";
+  }
+
   const today = new Date();
   const diffInDates = Math.floor(today.getTime() - dateCreated.getTime());
   const dayLength = 1000 * 60 * 60 * 24;
@@ -127,6 +133,10 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   }
 
   const onDownloadAttachment = async (message: Message) => {
+    if (!message.media) {
+      return new Error("No media attached");
+    }
+
     setFileLoading(Object.assign({}, fileLoading, { [message.sid]: true }));
     const blob = await getBlobFile(message.media, addNotifications);
     addAttachment(props.conversation.sid, message.sid, blob);
@@ -134,7 +144,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   };
 
   const onFileOpen = (file: Blob, { filename }: Media) => {
-    saveAs(file, filename);
+    saveAs(file, filename ?? "");
   };
 
   return (
@@ -142,12 +152,16 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
       {messages.map((message, index) => {
         const isImage = message.media?.contentType?.includes("image");
         const fileBlob = conversationAttachments?.[message.sid] ?? null;
+        const attributes = message.attributes as Record<
+          string,
+          ReactionsType | undefined
+        >;
 
         return (
           <div
             key={
-              message.dateCreated.getTime() +
-              message.body +
+              (message.dateCreated?.getTime() ?? "") +
+              (message.body ?? "") +
               message.media?.filename +
               message.sid
             }
@@ -158,9 +172,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
               <Horizon ref={myRef} amount={horizonAmount} />
             ) : null}
             <MessageView
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              reactions={message.attributes["reactions"]}
+              reactions={attributes["reactions"]}
               message={
                 message.body ||
                 (message.media ? (
@@ -181,6 +193,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                               file: fileBlob,
                             })
                         : () =>
+                            message.media &&
                             onFileOpen(
                               conversationAttachments?.[message.sid],
                               message.media
@@ -191,7 +204,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                   ""
                 ))
               }
-              author={message.author}
+              author={message.author ?? ""}
               getStatus={getMessageStatus(
                 props.conversation,
                 message,
@@ -214,7 +227,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
               messageTime={getMessageTime(message)}
               updateAttributes={(attribute) =>
                 message.updateAttributes({
-                  ...message.attributes,
+                  ...attributes,
                   ...attribute,
                 })
               }
@@ -224,23 +237,29 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
       })}
       {imagePreview
         ? (function () {
-            const date = new Date(imagePreview?.message.dateCreated);
+            const dateString = imagePreview?.message.dateCreated;
+            const date = dateString ? new Date(dateString) : "";
             return (
               <ImagePreviewModal
                 image={imagePreview.file}
                 isOpen={!!imagePreview}
-                author={imagePreview?.message.author}
+                author={imagePreview?.message.author ?? ""}
                 date={
-                  date.toDateString() +
-                  ", " +
-                  date.getHours() +
-                  ":" +
-                  (date.getMinutes() < 10 ? "0" : "") +
-                  date.getMinutes()
+                  date
+                    ? date.toDateString() +
+                      ", " +
+                      date.getHours() +
+                      ":" +
+                      (date.getMinutes() < 10 ? "0" : "") +
+                      date.getMinutes()
+                    : ""
                 }
                 handleClose={() => setImagePreview(null)}
                 onDownload={() =>
-                  saveAs(imagePreview.file, imagePreview.message.media.filename)
+                  saveAs(
+                    imagePreview.file,
+                    imagePreview.message.media?.filename ?? ""
+                  )
                 }
               />
             );

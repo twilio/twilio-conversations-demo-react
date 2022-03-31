@@ -1,11 +1,11 @@
 import { Box } from "@twilio-paste/core";
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, KeyboardEventHandler } from "react";
 import MessageFile from "./MessageFile";
 
 interface MessageInputProps {
   message: string;
   onChange: (message: string) => void;
-  onKeyPress: (event: any) => void;
+  onKeyPress: KeyboardEventHandler<HTMLInputElement>;
   onFileRemove: (file: string) => void;
   assets: File[];
 }
@@ -66,7 +66,7 @@ const MessageInput: React.FC<MessageInputProps> = (
             borderRadius: "4px",
             width: "100%",
           }}
-          onFocus={(e: any) =>
+          onFocus={(e) =>
             e.currentTarget.setSelectionRange(cursorPosition, cursorPosition)
           }
           onKeyPress={props.onKeyPress}
@@ -98,7 +98,7 @@ const MessageInput: React.FC<MessageInputProps> = (
             lineHeight: "20px",
             fontFamily: "Inter",
           }}
-          onFocus={(e: any) =>
+          onFocus={(e) =>
             e.currentTarget.setSelectionRange(cursorPosition, cursorPosition)
           }
         />

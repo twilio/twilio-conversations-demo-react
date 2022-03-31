@@ -213,7 +213,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
               }, 2000)();
               setMessage(e);
             }}
-            onKeyPress={(e: any) => {
+            onKeyPress={(e) => {
               if (e.key === "Enter") {
                 onMessageSend();
               }

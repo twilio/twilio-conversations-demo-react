@@ -11,14 +11,25 @@ const reducer = (
   switch (action.type) {
     case ActionType.LIST_CONVERSATIONS:
       return action.payload.sort((a, b) => {
+        if (
+          (!b.lastMessage?.dateCreated && !b.dateUpdated) ||
+          (!a.lastMessage?.dateCreated && !a.dateUpdated)
+        ) {
+          return 0;
+        }
+
         return (
-          (b.lastMessage?.dateCreated || b.dateUpdated) -
-          (a.lastMessage?.dateCreated || a.dateUpdated)
+          (b.lastMessage?.dateCreated?.getTime() ||
+            b.dateUpdated?.getTime() ||
+            0) -
+          (a.lastMessage?.dateCreated?.getTime() ||
+            a.dateUpdated?.getTime() ||
+            0)
         );
       });
     case ActionType.UPDATE_CONVERSATION: {
       const stateCopy = [...state];
-      let target = stateCopy.find(
+      let target: Conversation | undefined = stateCopy.find(
         (convo: Conversation) => convo.sid === action.payload.channelSid
       );
 
