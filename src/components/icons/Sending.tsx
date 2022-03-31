@@ -1,4 +1,6 @@
-const Sending: React.FC<{ color?: string; style?: any }> = ({
+import React, { CSSProperties } from "react";
+
+const Sending: React.FC<{ color?: string; style?: CSSProperties }> = ({
   color = "#606B85",
   style = {},
 }) => (

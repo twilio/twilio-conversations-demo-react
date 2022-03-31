@@ -1,4 +1,6 @@
-const TwilioLogo = () => (
+import React from "react";
+
+const TwilioLogo: React.FC = () => (
   <svg
     width="80"
     height="24"

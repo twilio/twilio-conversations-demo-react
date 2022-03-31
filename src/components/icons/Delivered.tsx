@@ -1,4 +1,6 @@
-const Delivered: React.FC<{ color?: string; style?: any }> = ({
+import { CSSProperties } from "react";
+
+const Delivered: React.FC<{ color?: string; style?: CSSProperties }> = ({
   color = "#606B85",
   style = {},
 }) => (

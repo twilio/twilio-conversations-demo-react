@@ -52,7 +52,7 @@ const ModalInputField: React.FC<ModalInputProps> = (props: ModalInputProps) => {
         type={props.inputType ?? InputType.Text}
         value={props.input}
         placeholder={props.placeholder}
-        onChange={(e: any) => props.onChange(e.currentTarget.value)}
+        onChange={(e) => props.onChange(e.currentTarget.value)}
         hasError={!!props.error}
         onBlur={props.onBlur}
         insertBefore={prefixType}

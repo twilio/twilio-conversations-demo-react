@@ -2,7 +2,7 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/messaging";
 import { Client, PushNotification } from "@twilio/conversations";
 
-export const initFcmServiceWorker = async () => {
+export const initFcmServiceWorker = async (): Promise<void> => {
   firebase.initializeApp((window as any).firebaseConfig);
 
   try {
@@ -15,7 +15,9 @@ export const initFcmServiceWorker = async () => {
   }
 };
 
-export const subscribeFcmNotifications = async (convoClient: Client) => {
+export const subscribeFcmNotifications = async (
+  convoClient: Client
+): Promise<void> => {
   const permission = await Notification.requestPermission();
   if (permission !== "granted") {
     console.log("FcmNotifications: can't request permission:", permission);
@@ -31,7 +33,7 @@ export const subscribeFcmNotifications = async (convoClient: Client) => {
 
   console.log("FcmNotifications: got fcm token", fcmToken);
   convoClient.setPushRegistrationId("fcm", fcmToken);
-  messaging.onMessage((payload: any) => {
+  messaging.onMessage((payload) => {
     console.log("FcmNotifications: push received", payload);
     if (convoClient) {
       convoClient.handlePushNotification(payload);
@@ -39,13 +41,14 @@ export const subscribeFcmNotifications = async (convoClient: Client) => {
   });
 };
 
-export const showNotification = (pushNotification: PushNotification) => {
+export const showNotification = (pushNotification: PushNotification): void => {
+  // TODO: remove when new version of sdk will be released
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const notificationTitle = pushNotification.data.conversationTitle || "";
 
   const notificationOptions = {
-    body: pushNotification.body,
+    body: pushNotification.body ?? "",
     icon: "favicon.ico",
   };
 

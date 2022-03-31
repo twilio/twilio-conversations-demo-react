@@ -98,10 +98,10 @@ const ConversationsList: React.FC = () => {
           convoId={convo.sid}
           setSid={updateCurrentConversation}
           currentConvoSid={sid}
-          lastMessage={getLastMessage(
-            messages[convo.sid],
-            typingData[convo.sid] ?? []
-          )}
+          lastMessage={
+            getLastMessage(messages[convo.sid], typingData[convo.sid] ?? []) ??
+            ""
+          }
           messages={messages[convo.sid]}
           typingInfo={typingData[convo.sid] ?? []}
           myMessage={isMyMessage(messages[convo.sid])}

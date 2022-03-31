@@ -87,7 +87,6 @@ async function getSubscribedConversations(
 
 const AppContainer: React.FC = () => {
   /* eslint-disable */
-  const Conversations = require("@twilio/conversations");
   const [client, setClient] = useState<Client>();
   const token = useSelector((state: AppState) => state.token);
   const conversations = useSelector((state: AppState) => state.convos);
@@ -255,7 +254,7 @@ const AppContainer: React.FC = () => {
       }
     });
 
-    client.on("tokenExpired", () => {
+    client.on("tokenAboutToExpire", () => {
       if (username && password) {
         getToken(username, password).then((token) => {
           login(token);
