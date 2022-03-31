@@ -5,8 +5,8 @@ import { Action } from "../actions";
 const initialState: Conversation[] = [];
 
 const convoSorter = (a: Conversation, b: Conversation) =>
-  (b.lastMessage?.dateCreated || b.dateUpdated) -
-  (a.lastMessage?.dateCreated || a.dateUpdated);
+  (b.lastMessage?.dateCreated?.getTime() ?? b.dateUpdated?.getTime() ?? 0) -
+  (a.lastMessage?.dateCreated?.getTime() ?? a.dateUpdated?.getTime() ?? 0);
 
 const reducer = (
   state: Conversation[] = initialState,
@@ -20,7 +20,7 @@ const reducer = (
       return [...filteredClone, action.payload].sort(convoSorter);
     case ActionType.UPDATE_CONVERSATION: {
       const stateCopy = [...state];
-      let target = stateCopy.find(
+      let target: Conversation | undefined = stateCopy.find(
         (convo: Conversation) => convo.sid === action.payload.channelSid
       );
 

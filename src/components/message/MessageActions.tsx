@@ -24,7 +24,7 @@ type MessageActionsProps = {
   onMessageDelete: () => void;
 };
 
-const MessageActions = ({
+const MessageActions: React.FC<MessageActionsProps> = ({
   messageText,
   onMessageDelete,
 }: MessageActionsProps) => {

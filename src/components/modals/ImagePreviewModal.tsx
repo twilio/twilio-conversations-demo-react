@@ -1,3 +1,4 @@
+import React from "react";
 import { Modal, ModalHeader } from "@twilio-paste/modal";
 import { Box, ModalBody, Text } from "@twilio-paste/core";
 import {
@@ -19,7 +20,7 @@ type ImagePreviewModalProps = {
   date: string;
 };
 
-const ImagePreviewModal = ({
+const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
   image,
   isOpen,
   handleClose,
