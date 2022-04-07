@@ -49,6 +49,24 @@ async function handleParticipantsUpdate(
   updateParticipants(result, participant.conversation.sid);
 }
 
+async function fetchClientData(
+  client: Client,
+  setConvos: SetConvosType,
+  addMessages: AddMessagesType
+) {
+  const subscribedConversations = await client.getSubscribedConversations();
+  setConvos(subscribedConversations.items);
+
+  subscribedConversations.items.forEach(async (item) => {
+    if (item.status === "joined") {
+      const messages = await item.getMessages();
+      addMessages(item.sid, messages.items);
+    } else {
+      addMessages(item.sid, []);
+    }
+  });
+}
+
 async function updateConvoList(
   client: Client,
   conversation: Conversation,
@@ -64,14 +82,10 @@ async function updateConvoList(
   }
 
   loadUnreadMessagesCount(conversation, updateUnreadMessages);
-
-  const subscribedConversations = await client.getSubscribedConversations();
-  setConvos(subscribedConversations.items);
 }
 
 const AppContainer: React.FC = () => {
   /* eslint-disable */
-  const Conversations = require("@twilio/conversations");
   const [client, setClient] = useState<Client>();
   const token = useSelector((state: AppState) => state.token);
   const conversations = useSelector((state: AppState) => state.convos);
@@ -126,7 +140,19 @@ const AppContainer: React.FC = () => {
     };
 
     fcMInit();
+
+    client.on("stateChanged", async (state) => {
+      if (state === "initialized") {
+        handlePromiseRejection(async () => {
+          await fetchClientData(client,
+              listConversations,
+              addMessages);
+        }, addNotifications);
+      }
+    });
+
     client.on("conversationAdded", async (conversation: Conversation) => {
+
       conversation.on("typingStarted", (participant) => {
         handlePromiseRejection(
           () =>
@@ -234,7 +260,7 @@ const AppContainer: React.FC = () => {
       }
     });
 
-    client.on("tokenExpired", () => {
+    client.on("tokenAboutToExpire", () => {
       if (username && password) {
         getToken(username, password).then((token) => {
           login(token);

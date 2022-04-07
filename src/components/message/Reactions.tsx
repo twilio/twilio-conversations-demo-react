@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { Box, Text } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 import { Menu, MenuButton, useMenuState } from "@twilio-paste/menu";
@@ -36,7 +36,7 @@ const reactionsExist = (reactions: ReactionsType) =>
     reactions[Reactions.SAD]?.length ||
     reactions[Reactions.LAUGH]?.length);
 
-export const ReactionsBox = ({
+export const ReactionsBox: React.FC<ReactionsProps> = ({
   reactions = {},
   onReactionsChanged,
 }: ReactionsProps) => {

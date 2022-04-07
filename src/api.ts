@@ -18,6 +18,8 @@ import {
 import { NotificationsType } from "./store/reducers/notificationsReducer";
 import { successNotification, unexpectedErrorNotification } from "./helpers";
 
+type ParticipantResponse = ReturnType<typeof Conversation.prototype.add>;
+
 export async function addConversation(
   name: string,
   updateParticipants: (participants: Participant[], sid: string) => void,
@@ -55,7 +57,7 @@ export async function addParticipant(
   chatParticipant: boolean,
   convo?: Conversation,
   addNotifications?: (notifications: NotificationsType) => void
-): Promise<void> {
+): Promise<ParticipantResponse> {
   if (chatParticipant && name.length > 0 && convo !== undefined) {
     try {
       const result = await convo.add(name);

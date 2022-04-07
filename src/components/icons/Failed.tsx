@@ -1,4 +1,6 @@
-const Failed: React.FC<{ color?: string; style?: any }> = ({
+import { CSSProperties } from "react";
+
+const Failed: React.FC<{ color?: string; style?: CSSProperties }> = ({
   color = "#606B85",
   style = {},
 }) => (

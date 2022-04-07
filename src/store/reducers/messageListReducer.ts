@@ -49,9 +49,12 @@ const reducer = (state = initialState, action: Action): ChatMessagesState => {
       //add new messages to exisiting, ignore duplicates
       const messagesUnique = [...filteredExistingMessages, ...messagesToAdd];
 
-      const sortedMessages = messagesUnique.sort(
-        (a, b) => a.dateCreated.getTime() - b.dateCreated.getTime()
-      );
+      const sortedMessages = messagesUnique.sort((a, b) => {
+        if (!a.dateCreated || !b.dateCreated) {
+          return 0;
+        }
+        return a.dateCreated.getTime() - b.dateCreated.getTime();
+      });
 
       //overwrite the channelSid messages
       return Object.assign({}, state, {

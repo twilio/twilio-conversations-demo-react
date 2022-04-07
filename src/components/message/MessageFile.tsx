@@ -19,7 +19,7 @@ type MessageFileProps = {
   loading?: boolean;
 };
 
-const MessageFile = ({
+const MessageFile: React.FC<MessageFileProps> = ({
   media,
   onRemove,
   onDownload,
@@ -30,7 +30,8 @@ const MessageFile = ({
   sending,
   loading = false,
 }: MessageFileProps) => {
-  const { filename: name, size } = media;
+  const { filename, size } = media;
+  const name = filename ?? "";
 
   const [imageUrl, setImageUrl] = useState("");
 

@@ -69,6 +69,10 @@ function getLastMessageTime(messages: Message[]) {
     return "";
   }
   const lastMessageDate = messages[messages.length - 1].dateCreated;
+  if (!lastMessageDate) {
+    return "";
+  }
+
   const today = new Date();
   const diffInDates = Math.floor(today.getTime() - lastMessageDate.getTime());
   const dayLength = 1000 * 60 * 60 * 24;

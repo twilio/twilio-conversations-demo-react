@@ -1,4 +1,6 @@
-const BellMuted = () => (
+import React from "react";
+
+const BellMuted: React.FC = () => (
   <svg
     width="20"
     height="18"
