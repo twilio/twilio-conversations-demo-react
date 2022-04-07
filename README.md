@@ -6,7 +6,7 @@ The latest available SDK version of this demo app: ![](https://img.shields.io/ba
 
 ## Getting Started
 
-Welcome to the Conversations Demo Web application.  This application demonstrates a basic Conversations client application with the ability to create and join conversations, add other participants into the conversations and exchange messages.
+Welcome to the Conversations Demo Web application. This application demonstrates a basic Conversations client application with the ability to create and join conversations, add other participants into the conversations and exchange messages.
 
 What you'll minimally need to get started:
 
@@ -17,8 +17,9 @@ What you'll minimally need to get started:
 
 ### Set the value of `REACT_APP_ACCESS_TOKEN_SERVICE_URL`
 
-Set the value of `REACT_APP_ACCESS_TOKEN_SERVICE_URL` in the `.env` file to point to a valid Access-Token server.
-So your Access-Token server should provide a valid token for valid credentials by URL:
+Set the value of `REACT_APP_ACCESS_TOKEN_SERVICE_URL` in the `.env` file to point to a valid Access-Token server. If you don't yet have a token server you can follow the instructions [here](#for-testing-purposes-it-is-possible-to-create-a-simple-token-generator-using-a-twilio-function) to create one using a Twilio function. The instructions here are only meant for **demo/testing purposes** it is not a production ready server.
+
+Your Access-Token server should provide a valid token for valid credentials by URL:
 
  ```
 $REACT_APP_ACCESS_TOKEN_SERVICE_URL?identity=<USER_PROVIDED_USERNAME>&password=<USER_PROVIDED_PASSWORD>
@@ -33,11 +34,11 @@ REACT_APP_ACCESS_TOKEN_SERVICE_URL=http://example.com/get-token/
 
 NOTE: No need for quotes around the URL, they will be added automatically.
 
-### Save Firebase project configuration to `firebase_config.js` file in the `public` folder
+### Save Firebase project configuration to `firebase-config.js` file in the `public` folder
 
 It should contain definition of the `firebaseConfig` variable like in the code below:
 
-```
+```javascript
 var firebaseConfig = {
   apiKey: "sample__key12345678901234567890",
   authDomain: "convo-demo-app-internal.firebaseapp.com",
@@ -48,7 +49,7 @@ var firebaseConfig = {
   measurementId: "EXAMPLE_ID"
 };
 ```
-Read more about Firebase project configuration: https://firebase.google.com/docs/web/learn-more#config-object
+Read more about [Firebase project configuration](https://firebase.google.com/docs/web/learn-more#config-object).
 
 ### For testing purposes, it is possible to create a simple token generator using a Twilio function:
 
@@ -56,7 +57,7 @@ Read more about Firebase project configuration: https://firebase.google.com/docs
 2. On the next, line add `/token-service` to the `PATH`. Copy the whole `PATH` and use it as `REACT_APP_ACCESS_TOKEN_SERVICE_URL` (see above)
 3. Uncheck the **Check for valid Twilio signature** checkbox
 4. Insert the following code:
-```
+```javascript
 // If you do not want to pay for other people using your Twilio service for their benefit,
 // generate user and password pairs different from what is presented here
 let users = {
@@ -95,7 +96,10 @@ exports.handler = function(context, event, callback) {
       });
 
     let grant = new AccessToken.ChatGrant({ serviceSid: context.SERVICE_SID });
-    grant.pushCredentialSid = context.PUSH_CREDENTIAL_SID; 
+    if(context.PUSH_CREDENTIAL_SID) {
+      // Optional: without it, no push notifications will be sent
+      grant.pushCredentialSid = context.PUSH_CREDENTIAL_SID; 
+    }
     token.addGrant(grant);
     response.setStatusCode(200);
     response.setBody(token.toJwt());
@@ -105,15 +109,16 @@ exports.handler = function(context, event, callback) {
 ```
 5. Save the function
 6. Open [Configure](https://www.twilio.com/console/functions/configure) page and setup values for the following `Environment Variables`:
-7. SERVICE_SID
-- Open [Conversational Messaging](https://www.twilio.com/console/conversations/configuration/defaults)
-- Select `View Service` near the `Default Conversation Service`
-- Copy the `Service SID`
-- Also navigate to `Push configuration` and enable all types of notifications for receiving FCM messages
-8. TWILIO_API_KEY and TWILIO_API_SECRET
-- Create an API KEY [here](https://www.twilio.com/console/chat/project/api-keys)
-9. PUSH_CREDENTIAL_SID
-- Create new push credentials [here](https://www.twilio.com/console/conversations/push-credentials) using `Server key` from `Firebase Cloud Messaging`
+    - SERVICE_SID
+        - Open [Conversational Messaging](https://www.twilio.com/console/conversations/configuration/defaults)
+        - Select `View Service` near the `Default Conversation Service`
+        - Copy the `Service SID`
+        - Also navigate to `Push configuration` and enable all types of notifications for receiving FCM messages
+    - TWILIO_API_KEY and TWILIO_API_SECRET
+        - Create an API KEY [here](https://www.twilio.com/console/chat/project/api-keys)
+    - PUSH_CREDENTIAL_SID
+        - This requires Firebase cloud messaging to be configured and is optional, without it push notifications will not be sent
+        - Create new push credentials [here](https://www.twilio.com/console/conversations/push-credentials) using `Server key` from `Firebase Cloud Messaging`
 
 ### Build
 
