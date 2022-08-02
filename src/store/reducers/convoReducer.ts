@@ -14,7 +14,10 @@ const reducer = (
 ): Conversation[] => {
   switch (action.type) {
     case ActionType.ADD_CONVERSATION:
-      return [...state, action.payload].sort(convoSorter);
+      const filteredClone = state.filter(
+        (conversation) => conversation.sid !== action.payload.sid
+      );
+      return [...filteredClone, action.payload].sort(convoSorter);
     case ActionType.UPDATE_CONVERSATION: {
       const stateCopy = [...state];
       let target = stateCopy.find(
