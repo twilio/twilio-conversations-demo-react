@@ -141,11 +141,12 @@ const AppContainer: React.FC = () => {
       await subscribeFcmNotifications(client);
     };
 
-    try {
-      fcmInit();
-    } catch(e) {
-      console.error("FCM initialization failed: no push notifications will be available");
-    }
+    fcmInit().catch(() => {
+      console.error(
+        "FCM initialization failed: no push notifications will be available"
+      );
+    });
+
     client.on("conversationJoined", (conversation) => {
       addConversation(conversation);
     });
