@@ -31,8 +31,6 @@ import {
   showNotification,
 } from "../firebase-support";
 
-type SetConvosType = (convos: Conversation[]) => void;
-
 async function loadUnreadMessagesCount(
   convo: Conversation,
   updateUnreadMessages: SetUreadMessagesType
@@ -61,7 +59,6 @@ async function handleParticipantsUpdate(
 async function updateConvoList(
   client: Client,
   conversation: Conversation,
-  setConvos: SetConvosType,
   addMessages: AddMessagesType,
   updateUnreadMessages: SetUreadMessagesType
 ) {
@@ -72,9 +69,20 @@ async function updateConvoList(
   } else {
     addMessages(conversation.sid, []);
   }
+}
 
-  const subscribedConversations = await client.getSubscribedConversations();
-  setConvos(subscribedConversations.items);
+async function getSubscribedConversations(
+  client: Client
+): Promise<Conversation[]> {
+  let subscribedConversations = await client.getSubscribedConversations();
+  let conversations = subscribedConversations.items;
+
+  while (subscribedConversations.hasNextPage) {
+    subscribedConversations = await subscribedConversations.nextPage();
+    conversations = [...conversations, ...subscribedConversations.items];
+  }
+
+  return conversations;
 }
 
 const AppContainer: React.FC = () => {
@@ -99,7 +107,7 @@ const AppContainer: React.FC = () => {
     updateUnreadMessages,
     startTyping,
     endTyping,
-    listConversations,
+    addConversation,
     login,
     removeMessages,
     removeConversation,
@@ -134,6 +142,9 @@ const AppContainer: React.FC = () => {
     };
 
     fcMInit();
+    client.on("conversationJoined", (conversation) => {
+      addConversation(conversation);
+    });
     client.on("conversationAdded", async (conversation: Conversation) => {
       conversation.on("typingStarted", (participant) => {
         handlePromiseRejection(
@@ -151,6 +162,7 @@ const AppContainer: React.FC = () => {
       });
 
       handlePromiseRejection(async () => {
+        // todo: this never gets executed because in conversationAdded, convo state is not populated
         if (conversation.status === "joined") {
           const result = await getConversationParticipants(conversation);
           updateParticipants(result, conversation.sid);
@@ -159,7 +171,6 @@ const AppContainer: React.FC = () => {
         updateConvoList(
           client,
           conversation,
-          listConversations,
           addMessages,
           updateUnreadMessages
         );
@@ -200,7 +211,6 @@ const AppContainer: React.FC = () => {
           updateConvoList(
             client,
             conversation,
-            listConversations,
             addMessages,
             updateUnreadMessages
           ),
@@ -214,7 +224,6 @@ const AppContainer: React.FC = () => {
           updateConvoList(
             client,
             message.conversation,
-            listConversations,
             addMessages,
             updateUnreadMessages
           ),
@@ -251,6 +260,7 @@ const AppContainer: React.FC = () => {
     });
 
     updateLoadingState(false);
+    getSubscribedConversations(client);
 
     return () => {
       client?.removeAllListeners();

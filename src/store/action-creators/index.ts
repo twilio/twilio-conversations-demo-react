@@ -23,11 +23,20 @@ export const logout = () => {
   };
 };
 
-export const listConversations = (convos: Conversation[]) => {
+export const addConversation = (convo: Conversation) => {
   return (dispatch: Dispatch<Action>): void => {
     dispatch({
-      type: ActionType.LIST_CONVERSATIONS,
-      payload: convos,
+      type: ActionType.ADD_CONVERSATION,
+      payload: convo,
+    });
+  };
+};
+
+export const removeConversation = (sid: string) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.REMOVE_CONVERSATION,
+      payload: sid,
     });
   };
 };
@@ -46,15 +55,6 @@ export const setLastReadIndex = (index: number) => {
     dispatch({
       type: ActionType.CONVERSATION_LAST_READ_INDEX,
       payload: index,
-    });
-  };
-};
-
-export const removeConversation = (sid: string) => {
-  return (dispatch: Dispatch<Action>): void => {
-    dispatch({
-      type: ActionType.REMOVE_CONVERSATION,
-      payload: sid,
     });
   };
 };

@@ -12,9 +12,14 @@ interface LogOutAction {
   type: ActionType.LOGOUT;
 }
 
-interface ListConverationAction {
-  type: ActionType.LIST_CONVERSATIONS;
-  payload: Conversation[];
+interface AddConversation {
+  type: ActionType.ADD_CONVERSATION;
+  payload: Conversation;
+}
+
+interface RemoveConversation {
+  type: ActionType.REMOVE_CONVERSATION;
+  payload: string;
 }
 
 interface UpdateCurrentConversation {
@@ -62,11 +67,6 @@ interface UpdateConversation {
   payload: { channelSid: string; parameters: Partial<Conversation> };
 }
 
-interface RemoveConversation {
-  type: ActionType.REMOVE_CONVERSATION;
-  payload: string;
-}
-
 interface AddAttachment {
   type: ActionType.ADD_ATTACHMENT;
   payload: { channelSid: string; messageIndex: string; attachment: Blob };
@@ -95,7 +95,8 @@ interface RemoveNotifications {
 export type Action =
   | LoginAction
   | LogOutAction
-  | ListConverationAction
+  | AddConversation
+  | RemoveConversation
   | UpdateCurrentConversation
   | SetLastReadIndex
   | AddMessages
@@ -105,7 +106,6 @@ export type Action =
   | UpdateParticipants
   | UpdateUnreadMessages
   | UpdateConversation
-  | RemoveConversation
   | AddAttachment
   | TypingStarted
   | TypingEnded
