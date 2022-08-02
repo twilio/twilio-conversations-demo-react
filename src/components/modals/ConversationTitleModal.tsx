@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ModalInputField from "./ModalInputField";
 import { ModalFooter, ModalFooterActions } from "@twilio-paste/modal";
 import { ModalBody, Box } from "@twilio-paste/core";
@@ -21,6 +21,7 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
   const [title, setTitle] = useState(props.title);
   const [error, setError] = useState("");
   const [isFormDirty, setFormDirty] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     if (props.title !== title) {
@@ -34,6 +35,8 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
     props.onCancel();
   };
 
+  const isBadTitle = title.length < 1 || title.trim() === props.title;
+
   const onSave = async () => {
     if (title.length < 1) {
       return;
@@ -44,10 +47,32 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
     try {
       await props.onSave(title);
     } catch (e) {
-      setError(e.message ?? "");
+      setError((e as Error).message ?? "");
     }
 
+    setLoading(false);
     setTitle(props.title);
+  };
+
+  const onSubmit = (e: React.FormEvent<HTMLElement>) => {
+    e.preventDefault();
+
+    if (isBadTitle || isLoading) {
+      return;
+    }
+
+    setLoading(true);
+    onSave();
+  };
+  const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (isLoading) {
+      return;
+    }
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      onCancel();
+    }
   };
 
   return (
@@ -58,7 +83,7 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
         handleClose={onCancel}
         modalBody={
           <ModalBody>
-            <Box as="form">
+            <Box as="form" onSubmit={onSubmit} onKeyDown={onKeyDown}>
               <ModalInputField
                 isFocused={true}
                 label="Conversation name"
@@ -80,11 +105,15 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
         modalFooter={
           <ModalFooter>
             <ModalFooterActions>
-              <Button variant="secondary" onClick={onCancel}>
+              <Button
+                disabled={isLoading}
+                variant="secondary"
+                onClick={onCancel}
+              >
                 Cancel
               </Button>
               <Button
-                disabled={title.length < 1 || title.trim() === props.title}
+                disabled={isBadTitle || isLoading}
                 variant="primary"
                 onClick={onSave}
               >
