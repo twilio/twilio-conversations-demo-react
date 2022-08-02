@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ModalInputField from "./ModalInputField";
 import { ModalFooter, ModalFooterActions } from "@twilio-paste/modal";
 import { ModalBody, Box } from "@twilio-paste/core";
@@ -34,6 +34,8 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
     props.onCancel();
   };
 
+  const isBadTitle = title.length < 1 || title.trim() === props.title;
+
   const onSave = async () => {
     if (title.length < 1) {
       return;
@@ -44,10 +46,25 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
     try {
       await props.onSave(title);
     } catch (e) {
-      setError(e.message ?? "");
+      setError((e as Error).message ?? "");
     }
 
     setTitle(props.title);
+  };
+  const onSubmit = (e: React.FormEvent<HTMLElement>) => {
+    e.preventDefault();
+
+    if (isBadTitle) {
+      return;
+    }
+
+    onSave();
+  };
+  const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      onCancel();
+    }
   };
 
   return (
@@ -58,7 +75,7 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
         handleClose={onCancel}
         modalBody={
           <ModalBody>
-            <Box as="form">
+            <Box as="form" onSubmit={onSubmit} onKeyDown={onKeyDown}>
               <ModalInputField
                 isFocused={true}
                 label="Conversation name"
@@ -83,11 +100,7 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
               <Button variant="secondary" onClick={onCancel}>
                 Cancel
               </Button>
-              <Button
-                disabled={title.length < 1 || title.trim() === props.title}
-                variant="primary"
-                onClick={onSave}
-              >
+              <Button disabled={isBadTitle} variant="primary" onClick={onSave}>
                 {ActionName.Save}
               </Button>
             </ModalFooterActions>

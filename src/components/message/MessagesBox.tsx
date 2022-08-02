@@ -24,11 +24,13 @@ import { CONVERSATION_PAGE_SIZE } from "../../constants";
 
 export async function loadMessages(
   conversation: Conversation,
-  currentMessages: Message[],
-  addMessage: AddMessagesType
+  addMessage: AddMessagesType,
+  currentMessages: Message[] = []
 ): Promise<void> {
   const convoSid: string = conversation.sid;
-  if (!(convoSid in currentMessages)) {
+  const sidExists = !!currentMessages.filter(({ sid }) => sid === convoSid)
+    .length;
+  if (!sidExists) {
     const paginator = await getMessages(conversation);
     const messages = paginator.items;
     //save to redux
@@ -50,7 +52,7 @@ interface MessageProps {
 const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
   const { messages, convo, loadingState, lastReadIndex, addMessage } = props;
   const [hasMore, setHasMore] = useState(
-    messages.length === CONVERSATION_PAGE_SIZE
+    messages?.length === CONVERSATION_PAGE_SIZE
   );
   const [loading, setLoading] = useState(false);
   const [height, setHeight] = useState(0);
@@ -59,7 +61,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
 
   useEffect(() => {
     if (!messages && convo && !loadingState) {
-      loadMessages(convo, messages, addMessage);
+      loadMessages(convo, addMessage);
     }
   }, []);
 
