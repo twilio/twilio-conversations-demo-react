@@ -4,18 +4,17 @@ import { Action } from "../actions";
 
 const initialState: Conversation[] = [];
 
+const convoSorter = (a: Conversation, b: Conversation) =>
+  (b.lastMessage?.dateCreated || b.dateUpdated) -
+  (a.lastMessage?.dateCreated || a.dateUpdated);
+
 const reducer = (
   state: Conversation[] = initialState,
   action: Action
 ): Conversation[] => {
   switch (action.type) {
-    case ActionType.LIST_CONVERSATIONS:
-      return action.payload.sort((a, b) => {
-        return (
-          (b.lastMessage?.dateCreated || b.dateUpdated) -
-          (a.lastMessage?.dateCreated || a.dateUpdated)
-        );
-      });
+    case ActionType.ADD_CONVERSATION:
+      return [...state, action.payload].sort(convoSorter);
     case ActionType.UPDATE_CONVERSATION: {
       const stateCopy = [...state];
       let target = stateCopy.find(
