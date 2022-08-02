@@ -149,8 +149,7 @@ const AppContainer: React.FC = () => {
 
     client.on("conversationJoined", (conversation) => {
       addConversation(conversation);
-    });
-    client.on("conversationAdded", async (conversation: Conversation) => {
+
       conversation.on("typingStarted", (participant) => {
         handlePromiseRejection(
           () =>
