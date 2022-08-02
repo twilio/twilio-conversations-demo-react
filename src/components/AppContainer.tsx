@@ -37,8 +37,17 @@ async function loadUnreadMessagesCount(
   convo: Conversation,
   updateUnreadMessages: SetUreadMessagesType
 ) {
-  const count = await convo.getUnreadMessagesCount();
-  updateUnreadMessages(convo.sid, count ?? 0);
+  let count = 0;
+
+  try {
+    count =
+      (await convo.getUnreadMessagesCount()) ??
+      (await convo.getMessagesCount());
+  } catch (e) {
+    console.error("getUnreadMessagesCount threw an error", e);
+  }
+
+  updateUnreadMessages(convo.sid, count);
 }
 
 async function handleParticipantsUpdate(
@@ -59,11 +68,10 @@ async function updateConvoList(
   if (conversation.status === "joined") {
     const messages = await conversation.getMessages();
     addMessages(conversation.sid, messages.items);
+    loadUnreadMessagesCount(conversation, updateUnreadMessages);
   } else {
     addMessages(conversation.sid, []);
   }
-
-  loadUnreadMessagesCount(conversation, updateUnreadMessages);
 
   const subscribedConversations = await client.getSubscribedConversations();
   setConvos(subscribedConversations.items);
