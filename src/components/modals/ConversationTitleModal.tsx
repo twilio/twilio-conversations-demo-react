@@ -21,6 +21,7 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
   const [title, setTitle] = useState(props.title);
   const [error, setError] = useState("");
   const [isFormDirty, setFormDirty] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     if (props.title !== title) {
@@ -49,18 +50,25 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
       setError((e as Error).message ?? "");
     }
 
+    setLoading(false);
     setTitle(props.title);
   };
+
   const onSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
 
-    if (isBadTitle) {
+    if (isBadTitle || isLoading) {
       return;
     }
 
+    setLoading(true);
     onSave();
   };
   const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (isLoading) {
+      return;
+    }
+
     if (e.key === "Escape") {
       e.preventDefault();
       onCancel();
@@ -97,10 +105,18 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
         modalFooter={
           <ModalFooter>
             <ModalFooterActions>
-              <Button variant="secondary" onClick={onCancel}>
+              <Button
+                disabled={isLoading}
+                variant="secondary"
+                onClick={onCancel}
+              >
                 Cancel
               </Button>
-              <Button disabled={isBadTitle} variant="primary" onClick={onSave}>
+              <Button
+                disabled={isBadTitle || isLoading}
+                variant="primary"
+                onClick={onSave}
+              >
                 {ActionName.Save}
               </Button>
             </ModalFooterActions>
