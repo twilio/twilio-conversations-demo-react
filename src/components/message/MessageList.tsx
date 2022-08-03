@@ -138,18 +138,22 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     return theme.space.space50;
   }
 
-  const onDownloadAttachment = async (message: ReduxMessage) => {
-    if (!message.media) {
+  const onDownloadAttachments = async (message: ReduxMessage) => {
+      const attachedMedia = getSdkMediaObject(message.attachedMedia);
+    if (!attachedMedia?.length) {
       return new Error("No media attached");
     }
 
     setFileLoading(Object.assign({}, fileLoading, { [message.sid]: true }));
-    const blob = await getBlobFile(
-      getSdkMediaObject(message.media),
-      addNotifications
-    );
-    addAttachment(props.conversation.sid, message.sid, blob);
-    setFileLoading(Object.assign({}, fileLoading, { [message.sid]: false }));
+    for (const [key, media] of attachedMedia.entries()) {
+      const blob = await getBlobFile(media, addNotifications);
+      addAttachment(props.conversation.sid, message.sid, media.sid, blob);
+      if (key === attachedMedia.length - 1) {
+        setFileLoading(
+          Object.assign({}, fileLoading, { [message.sid]: false })
+        );
+      }
+    }
   };
 
   const onFileOpen = (file: Blob, { filename }: ReduxMedia) => {
@@ -159,8 +163,17 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   return (
     <>
       {messages.map((message, index) => {
-        const isImage = message.media?.contentType?.includes("image");
-        const fileBlob = conversationAttachments?.[message.sid] ?? null;
+        const messageImages: Media[] = [];
+        const messageFiles: Media[] = [];
+        (message.attachedMedia || []).forEach((file) => {
+          const { contentType } = file;
+          if (contentType.includes("image")) {
+            messageImages.push(file);
+            return;
+          }
+          messageFiles.push(file);
+        });
+        const fileBlobs = conversationAttachments?.[message.sid] ?? null;
         const attributes = message.attributes as Record<
           string,
           ReactionsType | undefined
@@ -177,30 +190,29 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
               reactions={attributes["reactions"]}
               message={
                 message.body ||
-                (message.media ? (
+                (message.attachedMedia?.length ? (
                   <MessageFile
                     key={message.sid + "media"}
-                    media={message.media}
+                    media={message.attachedMedia}
                     type="view"
-                    onDownload={() => onDownloadAttachment(message)}
-                    isImage={isImage}
-                    file={fileBlob}
+                    onDownload={() => onDownloadAttachments(message)}
+                    images={messageImages}
+                    files={messageFiles}
                     sending={message.index === -1}
                     loading={fileLoading[message.sid]}
-                    onOpen={
-                      isImage && fileBlob
-                        ? () =>
-                            setImagePreview({
-                              message,
-                              file: fileBlob,
-                            })
-                        : () =>
-                            message.media &&
-                            onFileOpen(
-                              conversationAttachments?.[message.sid],
-                              message.media
-                            )
-                    }
+                    onOpen={(image, file, mediaSid) => {
+                      if (file) {
+                        onFileOpen(
+                          conversationAttachments?.[message.sid][mediaSid],
+                          message.media
+                        );
+                        return;
+                      }
+                      setImagePreview({
+                        message,
+                        file: image,
+                      });
+                    }}
                   />
                 ) : (
                   ""

@@ -71,7 +71,12 @@ interface UpdateConversation {
 
 interface AddAttachment {
   type: ActionType.ADD_ATTACHMENT;
-  payload: { channelSid: string; messageIndex: string; attachment: Blob };
+  payload: {
+    channelSid: string;
+    messageSid: string;
+    mediaSid: string;
+    attachment: Blob;
+  };
 }
 
 interface TypingStarted {
