@@ -16,7 +16,7 @@ import ConversationsContainer from "./conversations/ConversationsContainer";
 import {
   AddMessagesType,
   SetParticipantsType,
-  SetUreadMessagesType,
+  SetUnreadMessagesType,
 } from "../types";
 import { getConversationParticipants, getToken } from "../api";
 import useAppAlert from "../hooks/useAppAlerts";
@@ -33,7 +33,7 @@ import {
 
 async function loadUnreadMessagesCount(
   convo: Conversation,
-  updateUnreadMessages: SetUreadMessagesType
+  updateUnreadMessages: SetUnreadMessagesType
 ) {
   let count = 0;
 
@@ -60,7 +60,7 @@ async function updateConvoList(
   client: Client,
   conversation: Conversation,
   addMessages: AddMessagesType,
-  updateUnreadMessages: SetUreadMessagesType
+  updateUnreadMessages: SetUnreadMessagesType
 ) {
   if (conversation.status === "joined") {
     const messages = await conversation.getMessages();
@@ -273,7 +273,7 @@ const AppContainer: React.FC = () => {
   function addMessage(
     message: Message,
     addMessages: AddMessagesType,
-    updateUnreadMessages: SetUreadMessagesType
+    updateUnreadMessages: SetUnreadMessagesType
   ) {
     //transform the message and add it to redux
     handlePromiseRejection(() => {
