@@ -28,7 +28,7 @@ export type ReduxMessage = {
   attributes: JSONValue;
   participantSid: string | null;
   dateCreated: Date | null;
-  media?: ReduxMedia;
+  attachedMedia: ReduxMedia[] | null;
   aggregatedDeliveryReceipt: {
     total: number;
     sent: DeliveryAmount;
@@ -61,17 +61,14 @@ const reduxifyMessage = (message: Message | ReduxMessage): ReduxMessage => ({
         failed: message.aggregatedDeliveryReceipt.failed,
       }
     : null,
-  ...(message.media
-    ? {
-        media: {
-          sid: message.media.sid,
-          filename: message.media.filename,
-          contentType: message.media.contentType,
-          size: message.media.size,
-          category: message.media.category,
-        },
-      }
-    : {}),
+  attachedMedia:
+    message.attachedMedia?.map((el) => ({
+      sid: el.sid,
+      filename: el.filename,
+      contentType: el.contentType,
+      size: el.size,
+      category: el.category,
+    })) ?? [],
 });
 
 const reducer = (state = initialState, action: Action): ChatMessagesState => {
@@ -82,8 +79,10 @@ const reducer = (state = initialState, action: Action): ChatMessagesState => {
 
       for (const message of messagesToAdd) {
         messagesMap.set(message.sid, message);
-        if (message.media) {
-          mediaMap.set(message.media.sid, message.media);
+        if (message.attachedMedia) {
+          message.attachedMedia.forEach((media) => {
+            mediaMap.set(media.sid, media);
+          });
         }
       }
 
@@ -106,8 +105,6 @@ const reducer = (state = initialState, action: Action): ChatMessagesState => {
             (value) =>
               value.body === message.body &&
               value.author === message.author &&
-              value.media?.filename === message.media?.filename &&
-              value.media?.size === message.media?.size &&
               (message.index === -1 || value.index === message.index)
           );
         }
@@ -122,8 +119,10 @@ const reducer = (state = initialState, action: Action): ChatMessagesState => {
       for (const message of messagesToAdd) {
         if (message instanceof Message) {
           messagesMap.set(message.sid, message);
-          if (message.media) {
-            mediaMap.set(message.media.sid, message.media);
+          if (message.attachedMedia) {
+            message.attachedMedia.forEach((media) => {
+              mediaMap.set(media.sid, media);
+            });
           }
         }
       }
@@ -149,8 +148,10 @@ const reducer = (state = initialState, action: Action): ChatMessagesState => {
 
       for (const message of messagesToRemove) {
         messagesMap.delete(message.sid);
-        if (message.media) {
-          mediaMap.delete(message.media.sid);
+        if (message.attachedMedia) {
+          message.attachedMedia.forEach((media) => {
+            mediaMap.delete(media.sid);
+          });
         }
       }
 

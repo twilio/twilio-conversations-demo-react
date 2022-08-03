@@ -1,14 +1,13 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { saveAs } from "file-saver";
 
 import { useTheme } from "@twilio-paste/theme";
-import { Media, Message, Participant } from "@twilio/conversations";
+import { Media, Participant } from "@twilio/conversations";
 
 import { getBlobFile, getMessageStatus } from "../../api";
 import MessageView from "./MessageView";
-import MessageFile from "./MessageFile";
 import { actionCreators, AppState } from "../../store";
 import ImagePreviewModal from "../modals/ImagePreviewModal";
 import Horizon from "./Horizon";
@@ -17,6 +16,7 @@ import {
   unexpectedErrorNotification,
 } from "../../helpers";
 import type { ReactionsType } from "./Reactions";
+import MessageMedia from "./MessageMedia";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
 import {
   ReduxMedia,
@@ -26,6 +26,8 @@ import {
   getSdkMediaObject,
   getSdkMessageObject,
 } from "../../conversations-objects";
+import { getSdkConversationObject } from "../../conversations-objects";
+import TimeAgo from "javascript-time-ago";
 
 interface MessageListProps {
   messages: ReduxMessage[];
@@ -37,36 +39,9 @@ interface MessageListProps {
 function getMessageTime(message: ReduxMessage) {
   const dateCreated = message.dateCreated;
 
-  if (!dateCreated) {
-    return "";
-  }
-
-  // TODO: use javascript-time-ago here
-  const today = new Date();
-  const diffInDates = Math.floor(today.getTime() - dateCreated.getTime());
-  const dayLength = 1000 * 60 * 60 * 24;
-  const diffInDays = Math.floor(diffInDates / dayLength);
-  const minutesLessThanTen = dateCreated.getMinutes() < 10 ? "0" : "";
-  if (diffInDays === 0) {
-    return (
-      dateCreated.getHours().toString() +
-      ":" +
-      minutesLessThanTen +
-      dateCreated.getMinutes().toString()
-    );
-  }
-  return (
-    dateCreated.getDate() +
-    "/" +
-    dateCreated.getMonth() +
-    "/" +
-    dateCreated.getFullYear().toString().substr(-2) +
-    " " +
-    dateCreated.getHours().toString() +
-    ":" +
-    minutesLessThanTen +
-    dateCreated.getMinutes().toString()
-  );
+  return dateCreated
+    ? new TimeAgo("en-US").format(dateCreated, "twitter-now")
+    : "";
 }
 
 const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
@@ -91,8 +66,8 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   const [imagePreview, setImagePreview] = useState<{
     message: ReduxMessage;
     file: Blob;
+    sid: string;
   } | null>(null);
-  const [fileLoading, setFileLoading] = useState<Record<string, boolean>>({});
 
   const [horizonMessageCount, setHorizonMessageCount] = useState<number>(0);
   const [showHorizonIndex, setShowHorizonIndex] = useState<number>(0);
@@ -112,19 +87,13 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     if (lastReadIndex === -1 || horizonMessageCount) {
       return;
     }
-    let showIndex = 0;
-
-    setHorizonMessageCount(
-      // TODO: Use getUnreadMessageCount here obviously!
-      messages.filter(({ index }) => {
-        if (index > lastReadIndex && !showIndex) {
-          showIndex = index;
-        }
-        return index > lastReadIndex;
-      }).length
-    );
-
-    setShowHorizonIndex(showIndex);
+    const showIndex = 0;
+    getSdkConversationObject(conversation)
+      .getUnreadMessagesCount()
+      .then((count) => {
+        setHorizonMessageCount(count ?? 0);
+        setShowHorizonIndex(showIndex);
+      });
   }, [messages, lastReadIndex]);
 
   function setTopPadding(index: number) {
@@ -138,18 +107,21 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     return theme.space.space50;
   }
 
-  const onDownloadAttachment = async (message: ReduxMessage) => {
-    if (!message.media) {
+  const onDownloadAttachments = async (message: ReduxMessage) => {
+    const attachedMedia = message.attachedMedia?.map(getSdkMediaObject);
+    if (message.index === -1) {
+      return undefined;
+    }
+    if (!attachedMedia?.length) {
       return new Error("No media attached");
     }
 
-    setFileLoading(Object.assign({}, fileLoading, { [message.sid]: true }));
-    const blob = await getBlobFile(
-      getSdkMediaObject(message.media),
-      addNotifications
-    );
-    addAttachment(props.conversation.sid, message.sid, blob);
-    setFileLoading(Object.assign({}, fileLoading, { [message.sid]: false }));
+    for (const media of attachedMedia) {
+      const blob = await getBlobFile(media, addNotifications);
+      addAttachment(props.conversation.sid, message.sid, media.sid, blob);
+    }
+
+    return;
   };
 
   const onFileOpen = (file: Blob, { filename }: ReduxMedia) => {
@@ -159,8 +131,16 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   return (
     <>
       {messages.map((message, index) => {
-        const isImage = message.media?.contentType?.includes("image");
-        const fileBlob = conversationAttachments?.[message.sid] ?? null;
+        const messageImages: ReduxMedia[] = [];
+        const messageFiles: ReduxMedia[] = [];
+        (message.attachedMedia || []).forEach((file) => {
+          const { contentType } = file;
+          if (contentType.includes("image")) {
+            messageImages.push(file);
+            return;
+          }
+          messageFiles.push(file);
+        });
         const attributes = message.attributes as Record<
           string,
           ReactionsType | undefined
@@ -175,36 +155,42 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
             ) : null}
             <MessageView
               reactions={attributes["reactions"]}
-              message={
-                message.body ||
-                (message.media ? (
-                  <MessageFile
-                    key={message.sid + "media"}
-                    media={message.media}
-                    type="view"
-                    onDownload={() => onDownloadAttachment(message)}
-                    isImage={isImage}
-                    file={fileBlob}
-                    sending={message.index === -1}
-                    loading={fileLoading[message.sid]}
-                    onOpen={
-                      isImage && fileBlob
-                        ? () =>
-                            setImagePreview({
-                              message,
-                              file: fileBlob,
-                            })
-                        : () =>
-                            message.media &&
-                            onFileOpen(
-                              conversationAttachments?.[message.sid],
-                              message.media
-                            )
+              text={message.body ?? ""}
+              media={
+                message.attachedMedia?.length ? (
+                  <MessageMedia
+                    key={message.sid}
+                    attachments={conversationAttachments?.[message.sid]}
+                    onDownload={async () =>
+                      await onDownloadAttachments(message)
                     }
+                    images={messageImages}
+                    files={messageFiles}
+                    sending={message.index === -1}
+                    onOpen={(
+                      mediaSid: string,
+                      image?: ReduxMedia,
+                      file?: ReduxMedia
+                    ) => {
+                      if (file) {
+                        onFileOpen(
+                          conversationAttachments?.[message.sid][mediaSid],
+                          file
+                        );
+                        return;
+                      }
+                      if (image) {
+                        setImagePreview({
+                          message,
+                          file: conversationAttachments?.[message.sid][
+                            mediaSid
+                          ],
+                          sid: mediaSid,
+                        });
+                      }
+                    }}
                   />
-                ) : (
-                  ""
-                ))
+                ) : null
               }
               author={message.author ?? ""}
               getStatus={getMessageStatus(message, props.participants)}
@@ -253,12 +239,14 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                     : ""
                 }
                 handleClose={() => setImagePreview(null)}
-                onDownload={() =>
+                onDownload={() => {
                   saveAs(
                     imagePreview.file,
-                    imagePreview.message.media?.filename ?? ""
-                  )
-                }
+                    imagePreview.message.attachedMedia?.find(
+                      ({ sid }) => sid === imagePreview.sid
+                    )?.filename ?? ""
+                  );
+                }}
               />
             );
           })()

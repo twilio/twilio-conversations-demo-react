@@ -23,10 +23,7 @@ function getLastMessage(messages: ReduxMessage[], typingData: string[]) {
   if (messages.length === 0) {
     return "No messages";
   }
-  if (!!messages[messages.length - 1].media) {
-    return "Media message";
-  }
-  return messages[messages.length - 1].body;
+  return messages[messages.length - 1].body || "Media message";
 }
 
 function isMyMessage(messages: ReduxMessage[]) {

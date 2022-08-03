@@ -71,7 +71,20 @@ interface UpdateConversation {
 
 interface AddAttachment {
   type: ActionType.ADD_ATTACHMENT;
-  payload: { channelSid: string; messageIndex: string; attachment: Blob };
+  payload: {
+    channelSid: string;
+    messageSid: string;
+    mediaSid: string;
+    attachment: Blob;
+  };
+}
+
+interface ClearAttachments {
+  type: ActionType.CLEAR_ATTACHMENTS;
+  payload: {
+    channelSid: string;
+    messageSid: string;
+  };
 }
 
 interface TypingStarted {
@@ -109,6 +122,7 @@ export type Action =
   | UpdateUnreadMessages
   | UpdateConversation
   | AddAttachment
+  | ClearAttachments
   | TypingStarted
   | TypingEnded
   | AddNotifications

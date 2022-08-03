@@ -137,13 +137,23 @@ export const updateConversation = (
 
 export const addAttachment = (
   channelSid: string,
-  messageIndex: string,
+  messageSid: string,
+  mediaSid: string,
   attachment: Blob
 ) => {
   return (dispatch: Dispatch<Action>): void => {
     dispatch({
       type: ActionType.ADD_ATTACHMENT,
-      payload: { channelSid, messageIndex, attachment },
+      payload: { channelSid, messageSid, mediaSid, attachment },
+    });
+  };
+};
+
+export const clearAttachments = (channelSid: string, messageSid: string) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.CLEAR_ATTACHMENTS,
+      payload: { channelSid, messageSid },
     });
   };
 };
