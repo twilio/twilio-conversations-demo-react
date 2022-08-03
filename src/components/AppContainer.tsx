@@ -78,7 +78,7 @@ async function getSubscribedConversations(
   let conversations = subscribedConversations.items;
 
   while (subscribedConversations.hasNextPage) {
-    subscribedConversations = await client.getSubscribedConversations();
+    subscribedConversations = await subscribedConversations.nextPage();
     conversations = [...conversations, ...subscribedConversations.items];
   }
 
