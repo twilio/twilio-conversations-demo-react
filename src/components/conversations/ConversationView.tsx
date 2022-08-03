@@ -14,6 +14,13 @@ import { NOTIFICATION_LEVEL } from "../../constants";
 import { SetSidType, SetUreadMessagesType } from "../../types";
 import { getMessageStatus } from "../../api";
 
+import * as _ from "lodash";
+
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+
+TimeAgo.addDefaultLocale(en);
+
 interface SingleConvoProps {
   convoId: string;
   setSid: SetSidType;
@@ -65,50 +72,12 @@ function truncateMiddle(text: string, countWidth: number) {
 }
 
 function getLastMessageTime(messages: Message[]) {
-  if (messages === undefined || messages === null || messages.length === 0) {
-    return "";
-  }
-  const lastMessageDate = messages[messages.length - 1].dateCreated;
+  const lastMessageDate = _.last(messages)?.dateCreated;
   if (!lastMessageDate) {
     return "";
   }
 
-  const today = new Date();
-  const diffInDates = Math.floor(today.getTime() - lastMessageDate.getTime());
-  const dayLength = 1000 * 60 * 60 * 24;
-  const weekLength = dayLength * 7;
-  const yearLength = weekLength * 52;
-  const diffInDays = Math.floor(diffInDates / dayLength);
-  const diffInWeeks = Math.floor(diffInDates / weekLength);
-  const diffInYears = Math.floor(diffInDates / yearLength);
-  if (diffInDays < 0) {
-    return "";
-  }
-  if (diffInDays === 0) {
-    const minutesLessThanTen = lastMessageDate.getMinutes() < 10 ? "0" : "";
-    return (
-      lastMessageDate.getHours().toString() +
-      ":" +
-      minutesLessThanTen +
-      lastMessageDate.getMinutes().toString()
-    );
-  }
-  if (diffInDays === 1) {
-    return "1 day ago";
-  }
-  if (diffInDays < 7) {
-    return diffInDays + " days ago";
-  }
-  if (diffInDays < 14) {
-    return "1 week ago";
-  }
-  if (diffInWeeks < 52) {
-    return diffInWeeks + " weeks ago";
-  }
-  if (diffInYears < 2) {
-    return "1 year ago";
-  }
-  return diffInYears + " years ago";
+  return new TimeAgo("en-US").format(lastMessageDate, "twitter-now");
 }
 
 const ConversationView: React.FC<SingleConvoProps> = (
