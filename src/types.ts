@@ -8,7 +8,7 @@ export type SetParticipantsType = (
   sid: string
 ) => void;
 
-export type SetUreadMessagesType = (
+export type SetUnreadMessagesType = (
   channelSid: string,
   unreadCount: number
 ) => void;

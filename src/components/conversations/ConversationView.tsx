@@ -11,7 +11,7 @@ import FailedIcon from "../icons/Failed";
 import BellMuted from "../icons/BellMuted";
 
 import { NOTIFICATION_LEVEL } from "../../constants";
-import { SetSidType, SetUreadMessagesType } from "../../types";
+import { SetSidType, SetUnreadMessagesType } from "../../types";
 import { getMessageStatus } from "../../api";
 
 import * as _ from "lodash";
@@ -29,7 +29,7 @@ interface SingleConvoProps {
   myMessage: Message | false;
   unreadMessagesCount: number;
   convo: Conversation;
-  updateUnreadMessages: SetUreadMessagesType;
+  updateUnreadMessages: SetUnreadMessagesType;
   onClick: () => void;
   participants: Participant[];
   messages: Message[];

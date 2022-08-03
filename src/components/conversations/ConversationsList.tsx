@@ -6,7 +6,7 @@ import ConversationView from "./ConversationView";
 import {
   SetParticipantsType,
   SetSidType,
-  SetUreadMessagesType,
+  SetUnreadMessagesType,
 } from "../../types";
 import { actionCreators, AppState } from "../../store";
 import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
@@ -57,7 +57,7 @@ function setUnreadMessagesCount(
   currentconvoSid: string,
   convoSid: string,
   unreadMessages: Record<string, number>,
-  updateUnreadMessages: SetUreadMessagesType
+  updateUnreadMessages: SetUnreadMessagesType
 ) {
   if (currentconvoSid == convoSid && unreadMessages[convoSid] !== 0) {
     updateUnreadMessages(convoSid, 0);
