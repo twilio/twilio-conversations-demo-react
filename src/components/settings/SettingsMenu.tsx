@@ -120,7 +120,11 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
               />
             </MediaFigure>
             <MediaBody>
-              <Text as="span" color="colorTextError">
+              <Text
+                as="a"
+                color="colorTextError"
+                _hover={{ color: "colorTextError", cursor: "pointer" }}
+              >
                 Leave Conversation
               </Text>
             </MediaBody>
