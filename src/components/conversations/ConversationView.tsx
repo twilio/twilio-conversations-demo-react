@@ -36,29 +36,25 @@ interface SingleConvoProps {
   typingInfo: string[];
 }
 
+const measureWidth = (text: string): number => {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return 0;
+  }
+  context.font = "bold 14px Inter";
+  return context.measureText(text).width;
+};
+
 function calculateUnreadMessagesWidth(count: number) {
   if (count === 0 || !count) {
     return 0;
   }
-  const countAsString = count.toString();
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (!context) {
-    return 0;
-  }
-  context.font = "bold 14px Inter";
-  const width = context.measureText(countAsString).width;
-  return width + 32;
+  return measureWidth(count.toString()) + 32;
 }
 
 function truncateMiddle(text: string, countWidth: number) {
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (!context) {
-    return text;
-  }
-  context.font = "bold 14px Inter";
-  const width = context.measureText(text).width;
+  const width = measureWidth(text);
   if (width > 288 - countWidth) {
     const textLength = text.length;
     const avgLetterSize = width / textLength;
