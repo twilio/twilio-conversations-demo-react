@@ -31,7 +31,7 @@ interface MessageListProps {
 }
 
 function getMessageTime(message: Message) {
-  const dateCreated: Date | null = message.dateCreated;
+  const dateCreated = message.dateCreated;
 
   if (!dateCreated) {
     return "";

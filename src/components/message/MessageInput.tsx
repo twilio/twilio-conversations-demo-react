@@ -44,8 +44,8 @@ const MessageInput: React.FC<MessageInputProps> = (
       {getTextWidth(props.message) < width - 500 && (
         <input
           type="text"
-          onChange={(e: any) => {
-            setCursorPostions(e.currentTarget.selectionStart);
+          onChange={(e) => {
+            setCursorPostions(e.currentTarget.selectionStart ?? 0);
             props.onChange(e.currentTarget.value);
           }}
           aria-describedby="message_help_text"
@@ -75,7 +75,7 @@ const MessageInput: React.FC<MessageInputProps> = (
 
       {getTextWidth(props.message) >= width - 500 && (
         <textarea
-          onChange={(e: any) => {
+          onChange={(e) => {
             setCursorPostions(e.currentTarget.selectionStart);
             props.onChange(e.currentTarget.value);
           }}

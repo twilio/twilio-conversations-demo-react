@@ -20,16 +20,15 @@ const reducer = (
       return [...filteredClone, action.payload].sort(convoSorter);
     case ActionType.UPDATE_CONVERSATION: {
       const stateCopy = [...state];
-      let target: Conversation | undefined = stateCopy.find(
+      const target = stateCopy.find(
         (convo: Conversation) => convo.sid === action.payload.channelSid
       );
 
-      target =
-        target &&
-        ({
-          ...target,
+      if (target) {
+        Object.assign(target, {
           ...action.payload.parameters,
-        } as Conversation);
+        });
+      }
 
       return stateCopy;
     }
