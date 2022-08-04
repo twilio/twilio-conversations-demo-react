@@ -1,27 +1,62 @@
-import { Conversation } from "@twilio/conversations";
+import { ConversationsMap } from "../../conversations-objects";
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
 
-const initialState: Conversation[] = [];
+export type ReduxConversation = {
+  sid: string;
+  friendlyName: string | null;
+  dateUpdated: Date | null;
+  notificationLevel: "default" | "muted";
+  lastReadMessageIndex: number | null;
+  lastMessage?: {
+    index?: number;
+    dateCreated?: Date;
+  };
+};
 
-const convoSorter = (a: Conversation, b: Conversation) =>
+const initialState: ReduxConversation[] = [];
+
+const convoSorter = (a: ReduxConversation, b: ReduxConversation) =>
   (b.lastMessage?.dateCreated?.getTime() ?? b.dateUpdated?.getTime() ?? 0) -
   (a.lastMessage?.dateCreated?.getTime() ?? a.dateUpdated?.getTime() ?? 0);
 
 const reducer = (
-  state: Conversation[] = initialState,
+  state: ReduxConversation[] = initialState,
   action: Action
-): Conversation[] => {
+): ReduxConversation[] => {
   switch (action.type) {
     case ActionType.ADD_CONVERSATION:
+      const {
+        sid,
+        friendlyName,
+        dateUpdated,
+        notificationLevel,
+        lastReadMessageIndex,
+        lastMessage,
+      } = action.payload;
       const filteredClone = state.filter(
         (conversation) => conversation.sid !== action.payload.sid
       );
-      return [...filteredClone, action.payload].sort(convoSorter);
+
+      ConversationsMap.set(action.payload.sid, action.payload);
+
+      return [
+        ...filteredClone,
+        {
+          sid,
+          friendlyName,
+          dateUpdated,
+          notificationLevel,
+          lastReadMessageIndex,
+          lastMessage: {
+            ...lastMessage,
+          },
+        },
+      ].sort(convoSorter);
     case ActionType.UPDATE_CONVERSATION: {
       const stateCopy = [...state];
       const target = stateCopy.find(
-        (convo: Conversation) => convo.sid === action.payload.channelSid
+        (convo: ReduxConversation) => convo.sid === action.payload.channelSid
       );
 
       if (target) {
@@ -35,8 +70,10 @@ const reducer = (
     case ActionType.REMOVE_CONVERSATION: {
       const stateCopy = [...state];
 
+      ConversationsMap.delete(action.payload);
+
       return stateCopy.filter(
-        (convo: Conversation) => convo.sid !== action.payload
+        (convo: ReduxConversation) => convo.sid !== action.payload
       );
     }
     default:

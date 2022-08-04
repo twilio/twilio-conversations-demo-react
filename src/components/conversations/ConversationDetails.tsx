@@ -1,13 +1,14 @@
-import { Conversation, Participant } from "@twilio/conversations";
+import { Participant } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 
 import Settings from "../settings/Settings";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
 
 interface ConversationDetailsProps {
   convoSid: string;
   participants: Participant[];
-  convo: Conversation;
+  convo: ReduxConversation;
 }
 
 const ConversationDetails: React.FC<ConversationDetailsProps> = (

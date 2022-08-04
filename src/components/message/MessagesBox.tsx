@@ -6,13 +6,7 @@ import React, {
   useState,
 } from "react";
 
-import {
-  Client,
-  Conversation,
-  Paginator,
-  Message,
-  Participant,
-} from "@twilio/conversations";
+import { Client, Paginator, Message, Participant } from "@twilio/conversations";
 import { Box, Spinner } from "@twilio-paste/core";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -21,9 +15,11 @@ import { AddMessagesType } from "../../types";
 import styles from "../../styles";
 import { getMessages } from "../../api";
 import { CONVERSATION_PAGE_SIZE } from "../../constants";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
+import { getSdkConversationObject } from "../../conversations-objects";
 
 export async function loadMessages(
-  conversation: Conversation,
+  conversation: ReduxConversation,
   addMessage: AddMessagesType,
   currentMessages: Message[] = []
 ): Promise<void> {
@@ -31,7 +27,7 @@ export async function loadMessages(
   const sidExists = !!currentMessages.filter(({ sid }) => sid === convoSid)
     .length;
   if (!sidExists) {
-    const paginator = await getMessages(conversation);
+    const paginator = await getMessages(getSdkConversationObject(conversation));
     const messages = paginator.items;
     //save to redux
     addMessage(convoSid, messages);
@@ -41,7 +37,7 @@ export async function loadMessages(
 interface MessageProps {
   convoSid: string;
   client?: Client;
-  convo: Conversation;
+  convo: ReduxConversation;
   addMessage: AddMessagesType;
   messages: Message[];
   loadingState: boolean;
@@ -58,6 +54,8 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
   const [height, setHeight] = useState(0);
   const [paginator, setPaginator] = useState<Paginator<Message> | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+
+  const sdkConvo = useMemo(() => getSdkConversationObject(convo), [convo.sid]);
 
   useEffect(() => {
     if (!messages && convo && !loadingState) {
@@ -77,7 +75,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
   }, [listRef.current?.clientHeight]);
 
   useEffect(() => {
-    getMessages(convo).then((paginator) => {
+    getMessages(sdkConvo).then((paginator) => {
       setHasMore(paginator.hasPrevPage);
       setPaginator(paginator);
     });
@@ -85,7 +83,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
 
   useEffect(() => {
     if (messages?.length && messages[messages.length - 1].index !== -1) {
-      convo.updateLastReadMessageIndex(messages[messages.length - 1].index);
+      sdkConvo.updateLastReadMessageIndex(messages[messages.length - 1].index);
     }
   }, [messages, convo]);
 

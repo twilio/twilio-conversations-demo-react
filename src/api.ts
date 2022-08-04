@@ -122,7 +122,6 @@ export async function getToken(
 }
 
 export async function getMessageStatus(
-  conversation: Conversation,
   message: Message,
   channelParticipants: Participant[]
 ): Promise<{

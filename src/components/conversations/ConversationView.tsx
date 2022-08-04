@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Conversation, Message, Participant } from "@twilio/conversations";
+import { Message, Participant } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 
@@ -18,6 +18,7 @@ import * as _ from "lodash";
 
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -28,7 +29,7 @@ interface SingleConvoProps {
   lastMessage: string;
   myMessage: Message | false;
   unreadMessagesCount: number;
-  convo: Conversation;
+  convo: ReduxConversation;
   updateUnreadMessages: SetUnreadMessagesType;
   onClick: () => void;
   participants: Participant[];
@@ -105,26 +106,24 @@ const ConversationView: React.FC<SingleConvoProps> = (
 
   useEffect(() => {
     if (myMessage && !props.typingInfo.length) {
-      getMessageStatus(convo, myMessage, props.participants).then(
-        (statuses) => {
-          if (statuses[MessageStatus.Read]) {
-            setLastMsgStatus(MessageStatus.Read);
-            return;
-          }
-          if (statuses[MessageStatus.Delivered]) {
-            setLastMsgStatus(MessageStatus.Delivered);
-            return;
-          }
-          if (statuses[MessageStatus.Failed]) {
-            setLastMsgStatus(MessageStatus.Failed);
-            return;
-          }
-          if (statuses[MessageStatus.Sending]) {
-            setLastMsgStatus(MessageStatus.Sending);
-            return;
-          }
+      getMessageStatus(myMessage, props.participants).then((statuses) => {
+        if (statuses[MessageStatus.Read]) {
+          setLastMsgStatus(MessageStatus.Read);
+          return;
         }
-      );
+        if (statuses[MessageStatus.Delivered]) {
+          setLastMsgStatus(MessageStatus.Delivered);
+          return;
+        }
+        if (statuses[MessageStatus.Failed]) {
+          setLastMsgStatus(MessageStatus.Failed);
+          return;
+        }
+        if (statuses[MessageStatus.Sending]) {
+          setLastMsgStatus(MessageStatus.Sending);
+          return;
+        }
+      });
     }
   }, [convo, myMessage, lastMessage, props.participants, props.typingInfo]);
 

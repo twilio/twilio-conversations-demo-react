@@ -1,9 +1,9 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { debounce } from "lodash";
 
-import { Conversation, Message, Client } from "@twilio/conversations";
+import { Message, Client } from "@twilio/conversations";
 import { AttachIcon } from "@twilio-paste/icons/esm/AttachIcon";
 import { Box, Button } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
@@ -14,12 +14,14 @@ import { MAX_FILE_SIZE, UNEXPECTED_ERROR_MESSAGE } from "../../constants";
 import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
 import MessageInput from "./MessageInput";
 import SendMessageButton from "./SendMessageButton";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
+import { getSdkConversationObject } from "../../conversations-objects";
 
 interface SendMessageProps {
   convoSid: string;
   client: Client;
   messages: Message[];
-  convo: Conversation;
+  convo: ReduxConversation;
   typingData: string[];
 }
 
@@ -51,6 +53,11 @@ const MessageInputField: React.FC<SendMessageProps> = (
       setFilesInputKey(Date.now().toString());
     }
   }, [files]);
+
+  const sdkConvo = useMemo(
+    () => getSdkConversationObject(props.convo),
+    [props.convo.sid]
+  );
 
   const onFilesChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const { files: assets } = event.target;
@@ -135,10 +142,10 @@ const MessageInputField: React.FC<SendMessageProps> = (
     try {
       let lastIndex = -1;
       for (const msg of messagesData) {
-        const index = await convo.sendMessage(msg);
+        const index = await sdkConvo.sendMessage(msg);
         lastIndex = Math.max(lastIndex, index);
       }
-      await convo.updateLastReadMessageIndex(lastIndex);
+      await sdkConvo.updateLastReadMessageIndex(lastIndex);
     } catch (e) {
       unexpectedErrorNotification(addNotifications);
       return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
@@ -209,7 +216,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
             message={message}
             onChange={(e: string) => {
               debounce(() => {
-                props.convo.typing();
+                sdkConvo.typing();
               }, 2000)();
               setMessage(e);
             }}

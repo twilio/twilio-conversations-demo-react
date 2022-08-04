@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Box } from "@twilio-paste/core";
 import {
   MenuButton,
@@ -17,7 +17,7 @@ import { UserIcon } from "@twilio-paste/icons/esm/UserIcon";
 import { EditIcon } from "@twilio-paste/icons/esm/EditIcon";
 import { ArrowBackIcon } from "@twilio-paste/icons/esm/ArrowBackIcon";
 import { Text } from "@twilio-paste/text";
-import { Conversation, NotificationLevel } from "@twilio/conversations";
+import { NotificationLevel } from "@twilio/conversations";
 
 import ConversationTitleModal from "../modals/ConversationTitleModal";
 import { unexpectedErrorNotification } from "../../helpers";
@@ -26,11 +26,13 @@ import { NOTIFICATION_LEVEL } from "../../constants";
 import Bell from "../icons/Bell";
 import BellMuted from "../icons/BellMuted";
 import styles from "../../styles";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
+import { getSdkConversationObject } from "../../conversations-objects";
 
 interface SettingsMenuProps {
   leaveConvo: () => void;
   updateConvo: (val: string) => Promise<void>;
-  conversation: Conversation;
+  conversation: ReduxConversation;
   onParticipantListOpen: () => void;
   addNotifications: (messages: NotificationsType) => void;
 }
@@ -42,9 +44,13 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
   const [isTitleModalOpen, setIsTitleModalOpen] = useState(false);
   const { friendlyName, notificationLevel } = props.conversation;
   const muted = notificationLevel === NOTIFICATION_LEVEL.MUTED;
+  const sdkConvo = useMemo(
+    () => getSdkConversationObject(props.conversation),
+    [props.conversation.sid]
+  );
 
   const toggleMuteConversation = () => {
-    props.conversation.setUserNotificationLevel(
+    sdkConvo.setUserNotificationLevel(
       muted
         ? (NOTIFICATION_LEVEL.DEFAULT as NotificationLevel)
         : (NOTIFICATION_LEVEL.MUTED as NotificationLevel)

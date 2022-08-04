@@ -1,8 +1,8 @@
-import React, { useState, createRef } from "react";
+import React, { useState, createRef, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { Conversation, Participant, Client } from "@twilio/conversations";
+import { Participant, Client } from "@twilio/conversations";
 import { Box, Spinner } from "@twilio-paste/core";
 
 import SettingsMenu from "./SettingsMenu";
@@ -24,11 +24,13 @@ import {
   successNotification,
   unexpectedErrorNotification,
 } from "../../helpers";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
+import { getSdkConversationObject } from "../../conversations-objects";
 
 interface SettingsProps {
   participants: Participant[];
   client?: Client;
-  convo: Conversation;
+  convo: ReduxConversation;
 }
 
 const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
@@ -76,6 +78,11 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
   const { updateCurrentConversation, updateConversation, addNotifications } =
     bindActionCreators(actionCreators, dispatch);
 
+  const sdkConvo = useMemo(
+    () => getSdkConversationObject(props.convo),
+    [props.convo.sid]
+  );
+
   function emptyData() {
     setName("");
     setNameProxy("");
@@ -94,7 +101,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
         onParticipantListOpen={() => setIsManageParticipantOpen(true)}
         leaveConvo={async () => {
           try {
-            await props.convo.leave();
+            await sdkConvo.leave();
             successNotification({
               message: CONVERSATION_MESSAGES.LEFT,
               addNotifications,
@@ -105,7 +112,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           }
         }}
         updateConvo={(val: string) =>
-          props.convo
+          sdkConvo
             .updateFriendlyName(val)
             .then((convo) => {
               updateConversation(convo.sid, convo);
@@ -155,7 +162,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
             }
           }}
           onParticipantRemove={async (participant: Participant) => {
-            await removeParticipant(props.convo, participant, addNotifications);
+            await removeParticipant(sdkConvo, participant, addNotifications);
           }}
         />
       )}
@@ -191,13 +198,13 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
                 SMS_PREFIX + name,
                 SMS_PREFIX + nameProxy,
                 false,
-                props.convo,
+                sdkConvo,
                 addNotifications
               );
               emptyData();
               handleSMSClose();
             } catch (e) {
-              setErrorData(e);
+              setErrorData(e as any);
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
             }
           }}
@@ -235,13 +242,13 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
                 WHATSAPP_PREFIX + name,
                 WHATSAPP_PREFIX + nameProxy,
                 false,
-                props.convo,
+                sdkConvo,
                 addNotifications
               );
               emptyData();
               handleWhatsAppClose();
             } catch (e) {
-              setErrorData(e);
+              setErrorData(e as any);
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
             }
           }}
@@ -273,13 +280,13 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
                 name,
                 nameProxy,
                 true,
-                props.convo,
+                sdkConvo,
                 addNotifications
               );
               emptyData();
             } catch (e) {
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
-              setErrorData(e);
+              setErrorData(e as any);
             }
           }}
         />
