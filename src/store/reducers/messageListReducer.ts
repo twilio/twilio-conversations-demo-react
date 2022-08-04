@@ -106,8 +106,6 @@ const reducer = (state = initialState, action: Action): ChatMessagesState => {
             (value) =>
               value.body === message.body &&
               value.author === message.author &&
-              value.media?.filename === message.media?.filename &&
-              value.media?.size === message.media?.size &&
               (message.index === -1 || value.index === message.index)
           );
         }

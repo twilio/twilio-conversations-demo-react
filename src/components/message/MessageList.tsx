@@ -17,6 +17,7 @@ import {
   unexpectedErrorNotification,
 } from "../../helpers";
 import type { ReactionsType } from "./Reactions";
+import MessageMedia from "./MessageMedia";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
 import {
   ReduxMedia,
@@ -92,7 +93,6 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     message: ReduxMessage;
     file: Blob;
   } | null>(null);
-  const [fileLoading, setFileLoading] = useState<Record<string, boolean>>({});
 
   const [horizonMessageCount, setHorizonMessageCount] = useState<number>(0);
   const [showHorizonIndex, setShowHorizonIndex] = useState<number>(0);
@@ -139,21 +139,20 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   }
 
   const onDownloadAttachments = async (message: ReduxMessage) => {
-      const attachedMedia = getSdkMediaObject(message.attachedMedia);
+    const attachedMedia = getSdkMediaObject(message.attachedMedia);
+    if (message.index === -1) {
+      return undefined;
+    }
     if (!attachedMedia?.length) {
       return new Error("No media attached");
     }
 
-    setFileLoading(Object.assign({}, fileLoading, { [message.sid]: true }));
-    for (const [key, media] of attachedMedia.entries()) {
+    for (const media of attachedMedia) {
       const blob = await getBlobFile(media, addNotifications);
       addAttachment(props.conversation.sid, message.sid, media.sid, blob);
-      if (key === attachedMedia.length - 1) {
-        setFileLoading(
-          Object.assign({}, fileLoading, { [message.sid]: false })
-        );
-      }
     }
+
+    return;
   };
 
   const onFileOpen = (file: Blob, { filename }: ReduxMedia) => {
@@ -188,35 +187,36 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
             ) : null}
             <MessageView
               reactions={attributes["reactions"]}
-              message={
-                message.body ||
-                (message.attachedMedia?.length ? (
-                  <MessageFile
+              text={message.body ?? ""}
+              media={
+                message.attachedMedia?.length ? (
+                  <MessageMedia
                     key={message.sid + "media"}
                     media={message.attachedMedia}
                     type="view"
-                    onDownload={() => onDownloadAttachments(message)}
+                    attachments={conversationAttachments?.[message.sid]}
+                    onDownload={async () =>
+                      await onDownloadAttachments(message)
+                    }
                     images={messageImages}
                     files={messageFiles}
                     sending={message.index === -1}
-                    loading={fileLoading[message.sid]}
-                    onOpen={(image, file, mediaSid) => {
+                    // loading={fileLoading[message.sid]}
+                    onOpen={(mediaSid: string, image?: Media, file?: Media) => {
                       if (file) {
                         onFileOpen(
                           conversationAttachments?.[message.sid][mediaSid],
-                          message.media
+                          file
                         );
                         return;
                       }
-                      setImagePreview({
-                        message,
-                        file: image,
-                      });
+                      // setImagePreview({
+                      //   message,
+                      //   file: image,
+                      // });
                     }}
                   />
-                ) : (
-                  ""
-                ))
+                ) : null
               }
               author={message.author ?? ""}
               getStatus={getMessageStatus(message, props.participants)}

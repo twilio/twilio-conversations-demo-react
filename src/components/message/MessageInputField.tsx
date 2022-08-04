@@ -41,7 +41,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
   const typingInfo = getTypingMessage(props.typingData);
 
   const dispatch = useDispatch();
-  const { addMessages, addNotifications } = bindActionCreators(
+  const { addMessages, addNotifications, addAttachment } = bindActionCreators(
     actionCreators,
     dispatch
   );
@@ -91,73 +91,47 @@ const MessageInputField: React.FC<SendMessageProps> = (
   };
 
   const onMessageSend = async () => {
-    const { convo, client, messages } = props;
-    const messagesToSend = [];
-    const messagesData = [];
+    const { convo, client } = props;
     const currentDate: Date = new Date();
 
-    if (message) {
-      const newMessage: ReduxMessage = Object.assign(
-        {},
-        messages[messages.length],
-        {
-          ...(messages[messages.length] as ReduxMessage),
-          author: client.user.identity,
-          body: message,
-          attributes: {},
-          dateCreated: currentDate,
-          index: -1,
-          participantSid: "",
-          sid: convo.sid,
-          aggregatedDeliveryReceipt: null,
-        }
-      ) as ReduxMessage;
-      //add message to state
-      messagesToSend.push(newMessage);
-      messagesData.push(message);
-      //if promise is filled then is sent. If not failed. Update state of message
-      //change state for the message to sent (or failed)
-    }
+    const newMessageBuilder = convo.prepareMessage().setBody(message);
 
-    for (const file of files) {
-      const newMessage: ReduxMessage = Object.assign(
-        {},
-        messages[messages.length],
-        {
-          ...(messages[messages.length] as ReduxMessage),
-          author: client.user.identity,
-          body: null,
-          attributes: {},
-          dateCreated: currentDate,
-          index: -1,
-          participantSid: "",
-          sid: convo.sid,
-          aggregatedDeliveryReceipt: null,
-          media: {
-            size: file.size,
-            filename: file.name,
-            contentType: file.type,
-          },
-        }
-      ) as ReduxMessage;
-      //add message to state
-      messagesToSend.push(newMessage);
+    const newMessage: ReduxMessage = {
+      author: client.user.identity,
+      body: message,
+      attributes: {},
+      dateCreated: currentDate,
+      index: -1,
+      participantSid: "",
+      sid: "-1",
+      aggregatedDeliveryReceipt: null,
+      attachedMedia: [],
+    }  as ReduxMessage;
+
+    for (const [key, file] of files.entries()) {
       const fileData = new FormData();
       fileData.set(file.name, file, file.name);
-      messagesData.push(fileData);
-    }
 
-    addMessages(convo.sid, messagesToSend);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      newMessage.attachedMedia.push({
+        sid: key + "",
+        size: file.size,
+        filename: file.name,
+        contentType: file.type,
+      });
+      addAttachment(convo.sid, "-1", key + "", file);
+      newMessageBuilder.addMedia(fileData);
+    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    addMessages(convo.sid, [newMessage]);
     setMessage("");
     setFiles([]);
+    const messageIndex = await newMessageBuilder.build().send();
 
     try {
-      let lastIndex = -1;
-      for (const msg of messagesData) {
-        const index = await sdkConvo.sendMessage(msg);
-        lastIndex = Math.max(lastIndex, index);
-      }
-      await sdkConvo.updateLastReadMessageIndex(lastIndex);
+      await convo.updateLastReadMessageIndex(messageIndex);
     } catch (e) {
       unexpectedErrorNotification(addNotifications);
       return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
@@ -232,9 +206,9 @@ const MessageInputField: React.FC<SendMessageProps> = (
               }, 2000)();
               setMessage(e);
             }}
-            onKeyPress={(e) => {
+            onKeyPress={async (e) => {
               if (e.key === "Enter") {
-                onMessageSend();
+                await onMessageSend();
               }
             }}
             onFileRemove={onFileRemove}

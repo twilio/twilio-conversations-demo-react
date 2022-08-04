@@ -149,6 +149,15 @@ export const addAttachment = (
   };
 };
 
+export const clearAttachments = (channelSid: string, messageSid: string) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.CLEAR_ATTACHMENTS,
+      payload: { channelSid, messageSid },
+    });
+  };
+};
+
 export const startTyping = (channelSid: string, participant: string) => {
   return (dispatch: Dispatch<Action>): void => {
     dispatch({

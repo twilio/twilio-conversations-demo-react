@@ -98,6 +98,7 @@ const AppContainer: React.FC = () => {
     updateCurrentConversation,
     addNotifications,
     logout,
+    clearAttachments,
   } = bindActionCreators(actionCreators, dispatch);
 
   const updateTypingIndicator = (
@@ -168,8 +169,12 @@ const AppContainer: React.FC = () => {
         updateParticipants([], conversation.sid);
       }, addNotifications);
     });
-    client.on("messageAdded", (event: Message) => {
-      addMessage(event, addMessages, updateUnreadMessages);
+    client.on("messageAdded", (message: Message) => {
+      addMessage(message, addMessages, updateUnreadMessages);
+      if (message.author === localStorage.getItem("username")) {
+        clearAttachments(message.conversation.sid, "-1");
+      }
+
     });
     client.on("participantLeft", (participant) => {
       handlePromiseRejection(

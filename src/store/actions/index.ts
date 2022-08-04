@@ -79,6 +79,14 @@ interface AddAttachment {
   };
 }
 
+interface ClearAttachments {
+  type: ActionType.CLEAR_ATTACHMENTS;
+  payload: {
+    channelSid: string;
+    messageSid: string;
+  };
+}
+
 interface TypingStarted {
   type: ActionType.TYPING_STARTED;
   payload: { channelSid: string; participant: string };
@@ -114,6 +122,7 @@ export type Action =
   | UpdateUnreadMessages
   | UpdateConversation
   | AddAttachment
+  | ClearAttachments
   | TypingStarted
   | TypingEnded
   | AddNotifications
