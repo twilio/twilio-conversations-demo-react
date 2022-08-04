@@ -137,8 +137,6 @@ export async function getMessageStatus(
     [MessageStatus.Sending]: 0,
   };
 
-  return statuses; /// AAARRG
-
   if (message.index === -1) {
     return Promise.resolve({
       ...statuses,
@@ -151,7 +149,7 @@ export async function getMessageStatus(
       participant.identity == localStorage.getItem("username") ||
       participant.type !== "chat"
     ) {
-      return; // return WHAT?
+      return;
     }
 
     if (
