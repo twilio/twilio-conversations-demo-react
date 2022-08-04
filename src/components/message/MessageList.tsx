@@ -160,14 +160,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
         >;
 
         return (
-          <div
-            key={
-              (message.dateCreated?.getTime() ?? "") +
-              (message.body ?? "") +
-              message.media?.filename +
-              message.sid
-            }
-          >
+          <div key={message.sid + "message"}>
             {lastReadIndex !== -1 &&
             horizonMessageCount &&
             showHorizonIndex === message.index ? (
@@ -179,7 +172,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                 message.body ||
                 (message.media ? (
                   <MessageFile
-                    key={message.sid}
+                    key={message.sid + "media"}
                     media={message.media}
                     type="view"
                     onDownload={() => onDownloadAttachment(message)}
