@@ -21,27 +21,20 @@ async function login(
   password: string,
   setToken: (token: string) => void
 ): Promise<string> {
-  let token: string | undefined;
-
   try {
-    token = await getToken(username.trim(), password);
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      return error.response.data ?? "Authentication error.";
+    const token = await getToken(username.trim(), password);
+    if (token === "") {
+      return "Something went wrong.";
     }
 
-    return "Something went wrong.";
+    localStorage.setItem("username", username);
+    localStorage.setItem("password", password);
+    setToken(token);
+
+    return "";
+  } catch (error) {
+    return error;
   }
-
-  if (token === "") {
-    return "Something went wrong.";
-  }
-
-  localStorage.setItem("username", username);
-  localStorage.setItem("password", password);
-  setToken(token);
-
-  return "";
 }
 
 const Login: React.FC<LoginProps> = (props: LoginProps) => {

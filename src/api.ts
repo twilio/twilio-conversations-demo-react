@@ -98,16 +98,22 @@ export async function getToken(
   username: string,
   password: string
 ): Promise<string> {
-  const requestAddress = process.env.REACT_APP_ACCESS_TOKEN_SERVICE_URL;
+  const requestAddress = process.env
+    .REACT_APP_ACCESS_TOKEN_SERVICE_URL as string;
+  if (!requestAddress) {
+    return Promise.reject(
+      "REACT_APP_ACCESS_TOKEN_SERVICE_URL is not configured, cannot login"
+    );
+  }
 
   try {
-    const response = await axios.get(requestAddress as string, {
+    const response = await axios.get(requestAddress, {
       params: { identity: username, password: password },
     });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      return Promise.reject(error);
+      return Promise.reject(error.response.data ?? "Authentication error.");
     }
 
     process.stderr?.write(`ERROR received from ${requestAddress}: ${error}\n`);
