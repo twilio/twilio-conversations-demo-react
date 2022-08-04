@@ -50,10 +50,7 @@ const reducer = (state = initialState, action: Action): ChatMessagesState => {
       const messagesUnique = [...filteredExistingMessages, ...messagesToAdd];
 
       const sortedMessages = messagesUnique.sort((a, b) => {
-        if (!a.dateCreated || !b.dateCreated) {
-          return 0;
-        }
-        return a.dateCreated.getTime() - b.dateCreated.getTime();
+        return a.index - b.index;
       });
 
       //overwrite the channelSid messages
