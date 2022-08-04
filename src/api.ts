@@ -58,7 +58,11 @@ export async function addParticipant(
   convo?: Conversation,
   addNotifications?: (notifications: NotificationsType) => void
 ): Promise<ParticipantResponse> {
-  if (chatParticipant && name.length > 0 && convo !== undefined) {
+  if (convo === undefined) {
+    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+  }
+
+  if (chatParticipant && name.length > 0) {
     try {
       const result = await convo.add(name);
       successNotification({
@@ -70,12 +74,7 @@ export async function addParticipant(
       return Promise.reject(e);
     }
   }
-  if (
-    !chatParticipant &&
-    name.length > 0 &&
-    proxyName.length > 0 &&
-    convo !== undefined
-  ) {
+  if (!chatParticipant && name.length > 0 && proxyName.length > 0) {
     try {
       const result = await convo.addNonChatParticipant(proxyName, name, {
         friendlyName: name,
