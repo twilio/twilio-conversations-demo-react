@@ -37,6 +37,7 @@ function getMessageTime(message: Message) {
     return "";
   }
 
+  // TODO: use javascript-time-ago here
   const today = new Date();
   const diffInDates = Math.floor(today.getTime() - dateCreated.getTime());
   const dayLength = 1000 * 60 * 60 * 24;
