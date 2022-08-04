@@ -48,7 +48,7 @@ const MessageView: React.FC<SingleMessageProps> = (
   props: SingleMessageProps
 ) => {
   const theme = useTheme();
-  const { text, media, getStatus, onDeleteMessage } = props;
+  const { text, getStatus, onDeleteMessage } = props;
 
   const [status, setStatus] = useState<MessageStatuses>({});
   const sid = useSelector((state: AppState) => state.sid);
@@ -88,7 +88,13 @@ const MessageView: React.FC<SingleMessageProps> = (
               }}
             >
               {props.media}
-              {props.text}
+              <Box
+                style={{
+                  paddingTop: theme.space.space30,
+                }}
+              >
+                {props.text}
+              </Box>
               <Box
                 style={{
                   display: "flex",

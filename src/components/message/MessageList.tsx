@@ -8,7 +8,6 @@ import { Media, Message, Participant } from "@twilio/conversations";
 
 import { getBlobFile, getMessageStatus } from "../../api";
 import MessageView from "./MessageView";
-import MessageFile from "./MessageFile";
 import { actionCreators, AppState } from "../../store";
 import ImagePreviewModal from "../modals/ImagePreviewModal";
 import Horizon from "./Horizon";
@@ -27,6 +26,8 @@ import {
   getSdkMediaObject,
   getSdkMessageObject,
 } from "../../conversations-objects";
+import { getSdkConversationObject } from "../../conversations-objects";
+import TimeAgo from "javascript-time-ago";
 
 interface MessageListProps {
   messages: ReduxMessage[];
@@ -38,36 +39,9 @@ interface MessageListProps {
 function getMessageTime(message: ReduxMessage) {
   const dateCreated = message.dateCreated;
 
-  if (!dateCreated) {
-    return "";
-  }
-
-  // TODO: use javascript-time-ago here
-  const today = new Date();
-  const diffInDates = Math.floor(today.getTime() - dateCreated.getTime());
-  const dayLength = 1000 * 60 * 60 * 24;
-  const diffInDays = Math.floor(diffInDates / dayLength);
-  const minutesLessThanTen = dateCreated.getMinutes() < 10 ? "0" : "";
-  if (diffInDays === 0) {
-    return (
-      dateCreated.getHours().toString() +
-      ":" +
-      minutesLessThanTen +
-      dateCreated.getMinutes().toString()
-    );
-  }
-  return (
-    dateCreated.getDate() +
-    "/" +
-    dateCreated.getMonth() +
-    "/" +
-    dateCreated.getFullYear().toString().substr(-2) +
-    " " +
-    dateCreated.getHours().toString() +
-    ":" +
-    minutesLessThanTen +
-    dateCreated.getMinutes().toString()
-  );
+  return dateCreated
+    ? new TimeAgo("en-US").format(dateCreated, "twitter-now")
+    : "";
 }
 
 const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
@@ -92,6 +66,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   const [imagePreview, setImagePreview] = useState<{
     message: ReduxMessage;
     file: Blob;
+    sid: string;
   } | null>(null);
 
   const [horizonMessageCount, setHorizonMessageCount] = useState<number>(0);
@@ -112,19 +87,13 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     if (lastReadIndex === -1 || horizonMessageCount) {
       return;
     }
-    let showIndex = 0;
-
-    setHorizonMessageCount(
-      // TODO: Use getUnreadMessageCount here obviously!
-      messages.filter(({ index }) => {
-        if (index > lastReadIndex && !showIndex) {
-          showIndex = index;
-        }
-        return index > lastReadIndex;
-      }).length
-    );
-
-    setShowHorizonIndex(showIndex);
+    const showIndex = 0;
+    getSdkConversationObject(conversation)
+      .getUnreadMessagesCount()
+      .then((count) => {
+        setHorizonMessageCount(count ?? 0);
+        setShowHorizonIndex(showIndex);
+      });
   }, [messages, lastReadIndex]);
 
   function setTopPadding(index: number) {
@@ -172,7 +141,6 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           }
           messageFiles.push(file);
         });
-        const fileBlobs = conversationAttachments?.[message.sid] ?? null;
         const attributes = message.attributes as Record<
           string,
           ReactionsType | undefined
@@ -191,9 +159,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
               media={
                 message.attachedMedia?.length ? (
                   <MessageMedia
-                    key={message.sid + "media"}
-                    media={message.attachedMedia}
-                    type="view"
+                    key={message.sid}
                     attachments={conversationAttachments?.[message.sid]}
                     onDownload={async () =>
                       await onDownloadAttachments(message)
@@ -201,7 +167,6 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                     images={messageImages}
                     files={messageFiles}
                     sending={message.index === -1}
-                    // loading={fileLoading[message.sid]}
                     onOpen={(mediaSid: string, image?: Media, file?: Media) => {
                       if (file) {
                         onFileOpen(
@@ -210,10 +175,15 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                         );
                         return;
                       }
-                      // setImagePreview({
-                      //   message,
-                      //   file: image,
-                      // });
+                      if (image) {
+                        setImagePreview({
+                          message,
+                          file: conversationAttachments?.[message.sid][
+                            mediaSid
+                          ],
+                          sid: mediaSid,
+                        });
+                      }
                     }}
                   />
                 ) : null
@@ -265,12 +235,14 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                     : ""
                 }
                 handleClose={() => setImagePreview(null)}
-                onDownload={() =>
+                onDownload={() => {
                   saveAs(
                     imagePreview.file,
-                    imagePreview.message.media?.filename ?? ""
-                  )
-                }
+                    imagePreview.message.attachedMedia?.find(
+                      ({ sid }) => sid === imagePreview.sid
+                    )?.filename ?? ""
+                  );
+                }}
               />
             );
           })()

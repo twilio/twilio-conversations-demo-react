@@ -1,7 +1,6 @@
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
-import { debounce } from "lodash";
 
 import { Client } from "@twilio/conversations";
 import { AttachIcon } from "@twilio-paste/icons/esm/AttachIcon";
@@ -81,10 +80,14 @@ const MessageInputField: React.FC<SendMessageProps> = (
   };
 
   const onFileRemove = (file: string) => {
-    const fileIdentity = file.split("_");
+    const fileIdentityArray = file.split("_");
+    const fileIdentity = fileIdentityArray
+      .slice(0, fileIdentityArray.length - 1)
+      .join();
     const existentFiles = files.filter(
       ({ name, size }) =>
-        name !== fileIdentity[0] && size !== Number(fileIdentity[1])
+        name !== fileIdentity &&
+        size !== Number(fileIdentityArray[fileIdentityArray.length - 1])
     );
 
     setFiles(existentFiles);
@@ -93,8 +96,9 @@ const MessageInputField: React.FC<SendMessageProps> = (
   const onMessageSend = async () => {
     const { convo, client } = props;
     const currentDate: Date = new Date();
+    const sdkConvo = getSdkConversationObject(convo);
 
-    const newMessageBuilder = convo.prepareMessage().setBody(message);
+    const newMessageBuilder = sdkConvo.prepareMessage().setBody(message);
 
     const newMessage: ReduxMessage = {
       author: client.user.identity,
@@ -131,7 +135,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
     const messageIndex = await newMessageBuilder.build().send();
 
     try {
-      await convo.updateLastReadMessageIndex(messageIndex);
+      await sdkConvo.updateLastReadMessageIndex(messageIndex);
     } catch (e) {
       unexpectedErrorNotification(addNotifications);
       return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
@@ -201,9 +205,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
             assets={files}
             message={message}
             onChange={(e: string) => {
-              debounce(() => {
-                sdkConvo.typing();
-              }, 2000)();
+              sdkConvo.typing();
               setMessage(e);
             }}
             onKeyPress={async (e) => {
