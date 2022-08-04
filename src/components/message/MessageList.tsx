@@ -89,7 +89,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   } | null>(null);
   const [fileLoading, setFileLoading] = useState<Record<string, boolean>>({});
 
-  const [horizonAmount, setHorizonAmount] = useState<number>(0);
+  const [horizonMessageCount, setHorizonMessageCount] = useState<number>(0);
   const [showHorizonIndex, setShowHorizonIndex] = useState<number>(0);
   const [scrolledToHorizon, setScrollToHorizon] = useState(false);
 
@@ -104,12 +104,12 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   });
 
   useEffect(() => {
-    if (lastReadIndex === -1 || horizonAmount) {
+    if (lastReadIndex === -1 || horizonMessageCount) {
       return;
     }
     let showIndex = 0;
 
-    setHorizonAmount(
+    setHorizonMessageCount(
       messages.filter(({ index }) => {
         if (index > lastReadIndex && !showIndex) {
           showIndex = index;
@@ -167,9 +167,9 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
             }
           >
             {lastReadIndex !== -1 &&
-            horizonAmount &&
+            horizonMessageCount &&
             showHorizonIndex === message.index ? (
-              <Horizon ref={myRef} amount={horizonAmount} />
+              <Horizon ref={myRef} messageCount={horizonMessageCount} />
             ) : null}
             <MessageView
               reactions={attributes["reactions"]}

@@ -2,9 +2,9 @@ import { Box, Text } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 import React, { ForwardedRef, Ref } from "react";
 
-type HorizonProps = { amount: number; ref: Ref<HTMLElement> };
+type HorizonProps = { messageCount: number; ref: Ref<HTMLElement> };
 const Horizon: React.FC<HorizonProps> = React.forwardRef(
-  ({ amount }, ref: ForwardedRef<HTMLElement>) => {
+  ({ messageCount }, ref: ForwardedRef<HTMLElement>) => {
     const theme = useTheme();
     return (
       <Box
@@ -19,7 +19,7 @@ const Horizon: React.FC<HorizonProps> = React.forwardRef(
         }}
       >
         <Text as="span" color="colorTextLink">
-          {amount} new {amount > 1 ? "messages" : "message"}
+          {messageCount} new {messageCount > 1 ? "messages" : "message"}
         </Text>
       </Box>
     );
