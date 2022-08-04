@@ -145,7 +145,7 @@ export async function getMessageStatus(
       participant.identity == localStorage.getItem("username") ||
       participant.type !== "chat"
     ) {
-      return;
+      return; // return WHAT?
     }
 
     if (
