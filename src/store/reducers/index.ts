@@ -1,8 +1,7 @@
 import { Action, combineReducers } from "redux";
-import { Conversation } from "@twilio/conversations";
 
 import tokenReducer from "./tokenReducer";
-import convoReducer from "./convoReducer";
+import convoReducer, { ReduxConversation } from "./convoReducer";
 import sidReducer from "./currentConvoReducer";
 import messageReducer, { ChatMessagesState } from "./messageListReducer";
 import loadingReducer from "./loadingReducer";
@@ -20,7 +19,7 @@ import notificationsReducer, {
 
 export type AppState = {
   token: string;
-  convos: Conversation[];
+  convos: ReduxConversation[];
   sid: string;
   messages: ChatMessagesState;
   unreadMessages: UnreadMessagesState;

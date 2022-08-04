@@ -4,12 +4,7 @@ import { bindActionCreators } from "redux";
 import { saveAs } from "file-saver";
 
 import { useTheme } from "@twilio-paste/theme";
-import {
-  Conversation,
-  Message,
-  Media,
-  Participant,
-} from "@twilio/conversations";
+import { Message, Media, Participant } from "@twilio/conversations";
 
 import { getBlobFile, getMessageStatus } from "../../api";
 import MessageView from "./MessageView";
@@ -22,10 +17,11 @@ import {
   unexpectedErrorNotification,
 } from "../../helpers";
 import type { ReactionsType } from "./Reactions";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
 
 interface MessageListProps {
   messages: Message[];
-  conversation: Conversation;
+  conversation: ReduxConversation;
   participants: Participant[];
   lastReadIndex: number;
 }
@@ -200,11 +196,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                 ))
               }
               author={message.author ?? ""}
-              getStatus={getMessageStatus(
-                props.conversation,
-                message,
-                props.participants
-              )}
+              getStatus={getMessageStatus(message, props.participants)}
               onDeleteMessage={async () => {
                 try {
                   await message.remove();

@@ -1,6 +1,7 @@
 import { Conversation, Message, Participant } from "@twilio/conversations";
 
 import { ActionType } from "../action-types";
+import { ReduxConversation } from "../reducers/convoReducer";
 import { NotificationsType } from "../reducers/notificationsReducer";
 
 interface LoginAction {
@@ -64,7 +65,7 @@ interface UpdateUnreadMessages {
 
 interface UpdateConversation {
   type: ActionType.UPDATE_CONVERSATION;
-  payload: { channelSid: string; parameters: Partial<Conversation> };
+  payload: { channelSid: string; parameters: Partial<ReduxConversation> };
 }
 
 interface AddAttachment {
