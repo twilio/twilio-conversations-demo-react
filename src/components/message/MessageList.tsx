@@ -111,6 +111,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     let showIndex = 0;
 
     setHorizonMessageCount(
+      // TODO: Use getUnreadMessageCount here obviously!
       messages.filter(({ index }) => {
         if (index > lastReadIndex && !showIndex) {
           showIndex = index;
