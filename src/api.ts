@@ -133,6 +133,8 @@ export async function getMessageStatus(
     [MessageStatus.Sending]: 0,
   };
 
+  return statuses; /// AAARRG
+
   if (message.index === -1) {
     return Promise.resolve({
       ...statuses,
