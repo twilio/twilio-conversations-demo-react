@@ -123,7 +123,7 @@ const AppContainer: React.FC = () => {
     const {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      attributes: { friendlyName },
+      attributes: {friendlyName},
       identity,
     } = participant;
     if (identity === localStorage.getItem("username")) {
@@ -208,7 +208,7 @@ const AppContainer: React.FC = () => {
         addNotifications
       );
     });
-    client.on("conversationUpdated", ({ conversation }) => {
+    client.on("conversationUpdated", ({conversation}) => {
       handlePromiseRejection(
         () =>
           updateConvoList(
@@ -221,7 +221,7 @@ const AppContainer: React.FC = () => {
       );
     });
 
-    client.on("messageUpdated", ({ message }) => {
+    client.on("messageUpdated", ({message}) => {
       handlePromiseRejection(
         () =>
           updateConvoList(
@@ -292,8 +292,8 @@ const AppContainer: React.FC = () => {
 
   return (
     <Box style={stylesheet.appWrapper}>
-      <AlertsView />
-      <Notifications />
+      <AlertsView/>
+      <Notifications/>
       <Box>
         <AppHeader
           user={username ?? ""}
@@ -310,7 +310,7 @@ const AppContainer: React.FC = () => {
         />
       </Box>
       <Box style={stylesheet.appContainer(alertsExist)}>
-        <ConversationsContainer client={client} />
+        <ConversationsContainer client={client}/>
         <Box style={stylesheet.messagesWrapper}>
           <ConversationContainer
             conversation={openedConversation}
