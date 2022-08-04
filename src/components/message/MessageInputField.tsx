@@ -133,12 +133,12 @@ const MessageInputField: React.FC<SendMessageProps> = (
     setFiles([]);
 
     try {
-      const indexes = [];
+      let lastIndex = -1;
       for (const msg of messagesData) {
         const index = await convo.sendMessage(msg);
-        indexes.push(index);
+        lastIndex = Math.max(lastIndex, index);
       }
-      await convo.updateLastReadMessageIndex(Math.max(...indexes));
+      await convo.updateLastReadMessageIndex(lastIndex);
     } catch (e) {
       unexpectedErrorNotification(addNotifications);
       return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
