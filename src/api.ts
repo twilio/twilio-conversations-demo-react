@@ -130,6 +130,15 @@ export async function getMessageStatus(
   [MessageStatus.Failed]?: number;
   [MessageStatus.Sending]?: number;
 }> {
+  // FIXME should be: return statuses[message.sid];
+  // after this modification:
+  // message.on("updated", ({ message, updateReasons }) => {
+  // if reason includes "deliveryReceipt" {
+  //   // paginate detailed receipts
+  //   const receipts = await message.getDetailedDeliveryReceipts(); // paginated backend query every time
+  // }
+  // });
+
   const statuses = {
     [MessageStatus.Delivered]: 0,
     [MessageStatus.Read]: 0,
@@ -158,12 +167,12 @@ export async function getMessageStatus(
     ) {
       statuses[MessageStatus.Read] += 1;
     } else if (participant.lastReadMessageIndex !== -1) {
-      statuses[MessageStatus.Delivered] += 1;
+      // statuses[MessageStatus.Delivered] += 1; FIXME don't need Delivered status for chat particpants?
     }
   });
 
   if (message.aggregatedDeliveryReceipt) {
-    const receipts = await message.getDetailedDeliveryReceipts();
+    const receipts = await message.getDetailedDeliveryReceipts(); // paginated backend query every time
     receipts.forEach((receipt) => {
       if (receipt.status === "read") {
         statuses[MessageStatus.Read] += 1;
