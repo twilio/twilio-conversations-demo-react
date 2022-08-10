@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { saveAs } from "file-saver";
 
 import { useTheme } from "@twilio-paste/theme";
-import { Message, Media, Participant } from "@twilio/conversations";
+import { Media, Message, Participant } from "@twilio/conversations";
 
 import { getBlobFile, getMessageStatus } from "../../api";
 import MessageView from "./MessageView";
@@ -18,15 +18,23 @@ import {
 } from "../../helpers";
 import type { ReactionsType } from "./Reactions";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
+import {
+  ReduxMedia,
+  ReduxMessage,
+} from "../../store/reducers/messageListReducer";
+import {
+  getSdkMediaObject,
+  getSdkMessageObject,
+} from "../../conversations-objects";
 
 interface MessageListProps {
-  messages: Message[];
+  messages: ReduxMessage[];
   conversation: ReduxConversation;
   participants: Participant[];
   lastReadIndex: number;
 }
 
-function getMessageTime(message: Message) {
+function getMessageTime(message: ReduxMessage) {
   const dateCreated = message.dateCreated;
 
   if (!dateCreated) {
@@ -81,7 +89,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   );
 
   const [imagePreview, setImagePreview] = useState<{
-    message: Message;
+    message: ReduxMessage;
     file: Blob;
   } | null>(null);
   const [fileLoading, setFileLoading] = useState<Record<string, boolean>>({});
@@ -130,18 +138,21 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     return theme.space.space50;
   }
 
-  const onDownloadAttachment = async (message: Message) => {
+  const onDownloadAttachment = async (message: ReduxMessage) => {
     if (!message.media) {
       return new Error("No media attached");
     }
 
     setFileLoading(Object.assign({}, fileLoading, { [message.sid]: true }));
-    const blob = await getBlobFile(message.media, addNotifications);
+    const blob = await getBlobFile(
+      getSdkMediaObject(message.media),
+      addNotifications
+    );
     addAttachment(props.conversation.sid, message.sid, blob);
     setFileLoading(Object.assign({}, fileLoading, { [message.sid]: false }));
   };
 
-  const onFileOpen = (file: Blob, { filename }: Media) => {
+  const onFileOpen = (file: Blob, { filename }: ReduxMedia) => {
     saveAs(file, filename ?? "");
   };
 
@@ -199,7 +210,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
               getStatus={getMessageStatus(message, props.participants)}
               onDeleteMessage={async () => {
                 try {
-                  await message.remove();
+                  await getSdkMessageObject(message).remove();
                   successNotification({
                     message: "Message deleted.",
                     addNotifications,
@@ -213,7 +224,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
               sameAuthorAsPrev={setTopPadding(index) !== theme.space.space20}
               messageTime={getMessageTime(message)}
               updateAttributes={(attribute) =>
-                message.updateAttributes({
+                getSdkMessageObject(message).updateAttributes({
                   ...attributes,
                   ...attribute,
                 })

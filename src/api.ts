@@ -8,7 +8,10 @@ import {
   Paginator,
 } from "@twilio/conversations";
 
-import { MessageStatus } from "./store/reducers/messageListReducer";
+import {
+  MessageStatus,
+  ReduxMessage,
+} from "./store/reducers/messageListReducer";
 import {
   CONVERSATION_MESSAGES,
   CONVERSATION_PAGE_SIZE,
@@ -17,6 +20,7 @@ import {
 } from "./constants";
 import { NotificationsType } from "./store/reducers/notificationsReducer";
 import { successNotification, unexpectedErrorNotification } from "./helpers";
+import { getSdkMessageObject } from "./conversations-objects";
 
 type ParticipantResponse = ReturnType<typeof Conversation.prototype.add>;
 
@@ -122,7 +126,7 @@ export async function getToken(
 }
 
 export async function getMessageStatus(
-  message: Message,
+  message: ReduxMessage,
   channelParticipants: Participant[]
 ): Promise<{
   [MessageStatus.Delivered]?: number;
@@ -172,7 +176,9 @@ export async function getMessageStatus(
   });
 
   if (message.aggregatedDeliveryReceipt) {
-    const receipts = await message.getDetailedDeliveryReceipts(); // paginated backend query every time
+    const sdkMessage = getSdkMessageObject(message);
+    const receipts = await sdkMessage.getDetailedDeliveryReceipts(); // paginated backend query every time
+
     receipts.forEach((receipt) => {
       if (receipt.status === "read") {
         statuses[MessageStatus.Read] += 1;

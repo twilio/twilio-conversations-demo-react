@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Message, Participant } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 
-import { MessageStatus } from "../../store/reducers/messageListReducer";
+import {
+  MessageStatus,
+  ReduxMessage,
+} from "../../store/reducers/messageListReducer";
 import SendingIcon from "../icons/Sending";
 import DeliveredIcon from "../icons/Delivered";
 import ReadIcon from "../icons/Read";
@@ -19,6 +22,7 @@ import * as _ from "lodash";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
+import { getSdkMessageObject } from "../../conversations-objects";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -27,13 +31,13 @@ interface SingleConvoProps {
   setSid: SetSidType;
   currentConvoSid: string;
   lastMessage: string;
-  myMessage: Message | false;
+  myMessage: ReduxMessage | false;
   unreadMessagesCount: number;
   convo: ReduxConversation;
   updateUnreadMessages: SetUnreadMessagesType;
   onClick: () => void;
   participants: Participant[];
-  messages: Message[];
+  messages: ReduxMessage[];
   typingInfo: string[];
 }
 
@@ -68,7 +72,7 @@ function truncateMiddle(text: string, countWidth: number) {
   return text;
 }
 
-function getLastMessageTime(messages: Message[]) {
+function getLastMessageTime(messages: ReduxMessage[]) {
   const lastMessageDate = _.last(messages)?.dateCreated;
   if (!lastMessageDate) {
     return "";
