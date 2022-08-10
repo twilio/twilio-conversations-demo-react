@@ -1,4 +1,4 @@
-import { ConversationsMap } from "../../conversations-objects";
+import { conversationsMap } from "../../conversations-objects";
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
 
@@ -38,7 +38,7 @@ const reducer = (
         (conversation) => conversation.sid !== action.payload.sid
       );
 
-      ConversationsMap.set(action.payload.sid, action.payload);
+      conversationsMap.set(action.payload.sid, action.payload);
 
       return [
         ...filteredClone,
@@ -70,7 +70,7 @@ const reducer = (
     case ActionType.REMOVE_CONVERSATION: {
       const stateCopy = [...state];
 
-      ConversationsMap.delete(action.payload);
+      conversationsMap.delete(action.payload);
 
       return stateCopy.filter(
         (convo: ReduxConversation) => convo.sid !== action.payload

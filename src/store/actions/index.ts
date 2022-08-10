@@ -2,6 +2,7 @@ import { Conversation, Message, Participant } from "@twilio/conversations";
 
 import { ActionType } from "../action-types";
 import { ReduxConversation } from "../reducers/convoReducer";
+import { ReduxMessage } from "../reducers/messageListReducer";
 import { NotificationsType } from "../reducers/notificationsReducer";
 
 interface LoginAction {
@@ -35,7 +36,7 @@ interface SetLastReadIndex {
 
 interface AddMessages {
   type: ActionType.ADD_MESSAGES;
-  payload: { channelSid: string; messages: Message[] };
+  payload: { channelSid: string; messages: (Message | ReduxMessage)[] };
 }
 
 interface PushMessages {

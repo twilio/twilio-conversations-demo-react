@@ -1,7 +1,5 @@
 import { bindActionCreators } from "redux";
 import { useDispatch, useSelector } from "react-redux";
-import { Message } from "@twilio/conversations";
-
 import ConversationView from "./ConversationView";
 import {
   SetParticipantsType,
@@ -13,8 +11,9 @@ import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
 import { UNEXPECTED_ERROR_MESSAGE } from "../../constants";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
 import { getSdkConversationObject } from "../../conversations-objects";
+import { ReduxMessage } from "../../store/reducers/messageListReducer";
 
-function getLastMessage(messages: Message[], typingData: string[]) {
+function getLastMessage(messages: ReduxMessage[], typingData: string[]) {
   if (messages === undefined || messages === null) {
     return "Loading...";
   }
@@ -30,7 +29,7 @@ function getLastMessage(messages: Message[], typingData: string[]) {
   return messages[messages.length - 1].body;
 }
 
-function isMyMessage(messages: Message[]) {
+function isMyMessage(messages: ReduxMessage[]) {
   if (messages === undefined || messages === null || messages.length === 0) {
     return false;
   }

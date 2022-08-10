@@ -5,6 +5,7 @@ import { Conversation, Message, Participant } from "@twilio/conversations";
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
 import { NotificationsType } from "../reducers/notificationsReducer";
+import { ReduxMessage } from "../reducers/messageListReducer";
 
 export const login = (token: string) => {
   return (dispatch: Dispatch<Action>): void => {
@@ -59,7 +60,10 @@ export const setLastReadIndex = (index: number) => {
   };
 };
 
-export const addMessages = (channelSid: string, messages: Message[]) => {
+export const addMessages = (
+  channelSid: string,
+  messages: (Message | ReduxMessage)[]
+) => {
   return (dispatch: Dispatch<Action>): void => {
     dispatch({
       type: ActionType.ADD_MESSAGES,

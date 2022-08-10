@@ -3,12 +3,13 @@ import { Box, Button, Spinner, Text, Truncate } from "@twilio-paste/core";
 import { ProductAssetsIcon } from "@twilio-paste/icons/cjs/ProductAssetsIcon";
 import { CloseIcon } from "@twilio-paste/icons/cjs/CloseIcon";
 import { DownloadIcon } from "@twilio-paste/icons/cjs/DownloadIcon";
-import { Media } from "@twilio/conversations";
 
 import { getFileUrl } from "../../api";
+import { ReduxMedia } from "../../store/reducers/messageListReducer";
+import { getSdkMediaObject } from "../../conversations-objects";
 
 type MessageFileProps = {
-  media: Media | { filename: string; size: number };
+  media: ReduxMedia | { filename: string; size: number };
   onRemove?: () => void;
   onDownload?: () => void;
   onOpen?: () => void;
@@ -37,7 +38,9 @@ const MessageFile: React.FC<MessageFileProps> = ({
 
   useEffect(() => {
     if (!file && isImage && !sending) {
-      getFileUrl(media as Media).then((url) => setImageUrl(url));
+      getFileUrl(getSdkMediaObject(media as ReduxMedia)).then((url) =>
+        setImageUrl(url)
+      );
     }
   }, []);
   if (isImage && type === "view") {

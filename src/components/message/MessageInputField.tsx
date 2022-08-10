@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { debounce } from "lodash";
 
-import { Message, Client } from "@twilio/conversations";
+import { Client } from "@twilio/conversations";
 import { AttachIcon } from "@twilio-paste/icons/esm/AttachIcon";
 import { Box, Button } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
@@ -15,12 +15,16 @@ import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
 import MessageInput from "./MessageInput";
 import SendMessageButton from "./SendMessageButton";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
-import { getSdkConversationObject } from "../../conversations-objects";
+import {
+  getSdkConversationObject,
+  getSdkMessageObject,
+} from "../../conversations-objects";
+import { ReduxMessage } from "../../store/reducers/messageListReducer";
 
 interface SendMessageProps {
   convoSid: string;
   client: Client;
-  messages: Message[];
+  messages: ReduxMessage[];
   convo: ReduxConversation;
   typingData: string[];
 }
@@ -93,17 +97,21 @@ const MessageInputField: React.FC<SendMessageProps> = (
     const currentDate: Date = new Date();
 
     if (message) {
-      const newMessage: Message = Object.assign({}, messages[messages.length], {
-        ...(messages[messages.length] as Message),
-        author: client.user.identity,
-        body: message,
-        attributes: {},
-        dateCreated: currentDate,
-        index: -1,
-        participantSid: "",
-        sid: convo.sid,
-        aggregatedDeliveryReceipt: null,
-      }) as Message;
+      const newMessage: ReduxMessage = Object.assign(
+        {},
+        messages[messages.length],
+        {
+          ...(messages[messages.length] as ReduxMessage),
+          author: client.user.identity,
+          body: message,
+          attributes: {},
+          dateCreated: currentDate,
+          index: -1,
+          participantSid: "",
+          sid: convo.sid,
+          aggregatedDeliveryReceipt: null,
+        }
+      ) as ReduxMessage;
       //add message to state
       messagesToSend.push(newMessage);
       messagesData.push(message);
@@ -112,22 +120,26 @@ const MessageInputField: React.FC<SendMessageProps> = (
     }
 
     for (const file of files) {
-      const newMessage: Message = Object.assign({}, messages[messages.length], {
-        ...(messages[messages.length] as Message),
-        author: client.user.identity,
-        body: null,
-        attributes: {},
-        dateCreated: currentDate,
-        index: -1,
-        participantSid: "",
-        sid: convo.sid,
-        aggregatedDeliveryReceipt: null,
-        media: {
-          size: file.size,
-          filename: file.name,
-          contentType: file.type,
-        },
-      }) as Message;
+      const newMessage: ReduxMessage = Object.assign(
+        {},
+        messages[messages.length],
+        {
+          ...(messages[messages.length] as ReduxMessage),
+          author: client.user.identity,
+          body: null,
+          attributes: {},
+          dateCreated: currentDate,
+          index: -1,
+          participantSid: "",
+          sid: convo.sid,
+          aggregatedDeliveryReceipt: null,
+          media: {
+            size: file.size,
+            filename: file.name,
+            contentType: file.type,
+          },
+        }
+      ) as ReduxMessage;
       //add message to state
       messagesToSend.push(newMessage);
       const fileData = new FormData();
