@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { Box, Spinner, Text, Truncate } from "@twilio-paste/core";
 import { ProductAssetsIcon } from "@twilio-paste/icons/cjs/ProductAssetsIcon";
 import { Media } from "@twilio/conversations";
+import { ReduxMedia } from "../../store/reducers/messageListReducer";
 
 type MessageMediaProps = {
   onDownload: () => Promise<Error | undefined>;
-  onOpen: (mediaSid: string, image?: Media, file?: Media) => void;
+  onOpen: (mediaSid: string, image?: ReduxMedia, file?: ReduxMedia) => void;
   sending?: boolean;
-  images: Media[];
-  files: Media[];
+  images: ReduxMedia[];
+  files: ReduxMedia[];
   attachments: Record<string, Blob>;
 };
 

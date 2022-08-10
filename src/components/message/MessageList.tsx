@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { saveAs } from "file-saver";
 
 import { useTheme } from "@twilio-paste/theme";
-import { Media, Message, Participant } from "@twilio/conversations";
+import { Media, Participant } from "@twilio/conversations";
 
 import { getBlobFile, getMessageStatus } from "../../api";
 import MessageView from "./MessageView";
@@ -108,7 +108,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   }
 
   const onDownloadAttachments = async (message: ReduxMessage) => {
-    const attachedMedia = getSdkMediaObject(message.attachedMedia);
+    const attachedMedia = message.attachedMedia?.map(getSdkMediaObject);
     if (message.index === -1) {
       return undefined;
     }
@@ -131,8 +131,8 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   return (
     <>
       {messages.map((message, index) => {
-        const messageImages: Media[] = [];
-        const messageFiles: Media[] = [];
+        const messageImages: ReduxMedia[] = [];
+        const messageFiles: ReduxMedia[] = [];
         (message.attachedMedia || []).forEach((file) => {
           const { contentType } = file;
           if (contentType.includes("image")) {
@@ -167,7 +167,11 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                     images={messageImages}
                     files={messageFiles}
                     sending={message.index === -1}
-                    onOpen={(mediaSid: string, image?: Media, file?: Media) => {
+                    onOpen={(
+                      mediaSid: string,
+                      image?: ReduxMedia,
+                      file?: ReduxMedia
+                    ) => {
                       if (file) {
                         onFileOpen(
                           conversationAttachments?.[message.sid][mediaSid],

@@ -100,17 +100,17 @@ const MessageInputField: React.FC<SendMessageProps> = (
 
     const newMessageBuilder = sdkConvo.prepareMessage().setBody(message);
 
-    const newMessage: ReduxMessage = {
-      author: client.user.identity,
-      body: message,
-      attributes: {},
-      dateCreated: currentDate,
-      index: -1,
-      participantSid: "",
-      sid: "-1",
-      aggregatedDeliveryReceipt: null,
-      attachedMedia: [],
-    }  as ReduxMessage;
+    // const newMessage: ReduxMessage = {
+    //   author: client.user.identity,
+    //   body: message,
+    //   attributes: {},
+    //   dateCreated: currentDate,
+    //   index: -1,
+    //   participantSid: "",
+    //   sid: "-1",
+    //   aggregatedDeliveryReceipt: null,
+    //   attachedMedia: [],
+    // } as ReduxMessage;
 
     for (const [key, file] of files.entries()) {
       const fileData = new FormData();
@@ -118,18 +118,18 @@ const MessageInputField: React.FC<SendMessageProps> = (
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      newMessage.attachedMedia.push({
-        sid: key + "",
-        size: file.size,
-        filename: file.name,
-        contentType: file.type,
-      });
-      addAttachment(convo.sid, "-1", key + "", file);
+      // newMessage.attachedMedia.push({
+      //   sid: key + "",
+      //   size: file.size,
+      //   filename: file.name,
+      //   contentType: file.type,
+      // });
+      // addAttachment(convo.sid, "-1", key + "", file);
       newMessageBuilder.addMedia(fileData);
     }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    addMessages(convo.sid, [newMessage]);
+    // addMessages(convo.sid, [newMessage]);
     setMessage("");
     setFiles([]);
     const messageIndex = await newMessageBuilder.build().send();
