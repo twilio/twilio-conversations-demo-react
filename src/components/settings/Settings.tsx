@@ -2,7 +2,7 @@ import React, { useState, createRef, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { Participant, Client } from "@twilio/conversations";
+import { Client } from "@twilio/conversations";
 import { Box, Spinner } from "@twilio-paste/core";
 
 import SettingsMenu from "./SettingsMenu";
@@ -25,10 +25,14 @@ import {
   unexpectedErrorNotification,
 } from "../../helpers";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
-import { getSdkConversationObject } from "../../conversations-objects";
+import {
+  getSdkConversationObject,
+  getSdkParticipantObject,
+} from "../../conversations-objects";
+import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 
 interface SettingsProps {
-  participants: Participant[];
+  participants: ReduxParticipant[];
   client?: Client;
   convo: ReduxConversation;
 }
@@ -161,8 +165,12 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
                 return null;
             }
           }}
-          onParticipantRemove={async (participant: Participant) => {
-            await removeParticipant(sdkConvo, participant, addNotifications);
+          onParticipantRemove={async (participant) => {
+            await removeParticipant(
+              sdkConvo,
+              getSdkParticipantObject(participant),
+              addNotifications
+            );
           }}
         />
       )}

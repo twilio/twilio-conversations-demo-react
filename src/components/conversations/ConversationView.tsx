@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import { Message, Participant } from "@twilio/conversations";
+import { useEffect, useState } from "react";
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 
@@ -22,7 +21,7 @@ import * as _ from "lodash";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
-import { getSdkMessageObject } from "../../conversations-objects";
+import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -36,7 +35,7 @@ interface SingleConvoProps {
   convo: ReduxConversation;
   updateUnreadMessages: SetUnreadMessagesType;
   onClick: () => void;
-  participants: Participant[];
+  participants: ReduxParticipant[];
   messages: ReduxMessage[];
   typingInfo: string[];
 }

@@ -21,6 +21,7 @@ import {
 import { NotificationsType } from "./store/reducers/notificationsReducer";
 import { successNotification, unexpectedErrorNotification } from "./helpers";
 import { getSdkMessageObject } from "./conversations-objects";
+import { ReduxParticipant } from "./store/reducers/participantsReducer";
 
 type ParticipantResponse = ReturnType<typeof Conversation.prototype.add>;
 
@@ -127,7 +128,7 @@ export async function getToken(
 
 export async function getMessageStatus(
   message: ReduxMessage,
-  channelParticipants: Participant[]
+  channelParticipants: ReduxParticipant[]
 ): Promise<{
   [MessageStatus.Delivered]?: number;
   [MessageStatus.Read]?: number;

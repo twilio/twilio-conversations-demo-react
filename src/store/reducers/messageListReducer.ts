@@ -68,7 +68,7 @@ const reduxifyMessage = (message: Message | ReduxMessage): ReduxMessage => ({
       contentType: el.contentType,
       size: el.size,
       category: el.category,
-    })) ?? [],
+    })) ?? null,
 });
 
 const reducer = (state = initialState, action: Action): ChatMessagesState => {

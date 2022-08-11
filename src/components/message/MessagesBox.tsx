@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 
-import { Client, Message, Paginator, Participant } from "@twilio/conversations";
+import { Client, Message, Paginator } from "@twilio/conversations";
 import { Box, Spinner } from "@twilio-paste/core";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -18,6 +18,7 @@ import { CONVERSATION_PAGE_SIZE } from "../../constants";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
 import { getSdkConversationObject } from "../../conversations-objects";
 import { ReduxMessage } from "../../store/reducers/messageListReducer";
+import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 
 export async function loadMessages(
   conversation: ReduxConversation,
@@ -42,7 +43,7 @@ interface MessageProps {
   addMessage: AddMessagesType;
   messages: ReduxMessage[];
   loadingState: boolean;
-  participants: Participant[];
+  participants: ReduxParticipant[];
   lastReadIndex: number;
 }
 

@@ -4,7 +4,6 @@ import { bindActionCreators } from "redux";
 import { saveAs } from "file-saver";
 
 import { useTheme } from "@twilio-paste/theme";
-import { Media, Participant } from "@twilio/conversations";
 
 import { getBlobFile, getMessageStatus } from "../../api";
 import MessageView from "./MessageView";
@@ -28,11 +27,12 @@ import {
 } from "../../conversations-objects";
 import { getSdkConversationObject } from "../../conversations-objects";
 import TimeAgo from "javascript-time-ago";
+import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 
 interface MessageListProps {
   messages: ReduxMessage[];
   conversation: ReduxConversation;
-  participants: Participant[];
+  participants: ReduxParticipant[];
   lastReadIndex: number;
 }
 
