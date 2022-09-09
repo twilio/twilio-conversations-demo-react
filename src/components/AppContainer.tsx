@@ -56,21 +56,6 @@ async function handleParticipantsUpdate(
   updateParticipants(result, participant.conversation.sid);
 }
 
-async function updateConvoList(
-  client: Client,
-  conversation: Conversation,
-  addMessages: AddMessagesType,
-  updateUnreadMessages: SetUnreadMessagesType
-) {
-  if (conversation.status === "joined") {
-    const messages = await conversation.getMessages();
-    addMessages(conversation.sid, messages.items);
-    loadUnreadMessagesCount(conversation, updateUnreadMessages);
-  } else {
-    addMessages(conversation.sid, []);
-  }
-}
-
 async function getSubscribedConversations(
   client: Client
 ): Promise<Conversation[]> {
@@ -165,18 +150,15 @@ const AppContainer: React.FC = () => {
       });
 
       handlePromiseRejection(async () => {
-        // todo: this never gets executed because in conversationAdded, convo state is not populated
         if (conversation.status === "joined") {
           const result = await getConversationParticipants(conversation);
           updateParticipants(result, conversation.sid);
+
+          const messages = await conversation.getMessages();
+          addMessages(conversation.sid, messages.items);
+          loadUnreadMessagesCount(conversation, updateUnreadMessages);
         }
 
-        updateConvoList(
-          client,
-          conversation,
-          addMessages,
-          updateUnreadMessages
-        );
       }, addNotifications);
     });
 
@@ -210,26 +192,16 @@ const AppContainer: React.FC = () => {
     });
     client.on("conversationUpdated", ({conversation}) => {
       handlePromiseRejection(
-        () =>
-          updateConvoList(
-            client,
-            conversation,
-            addMessages,
-            updateUnreadMessages
-          ),
+        () => {
+        },
         addNotifications
       );
     });
 
     client.on("messageUpdated", ({message}) => {
       handlePromiseRejection(
-        () =>
-          updateConvoList(
-            client,
-            message.conversation,
-            addMessages,
-            updateUnreadMessages
-          ),
+        () => {
+        },
         addNotifications
       );
     });
