@@ -8,7 +8,10 @@ import {
   Paginator,
 } from "@twilio/conversations";
 
-import { MessageStatus } from "./store/reducers/messageListReducer";
+import {
+  MessageStatus,
+  ReduxMessage,
+} from "./store/reducers/messageListReducer";
 import {
   CONVERSATION_MESSAGES,
   CONVERSATION_PAGE_SIZE,
@@ -17,6 +20,10 @@ import {
 } from "./constants";
 import { NotificationsType } from "./store/reducers/notificationsReducer";
 import { successNotification, unexpectedErrorNotification } from "./helpers";
+import { getSdkMessageObject } from "./conversations-objects";
+import { ReduxParticipant } from "./store/reducers/participantsReducer";
+
+type ParticipantResponse = ReturnType<typeof Conversation.prototype.add>;
 
 export async function addConversation(
   name: string,
@@ -55,8 +62,12 @@ export async function addParticipant(
   chatParticipant: boolean,
   convo?: Conversation,
   addNotifications?: (notifications: NotificationsType) => void
-): Promise<void> {
-  if (chatParticipant && name.length > 0 && convo !== undefined) {
+): Promise<ParticipantResponse> {
+  if (convo === undefined) {
+    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+  }
+
+  if (chatParticipant && name.length > 0) {
     try {
       const result = await convo.add(name);
       successNotification({
@@ -68,12 +79,7 @@ export async function addParticipant(
       return Promise.reject(e);
     }
   }
-  if (
-    !chatParticipant &&
-    name.length > 0 &&
-    proxyName.length > 0 &&
-    convo !== undefined
-  ) {
+  if (!chatParticipant && name.length > 0 && proxyName.length > 0) {
     try {
       const result = await convo.addNonChatParticipant(proxyName, name, {
         friendlyName: name,
@@ -97,16 +103,22 @@ export async function getToken(
   username: string,
   password: string
 ): Promise<string> {
-  const requestAddress = process.env.REACT_APP_ACCESS_TOKEN_SERVICE_URL;
+  const requestAddress = process.env
+    .REACT_APP_ACCESS_TOKEN_SERVICE_URL as string;
+  if (!requestAddress) {
+    return Promise.reject(
+      "REACT_APP_ACCESS_TOKEN_SERVICE_URL is not configured, cannot login"
+    );
+  }
 
   try {
-    const response = await axios.get(requestAddress as string, {
+    const response = await axios.get(requestAddress, {
       params: { identity: username, password: password },
     });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      return Promise.reject(error);
+      return Promise.reject(error.response.data ?? "Authentication error.");
     }
 
     process.stderr?.write(`ERROR received from ${requestAddress}: ${error}\n`);
@@ -115,15 +127,23 @@ export async function getToken(
 }
 
 export async function getMessageStatus(
-  conversation: Conversation,
-  message: Message,
-  channelParticipants: Participant[]
+  message: ReduxMessage,
+  channelParticipants: ReduxParticipant[]
 ): Promise<{
   [MessageStatus.Delivered]?: number;
   [MessageStatus.Read]?: number;
   [MessageStatus.Failed]?: number;
   [MessageStatus.Sending]?: number;
 }> {
+  // FIXME should be: return statuses[message.sid];
+  // after this modification:
+  // message.on("updated", ({ message, updateReasons }) => {
+  // if reason includes "deliveryReceipt" {
+  //   // paginate detailed receipts
+  //   const receipts = await message.getDetailedDeliveryReceipts(); // paginated backend query every time
+  // }
+  // });
+
   const statuses = {
     [MessageStatus.Delivered]: 0,
     [MessageStatus.Read]: 0,
@@ -152,12 +172,14 @@ export async function getMessageStatus(
     ) {
       statuses[MessageStatus.Read] += 1;
     } else if (participant.lastReadMessageIndex !== -1) {
-      statuses[MessageStatus.Delivered] += 1;
+      // statuses[MessageStatus.Delivered] += 1; FIXME don't need Delivered status for chat particpants?
     }
   });
 
   if (message.aggregatedDeliveryReceipt) {
-    const receipts = await message.getDetailedDeliveryReceipts();
+    const sdkMessage = getSdkMessageObject(message);
+    const receipts = await sdkMessage.getDetailedDeliveryReceipts(); // paginated backend query every time
+
     receipts.forEach((receipt) => {
       if (receipt.status === "read") {
         statuses[MessageStatus.Read] += 1;

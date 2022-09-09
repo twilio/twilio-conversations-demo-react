@@ -1,6 +1,8 @@
 import { Conversation, Message, Participant } from "@twilio/conversations";
 
 import { ActionType } from "../action-types";
+import { ReduxConversation } from "../reducers/convoReducer";
+import { ReduxMessage } from "../reducers/messageListReducer";
 import { NotificationsType } from "../reducers/notificationsReducer";
 
 interface LoginAction {
@@ -12,9 +14,14 @@ interface LogOutAction {
   type: ActionType.LOGOUT;
 }
 
-interface ListConverationAction {
-  type: ActionType.LIST_CONVERSATIONS;
-  payload: Conversation[];
+interface AddConversation {
+  type: ActionType.ADD_CONVERSATION;
+  payload: Conversation;
+}
+
+interface RemoveConversation {
+  type: ActionType.REMOVE_CONVERSATION;
+  payload: string;
 }
 
 interface UpdateCurrentConversation {
@@ -29,7 +36,7 @@ interface SetLastReadIndex {
 
 interface AddMessages {
   type: ActionType.ADD_MESSAGES;
-  payload: { channelSid: string; messages: Message[] };
+  payload: { channelSid: string; messages: (Message | ReduxMessage)[] };
 }
 
 interface PushMessages {
@@ -59,17 +66,25 @@ interface UpdateUnreadMessages {
 
 interface UpdateConversation {
   type: ActionType.UPDATE_CONVERSATION;
-  payload: { channelSid: string; parameters: Partial<Conversation> };
-}
-
-interface RemoveConversation {
-  type: ActionType.REMOVE_CONVERSATION;
-  payload: string;
+  payload: { channelSid: string; parameters: Partial<ReduxConversation> };
 }
 
 interface AddAttachment {
   type: ActionType.ADD_ATTACHMENT;
-  payload: { channelSid: string; messageIndex: string; attachment: Blob };
+  payload: {
+    channelSid: string;
+    messageSid: string;
+    mediaSid: string;
+    attachment: Blob;
+  };
+}
+
+interface ClearAttachments {
+  type: ActionType.CLEAR_ATTACHMENTS;
+  payload: {
+    channelSid: string;
+    messageSid: string;
+  };
 }
 
 interface TypingStarted {
@@ -95,7 +110,8 @@ interface RemoveNotifications {
 export type Action =
   | LoginAction
   | LogOutAction
-  | ListConverationAction
+  | AddConversation
+  | RemoveConversation
   | UpdateCurrentConversation
   | SetLastReadIndex
   | AddMessages
@@ -105,8 +121,8 @@ export type Action =
   | UpdateParticipants
   | UpdateUnreadMessages
   | UpdateConversation
-  | RemoveConversation
   | AddAttachment
+  | ClearAttachments
   | TypingStarted
   | TypingEnded
   | AddNotifications

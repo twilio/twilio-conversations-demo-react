@@ -1,41 +1,79 @@
-import { Conversation } from "@twilio/conversations";
+import { conversationsMap } from "../../conversations-objects";
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
 
-const initialState: Conversation[] = [];
+export type ReduxConversation = {
+  sid: string;
+  friendlyName: string | null;
+  dateUpdated: Date | null;
+  notificationLevel: "default" | "muted";
+  lastReadMessageIndex: number | null;
+  lastMessage?: {
+    index?: number;
+    dateCreated?: Date;
+  };
+};
+
+const initialState: ReduxConversation[] = [];
+
+const convoSorter = (a: ReduxConversation, b: ReduxConversation) =>
+  (b.lastMessage?.dateCreated?.getTime() ?? b.dateUpdated?.getTime() ?? 0) -
+  (a.lastMessage?.dateCreated?.getTime() ?? a.dateUpdated?.getTime() ?? 0);
 
 const reducer = (
-  state: Conversation[] = initialState,
+  state: ReduxConversation[] = initialState,
   action: Action
-): Conversation[] => {
+): ReduxConversation[] => {
   switch (action.type) {
-    case ActionType.LIST_CONVERSATIONS:
-      return action.payload.sort((a, b) => {
-        return (
-          (b.lastMessage?.dateCreated || b.dateUpdated) -
-          (a.lastMessage?.dateCreated || a.dateUpdated)
-        );
-      });
-    case ActionType.UPDATE_CONVERSATION: {
-      const stateCopy = [...state];
-      let target = stateCopy.find(
-        (convo: Conversation) => convo.sid === action.payload.channelSid
+    case ActionType.ADD_CONVERSATION:
+      const {
+        sid,
+        friendlyName,
+        dateUpdated,
+        notificationLevel,
+        lastReadMessageIndex,
+        lastMessage,
+      } = action.payload;
+      const filteredClone = state.filter(
+        (conversation) => conversation.sid !== action.payload.sid
       );
 
-      target =
-        target &&
-        ({
-          ...target,
+      conversationsMap.set(action.payload.sid, action.payload);
+
+      return [
+        ...filteredClone,
+        {
+          sid,
+          friendlyName,
+          dateUpdated,
+          notificationLevel,
+          lastReadMessageIndex,
+          lastMessage: {
+            ...lastMessage,
+          },
+        },
+      ].sort(convoSorter);
+    case ActionType.UPDATE_CONVERSATION: {
+      const stateCopy = [...state];
+      const target = stateCopy.find(
+        (convo: ReduxConversation) => convo.sid === action.payload.channelSid
+      );
+
+      if (target) {
+        Object.assign(target, {
           ...action.payload.parameters,
-        } as Conversation);
+        });
+      }
 
       return stateCopy;
     }
     case ActionType.REMOVE_CONVERSATION: {
       const stateCopy = [...state];
 
+      conversationsMap.delete(action.payload);
+
       return stateCopy.filter(
-        (convo: Conversation) => convo.sid !== action.payload
+        (convo: ReduxConversation) => convo.sid !== action.payload
       );
     }
     default:

@@ -1,9 +1,8 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
-import { debounce } from "lodash";
 
-import { Conversation, Message, Client } from "@twilio/conversations";
+import { Client } from "@twilio/conversations";
 import { AttachIcon } from "@twilio-paste/icons/esm/AttachIcon";
 import { Box, Button } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
@@ -14,12 +13,18 @@ import { MAX_FILE_SIZE, UNEXPECTED_ERROR_MESSAGE } from "../../constants";
 import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
 import MessageInput from "./MessageInput";
 import SendMessageButton from "./SendMessageButton";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
+import {
+  getSdkConversationObject,
+  getSdkMessageObject,
+} from "../../conversations-objects";
+import { ReduxMessage } from "../../store/reducers/messageListReducer";
 
 interface SendMessageProps {
   convoSid: string;
   client: Client;
-  messages: Message[];
-  convo: Conversation;
+  messages: ReduxMessage[];
+  convo: ReduxConversation;
   typingData: string[];
 }
 
@@ -35,7 +40,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
   const typingInfo = getTypingMessage(props.typingData);
 
   const dispatch = useDispatch();
-  const { addMessages, addNotifications } = bindActionCreators(
+  const { addMessages, addNotifications, addAttachment } = bindActionCreators(
     actionCreators,
     dispatch
   );
@@ -51,6 +56,11 @@ const MessageInputField: React.FC<SendMessageProps> = (
       setFilesInputKey(Date.now().toString());
     }
   }, [files]);
+
+  const sdkConvo = useMemo(
+    () => getSdkConversationObject(props.convo),
+    [props.convo.sid]
+  );
 
   const onFilesChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const { files: assets } = event.target;
@@ -70,75 +80,62 @@ const MessageInputField: React.FC<SendMessageProps> = (
   };
 
   const onFileRemove = (file: string) => {
-    const fileIdentity = file.split("_");
+    const fileIdentityArray = file.split("_");
+    const fileIdentity = fileIdentityArray
+      .slice(0, fileIdentityArray.length - 1)
+      .join();
     const existentFiles = files.filter(
       ({ name, size }) =>
-        name !== fileIdentity[0] && size !== Number(fileIdentity[1])
+        name !== fileIdentity &&
+        size !== Number(fileIdentityArray[fileIdentityArray.length - 1])
     );
 
     setFiles(existentFiles);
   };
 
   const onMessageSend = async () => {
-    const { convo, client, messages } = props;
-    const messagesToSend = [];
-    const messagesData = [];
+    const { convo, client } = props;
     const currentDate: Date = new Date();
+    const sdkConvo = getSdkConversationObject(convo);
 
-    if (message) {
-      const newMessage: Message = Object.assign({}, messages[messages.length], {
-        ...(messages[messages.length] as Message),
-        author: client.user.identity,
-        body: message,
-        attributes: {},
-        dateCreated: currentDate,
-        index: -1,
-        participantSid: "",
-        sid: convo.sid,
-        aggregatedDeliveryReceipt: null,
-      }) as Message;
-      //add message to state
-      messagesToSend.push(newMessage);
-      messagesData.push(message);
-      //if promise is filled then is sent. If not failed. Update state of message
-      //change state for the message to sent (or failed)
-    }
+    const newMessageBuilder = sdkConvo.prepareMessage().setBody(message);
 
-    for (const file of files) {
-      const newMessage: Message = Object.assign({}, messages[messages.length], {
-        ...(messages[messages.length] as Message),
-        author: client.user.identity,
-        body: null,
-        attributes: {},
-        dateCreated: currentDate,
-        index: -1,
-        participantSid: "",
-        sid: convo.sid,
-        aggregatedDeliveryReceipt: null,
-        media: {
-          size: file.size,
-          filename: file.name,
-          contentType: file.type,
-        },
-      }) as Message;
-      //add message to state
-      messagesToSend.push(newMessage);
+    // const newMessage: ReduxMessage = {
+    //   author: client.user.identity,
+    //   body: message,
+    //   attributes: {},
+    //   dateCreated: currentDate,
+    //   index: -1,
+    //   participantSid: "",
+    //   sid: "-1",
+    //   aggregatedDeliveryReceipt: null,
+    //   attachedMedia: [],
+    // } as ReduxMessage;
+
+    for (const [key, file] of files.entries()) {
       const fileData = new FormData();
       fileData.set(file.name, file, file.name);
-      messagesData.push(fileData);
-    }
 
-    addMessages(convo.sid, messagesToSend);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      // newMessage.attachedMedia.push({
+      //   sid: key + "",
+      //   size: file.size,
+      //   filename: file.name,
+      //   contentType: file.type,
+      // });
+      // addAttachment(convo.sid, "-1", key + "", file);
+      newMessageBuilder.addMedia(fileData);
+    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    // addMessages(convo.sid, [newMessage]);
     setMessage("");
     setFiles([]);
+    const messageIndex = await newMessageBuilder.build().send();
 
     try {
-      const indexes = [];
-      for (const msg of messagesData) {
-        const index = await convo.sendMessage(msg);
-        indexes.push(index);
-      }
-      await convo.updateLastReadMessageIndex(Math.max(...indexes));
+      await sdkConvo.updateLastReadMessageIndex(messageIndex);
     } catch (e) {
       unexpectedErrorNotification(addNotifications);
       return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
@@ -208,14 +205,12 @@ const MessageInputField: React.FC<SendMessageProps> = (
             assets={files}
             message={message}
             onChange={(e: string) => {
-              debounce(() => {
-                props.convo.typing();
-              }, 2000)();
+              sdkConvo.typing();
               setMessage(e);
             }}
-            onKeyPress={(e: any) => {
+            onKeyPress={async (e) => {
               if (e.key === "Enter") {
-                onMessageSend();
+                await onMessageSend();
               }
             }}
             onFileRemove={onFileRemove}

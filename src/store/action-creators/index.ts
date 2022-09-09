@@ -5,6 +5,7 @@ import { Conversation, Message, Participant } from "@twilio/conversations";
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
 import { NotificationsType } from "../reducers/notificationsReducer";
+import { ReduxMessage } from "../reducers/messageListReducer";
 
 export const login = (token: string) => {
   return (dispatch: Dispatch<Action>): void => {
@@ -23,11 +24,20 @@ export const logout = () => {
   };
 };
 
-export const listConversations = (convos: Conversation[]) => {
+export const addConversation = (convo: Conversation) => {
   return (dispatch: Dispatch<Action>): void => {
     dispatch({
-      type: ActionType.LIST_CONVERSATIONS,
-      payload: convos,
+      type: ActionType.ADD_CONVERSATION,
+      payload: convo,
+    });
+  };
+};
+
+export const removeConversation = (sid: string) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.REMOVE_CONVERSATION,
+      payload: sid,
     });
   };
 };
@@ -50,16 +60,10 @@ export const setLastReadIndex = (index: number) => {
   };
 };
 
-export const removeConversation = (sid: string) => {
-  return (dispatch: Dispatch<Action>): void => {
-    dispatch({
-      type: ActionType.REMOVE_CONVERSATION,
-      payload: sid,
-    });
-  };
-};
-
-export const addMessages = (channelSid: string, messages: Message[]) => {
+export const addMessages = (
+  channelSid: string,
+  messages: (Message | ReduxMessage)[]
+) => {
   return (dispatch: Dispatch<Action>): void => {
     dispatch({
       type: ActionType.ADD_MESSAGES,
@@ -133,13 +137,23 @@ export const updateConversation = (
 
 export const addAttachment = (
   channelSid: string,
-  messageIndex: string,
+  messageSid: string,
+  mediaSid: string,
   attachment: Blob
 ) => {
   return (dispatch: Dispatch<Action>): void => {
     dispatch({
       type: ActionType.ADD_ATTACHMENT,
-      payload: { channelSid, messageIndex, attachment },
+      payload: { channelSid, messageSid, mediaSid, attachment },
+    });
+  };
+};
+
+export const clearAttachments = (channelSid: string, messageSid: string) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.CLEAR_ATTACHMENTS,
+      payload: { channelSid, messageSid },
     });
   };
 };

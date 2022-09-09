@@ -1,11 +1,11 @@
 import { Box } from "@twilio-paste/core";
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, KeyboardEventHandler } from "react";
 import MessageFile from "./MessageFile";
 
 interface MessageInputProps {
   message: string;
   onChange: (message: string) => void;
-  onKeyPress: (event: any) => void;
+  onKeyPress: KeyboardEventHandler<HTMLInputElement>;
   onFileRemove: (file: string) => void;
   assets: File[];
 }
@@ -44,8 +44,8 @@ const MessageInput: React.FC<MessageInputProps> = (
       {getTextWidth(props.message) < width - 500 && (
         <input
           type="text"
-          onChange={(e: any) => {
-            setCursorPostions(e.currentTarget.selectionStart);
+          onChange={(e) => {
+            setCursorPostions(e.currentTarget.selectionStart ?? 0);
             props.onChange(e.currentTarget.value);
           }}
           aria-describedby="message_help_text"
@@ -66,7 +66,7 @@ const MessageInput: React.FC<MessageInputProps> = (
             borderRadius: "4px",
             width: "100%",
           }}
-          onFocus={(e: any) =>
+          onFocus={(e) =>
             e.currentTarget.setSelectionRange(cursorPosition, cursorPosition)
           }
           onKeyPress={props.onKeyPress}
@@ -75,7 +75,7 @@ const MessageInput: React.FC<MessageInputProps> = (
 
       {getTextWidth(props.message) >= width - 500 && (
         <textarea
-          onChange={(e: any) => {
+          onChange={(e) => {
             setCursorPostions(e.currentTarget.selectionStart);
             props.onChange(e.currentTarget.value);
           }}
@@ -98,7 +98,7 @@ const MessageInput: React.FC<MessageInputProps> = (
             lineHeight: "20px",
             fontFamily: "Inter",
           }}
-          onFocus={(e: any) =>
+          onFocus={(e) =>
             e.currentTarget.setSelectionRange(cursorPosition, cursorPosition)
           }
         />

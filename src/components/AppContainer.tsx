@@ -16,7 +16,7 @@ import ConversationsContainer from "./conversations/ConversationsContainer";
 import {
   AddMessagesType,
   SetParticipantsType,
-  SetUreadMessagesType,
+  SetUnreadMessagesType,
 } from "../types";
 import { getConversationParticipants, getToken } from "../api";
 import useAppAlert from "../hooks/useAppAlerts";
@@ -31,14 +31,21 @@ import {
   showNotification,
 } from "../firebase-support";
 
-type SetConvosType = (convos: Conversation[]) => void;
-
 async function loadUnreadMessagesCount(
   convo: Conversation,
-  updateUnreadMessages: SetUreadMessagesType
+  updateUnreadMessages: SetUnreadMessagesType
 ) {
-  const count = await convo.getUnreadMessagesCount();
-  updateUnreadMessages(convo.sid, count ?? 0);
+  let count = 0;
+
+  try {
+    count =
+      (await convo.getUnreadMessagesCount()) ??
+      (await convo.getMessagesCount());
+  } catch (e) {
+    console.error("getUnreadMessagesCount threw an error", e);
+  }
+
+  updateUnreadMessages(convo.sid, count);
 }
 
 async function handleParticipantsUpdate(
@@ -49,29 +56,22 @@ async function handleParticipantsUpdate(
   updateParticipants(result, participant.conversation.sid);
 }
 
-async function updateConvoList(
-  client: Client,
-  conversation: Conversation,
-  setConvos: SetConvosType,
-  addMessages: AddMessagesType,
-  updateUnreadMessages: SetUreadMessagesType
-) {
-  if (conversation.status === "joined") {
-    const messages = await conversation.getMessages();
-    addMessages(conversation.sid, messages.items);
-  } else {
-    addMessages(conversation.sid, []);
+async function getSubscribedConversations(
+  client: Client
+): Promise<Conversation[]> {
+  let subscribedConversations = await client.getSubscribedConversations();
+  let conversations = subscribedConversations.items;
+
+  while (subscribedConversations.hasNextPage) {
+    subscribedConversations = await subscribedConversations.nextPage();
+    conversations = [...conversations, ...subscribedConversations.items];
   }
 
-  loadUnreadMessagesCount(conversation, updateUnreadMessages);
-
-  const subscribedConversations = await client.getSubscribedConversations();
-  setConvos(subscribedConversations.items);
+  return conversations;
 }
 
 const AppContainer: React.FC = () => {
   /* eslint-disable */
-  const Conversations = require("@twilio/conversations");
   const [client, setClient] = useState<Client>();
   const token = useSelector((state: AppState) => state.token);
   const conversations = useSelector((state: AppState) => state.convos);
@@ -91,13 +91,14 @@ const AppContainer: React.FC = () => {
     updateUnreadMessages,
     startTyping,
     endTyping,
-    listConversations,
+    addConversation,
     login,
     removeMessages,
     removeConversation,
     updateCurrentConversation,
     addNotifications,
     logout,
+    clearAttachments,
   } = bindActionCreators(actionCreators, dispatch);
 
   const updateTypingIndicator = (
@@ -120,13 +121,20 @@ const AppContainer: React.FC = () => {
     const client = new Client(token);
     setClient(client);
 
-    const fcMInit = async () => {
+    const fcmInit = async () => {
       await initFcmServiceWorker();
       await subscribeFcmNotifications(client);
     };
 
-    fcMInit();
-    client.on("conversationAdded", async (conversation: Conversation) => {
+    fcmInit().catch(() => {
+      console.error(
+        "FCM initialization failed: no push notifications will be available"
+      );
+    });
+
+    client.on("conversationJoined", (conversation) => {
+      addConversation(conversation);
+
       conversation.on("typingStarted", (participant) => {
         handlePromiseRejection(
           () =>
@@ -146,15 +154,11 @@ const AppContainer: React.FC = () => {
         if (conversation.status === "joined") {
           const result = await getConversationParticipants(conversation);
           updateParticipants(result, conversation.sid);
-        }
 
-        updateConvoList(
-          client,
-          conversation,
-          listConversations,
-          addMessages,
-          updateUnreadMessages
-        );
+          const messages = await conversation.getMessages();
+          addMessages(conversation.sid, messages.items);
+          loadUnreadMessagesCount(conversation, updateUnreadMessages);
+        }
       }, addNotifications);
     });
 
@@ -165,8 +169,12 @@ const AppContainer: React.FC = () => {
         updateParticipants([], conversation.sid);
       }, addNotifications);
     });
-    client.on("messageAdded", (event: Message) => {
-      addMessage(event, addMessages, updateUnreadMessages);
+    client.on("messageAdded", (message: Message) => {
+      addMessage(message, addMessages, updateUnreadMessages);
+      if (message.author === localStorage.getItem("username")) {
+        clearAttachments(message.conversation.sid, "-1");
+      }
+
     });
     client.on("participantLeft", (participant) => {
       handlePromiseRejection(
@@ -187,31 +195,11 @@ const AppContainer: React.FC = () => {
       );
     });
     client.on("conversationUpdated", ({ conversation }) => {
-      handlePromiseRejection(
-        () =>
-          updateConvoList(
-            client,
-            conversation,
-            listConversations,
-            addMessages,
-            updateUnreadMessages
-          ),
-        addNotifications
-      );
+      handlePromiseRejection(() => {}, addNotifications);
     });
 
     client.on("messageUpdated", ({ message }) => {
-      handlePromiseRejection(
-        () =>
-          updateConvoList(
-            client,
-            message.conversation,
-            listConversations,
-            addMessages,
-            updateUnreadMessages
-          ),
-        addNotifications
-      );
+      handlePromiseRejection(() => {}, addNotifications);
     });
 
     client.on("messageRemoved", (message) => {
@@ -234,7 +222,7 @@ const AppContainer: React.FC = () => {
       }
     });
 
-    client.on("tokenExpired", () => {
+    client.on("tokenAboutToExpire", () => {
       if (username && password) {
         getToken(username, password).then((token) => {
           login(token);
@@ -243,6 +231,7 @@ const AppContainer: React.FC = () => {
     });
 
     updateLoadingState(false);
+    getSubscribedConversations(client);
 
     return () => {
       client?.removeAllListeners();
@@ -252,7 +241,7 @@ const AppContainer: React.FC = () => {
   function addMessage(
     message: Message,
     addMessages: AddMessagesType,
-    updateUnreadMessages: SetUreadMessagesType
+    updateUnreadMessages: SetUnreadMessagesType
   ) {
     //transform the message and add it to redux
     handlePromiseRejection(() => {

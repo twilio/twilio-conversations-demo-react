@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { Conversation, Client } from "@twilio/conversations";
+import { Client } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 
@@ -10,9 +10,10 @@ import ConversationDetails from "./ConversationDetails";
 import MessagesBox from "../message/MessagesBox";
 import MessageInputField from "../message/MessageInputField";
 import styles from "../../styles";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
 
 interface ConvoContainerProps {
-  conversation?: Conversation;
+  conversation?: ReduxConversation;
   client?: Client;
 }
 

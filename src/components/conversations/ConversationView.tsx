@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { Conversation, Message, Participant } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 
-import { MessageStatus } from "../../store/reducers/messageListReducer";
+import {
+  MessageStatus,
+  ReduxMessage,
+} from "../../store/reducers/messageListReducer";
 import SendingIcon from "../icons/Sending";
 import DeliveredIcon from "../icons/Delivered";
 import ReadIcon from "../icons/Read";
@@ -11,47 +13,52 @@ import FailedIcon from "../icons/Failed";
 import BellMuted from "../icons/BellMuted";
 
 import { NOTIFICATION_LEVEL } from "../../constants";
-import { SetSidType, SetUreadMessagesType } from "../../types";
+import { SetSidType, SetUnreadMessagesType } from "../../types";
 import { getMessageStatus } from "../../api";
+
+import * as _ from "lodash";
+
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
+import { ReduxParticipant } from "../../store/reducers/participantsReducer";
+
+TimeAgo.addDefaultLocale(en);
 
 interface SingleConvoProps {
   convoId: string;
   setSid: SetSidType;
   currentConvoSid: string;
   lastMessage: string;
-  myMessage: Message | false;
+  myMessage: ReduxMessage | false;
   unreadMessagesCount: number;
-  convo: Conversation;
-  updateUnreadMessages: SetUreadMessagesType;
+  convo: ReduxConversation;
+  updateUnreadMessages: SetUnreadMessagesType;
   onClick: () => void;
-  participants: Participant[];
-  messages: Message[];
+  participants: ReduxParticipant[];
+  messages: ReduxMessage[];
   typingInfo: string[];
 }
+
+const measureWidth = (text: string): number => {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return 0;
+  }
+  context.font = "bold 14px Inter";
+  return context.measureText(text).width;
+};
 
 function calculateUnreadMessagesWidth(count: number) {
   if (count === 0 || !count) {
     return 0;
   }
-  const countAsString = count.toString();
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (!context) {
-    return 0;
-  }
-  context.font = "bold 14px Inter";
-  const width = context.measureText(countAsString).width;
-  return width + 32;
+  return measureWidth(count.toString()) + 32;
 }
 
 function truncateMiddle(text: string, countWidth: number) {
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (!context) {
-    return text;
-  }
-  context.font = "bold 14px Inter";
-  const width = context.measureText(text).width;
+  const width = measureWidth(text);
   if (width > 288 - countWidth) {
     const textLength = text.length;
     const avgLetterSize = width / textLength;
@@ -64,47 +71,13 @@ function truncateMiddle(text: string, countWidth: number) {
   return text;
 }
 
-function getLastMessageTime(messages: Message[]) {
-  if (messages === undefined || messages === null || messages.length === 0) {
+function getLastMessageTime(messages: ReduxMessage[]) {
+  const lastMessageDate = _.last(messages)?.dateCreated;
+  if (!lastMessageDate) {
     return "";
   }
-  const lastMessageDate = messages[messages.length - 1].dateCreated;
-  const today = new Date();
-  const diffInDates = Math.floor(today.getTime() - lastMessageDate.getTime());
-  const dayLength = 1000 * 60 * 60 * 24;
-  const weekLength = dayLength * 7;
-  const yearLength = weekLength * 52;
-  const diffInDays = Math.floor(diffInDates / dayLength);
-  const diffInWeeks = Math.floor(diffInDates / weekLength);
-  const diffInYears = Math.floor(diffInDates / yearLength);
-  if (diffInDays < 0) {
-    return "";
-  }
-  if (diffInDays === 0) {
-    const minutesLessThanTen = lastMessageDate.getMinutes() < 10 ? "0" : "";
-    return (
-      lastMessageDate.getHours().toString() +
-      ":" +
-      minutesLessThanTen +
-      lastMessageDate.getMinutes().toString()
-    );
-  }
-  if (diffInDays === 1) {
-    return "1 day ago";
-  }
-  if (diffInDays < 7) {
-    return diffInDays + " days ago";
-  }
-  if (diffInDays < 14) {
-    return "1 week ago";
-  }
-  if (diffInWeeks < 52) {
-    return diffInWeeks + " weeks ago";
-  }
-  if (diffInYears < 2) {
-    return "1 year ago";
-  }
-  return diffInYears + " years ago";
+
+  return new TimeAgo("en-US").format(lastMessageDate, "twitter-now");
 }
 
 const ConversationView: React.FC<SingleConvoProps> = (
@@ -136,26 +109,24 @@ const ConversationView: React.FC<SingleConvoProps> = (
 
   useEffect(() => {
     if (myMessage && !props.typingInfo.length) {
-      getMessageStatus(convo, myMessage, props.participants).then(
-        (statuses) => {
-          if (statuses[MessageStatus.Read]) {
-            setLastMsgStatus(MessageStatus.Read);
-            return;
-          }
-          if (statuses[MessageStatus.Delivered]) {
-            setLastMsgStatus(MessageStatus.Delivered);
-            return;
-          }
-          if (statuses[MessageStatus.Failed]) {
-            setLastMsgStatus(MessageStatus.Failed);
-            return;
-          }
-          if (statuses[MessageStatus.Sending]) {
-            setLastMsgStatus(MessageStatus.Sending);
-            return;
-          }
+      getMessageStatus(myMessage, props.participants).then((statuses) => {
+        if (statuses[MessageStatus.Read]) {
+          setLastMsgStatus(MessageStatus.Read);
+          return;
         }
-      );
+        if (statuses[MessageStatus.Delivered]) {
+          setLastMsgStatus(MessageStatus.Delivered);
+          return;
+        }
+        if (statuses[MessageStatus.Failed]) {
+          setLastMsgStatus(MessageStatus.Failed);
+          return;
+        }
+        if (statuses[MessageStatus.Sending]) {
+          setLastMsgStatus(MessageStatus.Sending);
+          return;
+        }
+      });
     }
   }, [convo, myMessage, lastMessage, props.participants, props.typingInfo]);
 

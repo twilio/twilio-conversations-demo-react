@@ -6,13 +6,7 @@ import React, {
   useState,
 } from "react";
 
-import {
-  Client,
-  Conversation,
-  Paginator,
-  Message,
-  Participant,
-} from "@twilio/conversations";
+import { Client, Message, Paginator } from "@twilio/conversations";
 import { Box, Spinner } from "@twilio-paste/core";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -21,15 +15,21 @@ import { AddMessagesType } from "../../types";
 import styles from "../../styles";
 import { getMessages } from "../../api";
 import { CONVERSATION_PAGE_SIZE } from "../../constants";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
+import { getSdkConversationObject } from "../../conversations-objects";
+import { ReduxMessage } from "../../store/reducers/messageListReducer";
+import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 
 export async function loadMessages(
-  conversation: Conversation,
-  currentMessages: Message[],
-  addMessage: AddMessagesType
+  conversation: ReduxConversation,
+  addMessage: AddMessagesType,
+  currentMessages: ReduxMessage[] = []
 ): Promise<void> {
   const convoSid: string = conversation.sid;
-  if (!(convoSid in currentMessages)) {
-    const paginator = await getMessages(conversation);
+  const sidExists = !!currentMessages.filter(({ sid }) => sid === convoSid)
+    .length;
+  if (!sidExists) {
+    const paginator = await getMessages(getSdkConversationObject(conversation));
     const messages = paginator.items;
     //save to redux
     addMessage(convoSid, messages);
@@ -39,27 +39,29 @@ export async function loadMessages(
 interface MessageProps {
   convoSid: string;
   client?: Client;
-  convo: Conversation;
+  convo: ReduxConversation;
   addMessage: AddMessagesType;
-  messages: Message[];
+  messages: ReduxMessage[];
   loadingState: boolean;
-  participants: Participant[];
+  participants: ReduxParticipant[];
   lastReadIndex: number;
 }
 
 const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
   const { messages, convo, loadingState, lastReadIndex, addMessage } = props;
   const [hasMore, setHasMore] = useState(
-    messages.length === CONVERSATION_PAGE_SIZE
+    messages?.length === CONVERSATION_PAGE_SIZE
   );
   const [loading, setLoading] = useState(false);
   const [height, setHeight] = useState(0);
   const [paginator, setPaginator] = useState<Paginator<Message> | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
+  const sdkConvo = useMemo(() => getSdkConversationObject(convo), [convo.sid]);
+
   useEffect(() => {
     if (!messages && convo && !loadingState) {
-      loadMessages(convo, messages, addMessage);
+      loadMessages(convo, addMessage);
     }
   }, []);
 
@@ -75,7 +77,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
   }, [listRef.current?.clientHeight]);
 
   useEffect(() => {
-    getMessages(convo).then((paginator) => {
+    getMessages(sdkConvo).then((paginator) => {
       setHasMore(paginator.hasPrevPage);
       setPaginator(paginator);
     });
@@ -83,7 +85,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
 
   useEffect(() => {
     if (messages?.length && messages[messages.length - 1].index !== -1) {
-      convo.updateLastReadMessageIndex(messages[messages.length - 1].index);
+      sdkConvo.updateLastReadMessageIndex(messages[messages.length - 1].index);
     }
   }, [messages, convo]);
 

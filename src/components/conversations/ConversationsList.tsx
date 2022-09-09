@@ -1,18 +1,19 @@
 import { bindActionCreators } from "redux";
 import { useDispatch, useSelector } from "react-redux";
-import { Conversation, Message } from "@twilio/conversations";
-
 import ConversationView from "./ConversationView";
 import {
   SetParticipantsType,
   SetSidType,
-  SetUreadMessagesType,
+  SetUnreadMessagesType,
 } from "../../types";
 import { actionCreators, AppState } from "../../store";
 import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
 import { UNEXPECTED_ERROR_MESSAGE } from "../../constants";
+import { ReduxConversation } from "../../store/reducers/convoReducer";
+import { getSdkConversationObject } from "../../conversations-objects";
+import { ReduxMessage } from "../../store/reducers/messageListReducer";
 
-function getLastMessage(messages: Message[], typingData: string[]) {
+function getLastMessage(messages: ReduxMessage[], typingData: string[]) {
   if (messages === undefined || messages === null) {
     return "Loading...";
   }
@@ -22,13 +23,10 @@ function getLastMessage(messages: Message[], typingData: string[]) {
   if (messages.length === 0) {
     return "No messages";
   }
-  if (!!messages[messages.length - 1].media) {
-    return "Media message";
-  }
-  return messages[messages.length - 1].body;
+  return messages[messages.length - 1].body || "Media message";
 }
 
-function isMyMessage(messages: Message[]) {
+function isMyMessage(messages: ReduxMessage[]) {
   if (messages === undefined || messages === null || messages.length === 0) {
     return false;
   }
@@ -40,13 +38,15 @@ function isMyMessage(messages: Message[]) {
 
 async function updateCurrentConvo(
   setSid: SetSidType,
-  convo: Conversation,
+  convo: ReduxConversation,
   updateParticipants: SetParticipantsType
 ) {
   setSid(convo.sid);
 
   try {
-    const participants = await convo.getParticipants();
+    const participants = await getSdkConversationObject(
+      convo
+    ).getParticipants();
     updateParticipants(participants, convo.sid);
   } catch {
     return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
@@ -57,7 +57,7 @@ function setUnreadMessagesCount(
   currentconvoSid: string,
   convoSid: string,
   unreadMessages: Record<string, number>,
-  updateUnreadMessages: SetUreadMessagesType
+  updateUnreadMessages: SetUnreadMessagesType
 ) {
   if (currentconvoSid == convoSid && unreadMessages[convoSid] !== 0) {
     updateUnreadMessages(convoSid, 0);
@@ -98,10 +98,10 @@ const ConversationsList: React.FC = () => {
           convoId={convo.sid}
           setSid={updateCurrentConversation}
           currentConvoSid={sid}
-          lastMessage={getLastMessage(
-            messages[convo.sid],
-            typingData[convo.sid] ?? []
-          )}
+          lastMessage={
+            getLastMessage(messages[convo.sid], typingData[convo.sid] ?? []) ??
+            ""
+          }
           messages={messages[convo.sid]}
           typingInfo={typingData[convo.sid] ?? []}
           myMessage={isMyMessage(messages[convo.sid])}
@@ -129,7 +129,9 @@ const ConversationsList: React.FC = () => {
                 messages[convo.sid].length &&
                 messages[convo.sid][messages[convo.sid].length - 1];
               if (lastMessage && lastMessage.index !== -1) {
-                await convo.updateLastReadMessageIndex(lastMessage.index);
+                await getSdkConversationObject(
+                  convo
+                ).updateLastReadMessageIndex(lastMessage.index);
               }
             } catch {
               unexpectedErrorNotification(addNotifications);

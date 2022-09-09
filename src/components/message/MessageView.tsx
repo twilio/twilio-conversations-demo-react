@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { Box } from "@twilio-paste/core";
@@ -21,7 +21,6 @@ type MessageStatuses = {
 };
 
 interface SingleMessageProps {
-  message: string | ReactElement;
   getStatus: Promise<MessageStatuses>;
   author: string;
   topPadding: number;
@@ -31,6 +30,8 @@ interface SingleMessageProps {
   onDeleteMessage: () => void;
   updateAttributes: (reactions: { reactions: ReactionsType }) => void;
   reactions?: ReactionsType;
+  text: string;
+  media: JSX.Element | null;
 }
 
 const statusStyle = {
@@ -47,7 +48,7 @@ const MessageView: React.FC<SingleMessageProps> = (
   props: SingleMessageProps
 ) => {
   const theme = useTheme();
-  const { message, getStatus, onDeleteMessage } = props;
+  const { text, getStatus, onDeleteMessage } = props;
 
   const [status, setStatus] = useState<MessageStatuses>({});
   const sid = useSelector((state: AppState) => state.sid);
@@ -56,11 +57,7 @@ const MessageView: React.FC<SingleMessageProps> = (
 
   useEffect(() => {
     getStatus.then((value) => setStatus(value));
-  }, [getStatus, message]);
-
-  if (message === undefined) {
-    return <></>;
-  }
+  }, [getStatus]);
 
   return (
     <>
@@ -90,7 +87,14 @@ const MessageView: React.FC<SingleMessageProps> = (
                 borderRadius: theme.space.space30,
               }}
             >
-              {props.message}
+              {props.media}
+              <Box
+                style={{
+                  paddingTop: theme.space.space30,
+                }}
+              >
+                {props.text}
+              </Box>
               <Box
                 style={{
                   display: "flex",
@@ -160,7 +164,7 @@ const MessageView: React.FC<SingleMessageProps> = (
                   ) : null}
 
                   <MessageActions
-                    messageText={typeof message === "string" ? message : ""}
+                    messageText={text}
                     onMessageDelete={onDeleteMessage}
                   />
                 </Box>
@@ -229,7 +233,8 @@ const MessageView: React.FC<SingleMessageProps> = (
                 borderRadius: theme.space.space30,
               }}
             >
-              {props.message}
+              {props.media}
+              {props.text}
               <Box
                 paddingTop="space30"
                 fontSize={theme.fontSizes.fontSize20}

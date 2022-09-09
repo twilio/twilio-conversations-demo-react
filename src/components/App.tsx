@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { ReactElement } from "react";
-import { config as dotenv } from "dotenv";
 
 import { Box, Spinner } from "@twilio-paste/core";
 
@@ -15,9 +14,6 @@ function App(): ReactElement {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const { login } = bindActionCreators(actionCreators, dispatch);
-
-  dotenv();
-
   const token = useSelector((state: AppState) => state.token);
 
   const username = localStorage.getItem("username") ?? "";

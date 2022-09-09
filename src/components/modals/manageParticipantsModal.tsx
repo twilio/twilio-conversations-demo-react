@@ -14,10 +14,10 @@ import { Text } from "@twilio-paste/text";
 import { ChevronDownIcon } from "@twilio-paste/icons/esm/ChevronDownIcon";
 import { Avatar } from "@twilio-paste/avatar";
 import { UserIcon } from "@twilio-paste/icons/cjs/UserIcon";
-import { Participant } from "@twilio/conversations";
 
 import ConvoModal from "./ConvoModal";
 import { Content } from "../../types";
+import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 
 interface ManageParticipantsModalProps {
   participantsCount: number;
@@ -25,8 +25,8 @@ interface ManageParticipantsModalProps {
   isModalOpen: boolean;
   title: string;
   onClick: (content: Content) => void;
-  participantsList: Participant[];
-  onParticipantRemove: (participant: Participant) => void;
+  participantsList: ReduxParticipant[];
+  onParticipantRemove: (participant: ReduxParticipant) => void;
 }
 
 const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = (

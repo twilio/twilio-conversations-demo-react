@@ -1,4 +1,6 @@
-const Bell = () => (
+import React from "react";
+
+const Bell: React.FC = () => (
   <svg
     width="20"
     height="18"
