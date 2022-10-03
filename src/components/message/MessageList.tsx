@@ -2,8 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { saveAs } from "file-saver";
-
+import { VariableSizeList as List } from "react-window";
+import InfiniteLoader from "react-window-infinite-loader";
+import AutoSizer from "react-virtualized-auto-sizer";
 import { useTheme } from "@twilio-paste/theme";
+import { Spinner } from "@twilio-paste/core";
 
 import { getBlobFile, getMessageStatus } from "../../api";
 import MessageView from "./MessageView";
@@ -28,12 +31,20 @@ import {
 import { getSdkConversationObject } from "../../conversations-objects";
 import TimeAgo from "javascript-time-ago";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
+import styles from "../../styles";
+import { Message } from "@twilio/conversations";
+
+const messageHasMedia = (message: ReduxMessage | Message): boolean => {
+  return !!message.attachedMedia && message.attachedMedia.length > 0; // @todo category filter?
+};
 
 interface MessageListProps {
   messages: ReduxMessage[];
   conversation: ReduxConversation;
   participants: ReduxParticipant[];
   lastReadIndex: number;
+  hasMore: boolean;
+  fetchMore: () => Promise<void>;
 }
 
 function getMessageTime(message: ReduxMessage) {
@@ -51,7 +62,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   }
 
   const theme = useTheme();
-  const myRef = useRef<HTMLInputElement>(null);
+  const readHorizonRef = useRef<HTMLInputElement>(null);
   const messagesLength: number = messages.length;
 
   const dispatch = useDispatch();
@@ -74,10 +85,10 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   const [scrolledToHorizon, setScrollToHorizon] = useState(false);
 
   useEffect(() => {
-    if (scrolledToHorizon || !myRef.current) {
+    if (scrolledToHorizon || !readHorizonRef.current) {
       return;
     }
-    myRef.current.scrollIntoView({
+    readHorizonRef.current.scrollIntoView({
       behavior: "smooth",
     });
     setScrollToHorizon(true);
@@ -128,97 +139,193 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     saveAs(file, filename ?? "");
   };
 
+  const getMessageHeight = (index: number) => {
+    const message = messages[index];
+    let height = message.author === localStorage.getItem("username") ? 98 : 93; // empty message block with/without statuses
+    height += 24; // padding top & bottom
+
+    // calculating media message height
+    if (messageHasMedia(message)) {
+      // @ts-stupid we know attachedMedia is not null here - we just checked that one line above.
+      if (message.attachedMedia?.some((m) => m.contentType.includes("image"))) {
+        return (height += 200);
+      }
+
+      return (height += 71); // file view height
+    }
+
+    // calculating text message height
+    const words = message.body?.split(" ") ?? [];
+    let lineChars = 0;
+
+    if (words.length) {
+      height += 17;
+    }
+
+    words.forEach((word) => {
+      if (lineChars + word.length < 75) {
+        if (lineChars == 0) {
+          lineChars = word.length;
+        } else {
+          lineChars += word.length + 1;
+        }
+      } else {
+        height += 17;
+        lineChars = word.length;
+      }
+    });
+
+    return height;
+  };
+
+  const { hasMore, fetchMore } = props;
+  const isItemLoaded = (index: number) => !hasMore || index < messages?.length;
+
   return (
     <>
-      {messages.map((message, index) => {
-        const messageImages: ReduxMedia[] = [];
-        const messageFiles: ReduxMedia[] = [];
-        (message.attachedMedia || []).forEach((file) => {
-          const { contentType } = file;
-          if (contentType.includes("image")) {
-            messageImages.push(file);
-            return;
-          }
-          messageFiles.push(file);
-        });
-        const attributes = message.attributes as Record<
-          string,
-          ReactionsType | undefined
-        >;
+      <AutoSizer>
+        {({ height, width }) => (
+          <InfiniteLoader
+            isItemLoaded={isItemLoaded}
+            itemCount={hasMore ? messages?.length + 1 : messages?.length}
+            loadMoreItems={fetchMore}
+          >
+            {({ onItemsRendered, ref }) => (
+              <List
+                height={height}
+                itemCount={hasMore ? messages?.length + 1 : messages?.length}
+                itemSize={getMessageHeight}
+                onItemsRendered={onItemsRendered}
+                ref={ref}
+                width={width}
+              >
+                {({ index, style }) => {
+                  let content;
+                  if (!isItemLoaded(index)) {
+                    content = (
+                      <div style={{ ...styles.paginationSpinner, ...style }}>
+                        <Spinner
+                          decorative={false}
+                          size="sizeIcon50"
+                          title="Loading"
+                        />
+                      </div>
+                    );
+                  } else {
+                    const message = messages[index];
 
-        return (
-          <div key={message.sid + "message"}>
-            {lastReadIndex !== -1 &&
-            horizonMessageCount &&
-            showHorizonIndex === message.index ? (
-              <Horizon ref={myRef} messageCount={horizonMessageCount} />
-            ) : null}
-            <MessageView
-              reactions={attributes["reactions"]}
-              text={message.body ?? ""}
-              media={
-                message.attachedMedia?.length ? (
-                  <MessageMedia
-                    key={message.sid}
-                    attachments={conversationAttachments?.[message.sid]}
-                    onDownload={async () =>
-                      await onDownloadAttachments(message)
-                    }
-                    images={messageImages}
-                    files={messageFiles}
-                    sending={message.index === -1}
-                    onOpen={(
-                      mediaSid: string,
-                      image?: ReduxMedia,
-                      file?: ReduxMedia
-                    ) => {
-                      if (file) {
-                        onFileOpen(
-                          conversationAttachments?.[message.sid][mediaSid],
-                          file
-                        );
+                    const messageImages: ReduxMedia[] = [];
+                    const messageFiles: ReduxMedia[] = [];
+                    (message.attachedMedia || []).forEach((file) => {
+                      const { contentType } = file;
+                      if (contentType.includes("image")) {
+                        messageImages.push(file);
                         return;
                       }
-                      if (image) {
-                        setImagePreview({
-                          message,
-                          file: conversationAttachments?.[message.sid][
-                            mediaSid
-                          ],
-                          sid: mediaSid,
-                        });
-                      }
-                    }}
-                  />
-                ) : null
-              }
-              author={message.author ?? ""}
-              getStatus={getMessageStatus(message, props.participants)}
-              onDeleteMessage={async () => {
-                try {
-                  await getSdkMessageObject(message).remove();
-                  successNotification({
-                    message: "Message deleted.",
-                    addNotifications,
-                  });
-                } catch {
-                  unexpectedErrorNotification(addNotifications);
-                }
-              }}
-              topPadding={setTopPadding(index)}
-              lastMessageBottomPadding={index === messagesLength - 1 ? 16 : 0}
-              sameAuthorAsPrev={setTopPadding(index) !== theme.space.space20}
-              messageTime={getMessageTime(message)}
-              updateAttributes={(attribute) =>
-                getSdkMessageObject(message).updateAttributes({
-                  ...attributes,
-                  ...attribute,
-                })
-              }
-            />
-          </div>
-        );
-      })}
+                      messageFiles.push(file);
+                    });
+                    const attributes = message.attributes as Record<
+                      string,
+                      ReactionsType | undefined
+                    >;
+
+                    // @todo move message rendering here!
+
+                    content = (
+                      <div key={message.sid + "message"}>
+                        {lastReadIndex !== -1 &&
+                        horizonMessageCount &&
+                        showHorizonIndex === message.index ? (
+                          <Horizon
+                            ref={readHorizonRef}
+                            messageCount={horizonMessageCount}
+                          />
+                        ) : null}
+                        <MessageView
+                          reactions={attributes["reactions"]}
+                          text={message.body ?? ""}
+                          media={
+                            message.attachedMedia?.length ? (
+                              <MessageMedia
+                                key={message.sid}
+                                attachments={
+                                  conversationAttachments?.[message.sid]
+                                }
+                                onDownload={async () =>
+                                  await onDownloadAttachments(message)
+                                }
+                                images={messageImages}
+                                files={messageFiles}
+                                sending={message.index === -1}
+                                onOpen={(
+                                  mediaSid: string,
+                                  image?: ReduxMedia,
+                                  file?: ReduxMedia
+                                ) => {
+                                  if (file) {
+                                    onFileOpen(
+                                      conversationAttachments?.[message.sid][
+                                        mediaSid
+                                      ],
+                                      file
+                                    );
+                                    return;
+                                  }
+                                  if (image) {
+                                    setImagePreview({
+                                      message,
+                                      file: conversationAttachments?.[
+                                        message.sid
+                                      ][mediaSid],
+                                      sid: mediaSid,
+                                    });
+                                  }
+                                }}
+                              />
+                            ) : null
+                          }
+                          author={message.author ?? ""}
+                          getStatus={getMessageStatus(
+                            message,
+                            props.participants
+                          )}
+                          onDeleteMessage={async () => {
+                            try {
+                              await getSdkMessageObject(message).remove();
+                              successNotification({
+                                message: "Message deleted.",
+                                addNotifications,
+                              });
+                            } catch {
+                              unexpectedErrorNotification(addNotifications);
+                            }
+                          }}
+                          topPadding={setTopPadding(index)}
+                          lastMessageBottomPadding={
+                            index === messagesLength - 1 ? 16 : 0
+                          }
+                          sameAuthorAsPrev={
+                            setTopPadding(index) !== theme.space.space20
+                          }
+                          messageTime={getMessageTime(message)}
+                          updateAttributes={(attribute) =>
+                            getSdkMessageObject(message).updateAttributes({
+                              ...attributes,
+                              ...attribute,
+                            })
+                          }
+                        />
+                      </div>
+                    );
+                  }
+
+                  return <>{content}</>;
+                }}
+              </List>
+            )}
+          </InfiniteLoader>
+        )}
+      </AutoSizer>
       {imagePreview
         ? (function () {
             const dateString = imagePreview?.message.dateCreated;

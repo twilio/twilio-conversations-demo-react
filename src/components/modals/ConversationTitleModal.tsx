@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModalInputField from "./ModalInputField";
 import { ModalFooter, ModalFooterActions } from "@twilio-paste/modal";
 import { ModalBody, Box } from "@twilio-paste/core";

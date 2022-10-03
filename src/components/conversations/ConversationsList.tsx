@@ -23,16 +23,15 @@ function getLastMessage(messages: ReduxMessage[], typingData: string[]) {
   if (messages.length === 0) {
     return "No messages";
   }
-  return messages[messages.length - 1].body || "Media message";
+  return messages[0].attachedMedia ? "Media message" : messages[0].body; // @todo check for media message properly (isMediaMessage etc)
 }
 
 function isMyMessage(messages: ReduxMessage[]) {
   if (messages === undefined || messages === null || messages.length === 0) {
     return false;
   }
-  return messages[messages.length - 1].author ===
-    localStorage.getItem("username")
-    ? messages[messages.length - 1]
+  return messages[0].author === localStorage.getItem("username")
+    ? messages[0]
     : false;
 }
 
@@ -126,8 +125,7 @@ const ConversationsList: React.FC = () => {
               updateUnreadMessages(convo.sid, 0);
               //set messages to be read
               const lastMessage =
-                messages[convo.sid].length &&
-                messages[convo.sid][messages[convo.sid].length - 1];
+                messages[convo.sid].length && messages[convo.sid][0];
               if (lastMessage && lastMessage.index !== -1) {
                 await getSdkConversationObject(
                   convo

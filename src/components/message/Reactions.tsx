@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { Box, Text } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 import { Menu, MenuButton, useMenuState } from "@twilio-paste/menu";

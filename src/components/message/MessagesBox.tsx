@@ -7,12 +7,10 @@ import React, {
 } from "react";
 
 import { Client, Message, Paginator } from "@twilio/conversations";
-import { Box, Spinner } from "@twilio-paste/core";
-import InfiniteScroll from "react-infinite-scroll-component";
+import { Box } from "@twilio-paste/core";
 
 import MessageList from "./MessageList";
 import { AddMessagesType } from "../../types";
-import styles from "../../styles";
 import { getMessages } from "../../api";
 import { CONVERSATION_PAGE_SIZE } from "../../constants";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
@@ -84,8 +82,8 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
   }, [convo]);
 
   useEffect(() => {
-    if (messages?.length && messages[messages.length - 1].index !== -1) {
-      sdkConvo.updateLastReadMessageIndex(messages[messages.length - 1].index);
+    if (messages?.length && messages[0].index !== -1) {
+      convo.updateLastReadMessageIndex(messages[0].index);
     }
   }, [messages, convo]);
 
@@ -118,44 +116,22 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
   return (
     <Box
       key={convo.sid}
-      id="scrollable"
       paddingRight="space50"
       style={{
-        display: "flex",
-        flexDirection: "column-reverse",
+        display: "block",
         width: "100%",
-        overflow: "scroll",
         paddingLeft: 16,
         height: "100%",
       }}
     >
-      <InfiniteScroll
-        dataLength={messages?.length ?? 0}
-        next={fetchMore}
-        hasMore={!loading && hasMore}
-        loader={
-          <div style={styles.paginationSpinner}>
-            <Spinner decorative={false} size="sizeIcon50" title="Loading" />
-          </div>
-        }
-        scrollableTarget="scrollable"
-        style={{
-          display: "flex",
-          overflow: "hidden",
-          flexDirection: "column-reverse",
-        }}
-        inverse={true}
-        scrollThreshold="20px"
-      >
-        <div ref={listRef} style={{ overflow: "scroll" }}>
-          <MessageList
-            messages={messages ?? []}
-            conversation={convo}
-            participants={props.participants}
-            lastReadIndex={lastConversationReadIndex}
-          />
-        </div>
-      </InfiniteScroll>
+      <MessageList
+        messages={messages ?? []}
+        conversation={convo}
+        participants={props.participants}
+        lastReadIndex={lastConversationReadIndex}
+        hasMore={hasMore}
+        fetchMore={fetchMore}
+      />
     </Box>
   );
 };

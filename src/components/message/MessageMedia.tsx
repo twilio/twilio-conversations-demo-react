@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Spinner, Text, Truncate } from "@twilio-paste/core";
 import { ProductAssetsIcon } from "@twilio-paste/icons/cjs/ProductAssetsIcon";
-import { Media } from "@twilio/conversations";
 import { ReduxMedia } from "../../store/reducers/messageListReducer";
 
 type MessageMediaProps = {

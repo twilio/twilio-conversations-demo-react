@@ -76,6 +76,7 @@ const reducer = (state = initialState, action: Action): ChatMessagesState => {
     case ActionType.PUSH_MESSAGES: {
       const { channelSid, messages: messagesToAdd } = action.payload;
       const existingMessages = state[channelSid] ?? [];
+      const reversedNewMessages = messagesToAdd.reverse();
 
       for (const message of messagesToAdd) {
         messagesMap.set(message.sid, message);
@@ -88,20 +89,19 @@ const reducer = (state = initialState, action: Action): ChatMessagesState => {
 
       return Object.assign({}, state, {
         [channelSid]: existingMessages.concat(
-          messagesToAdd.map(reduxifyMessage)
+          reversedNewMessages.map(reduxifyMessage)
         ),
       }) as ChatMessagesState;
     }
     case ActionType.ADD_MESSAGES: {
-      //get convo sid and messages to add from payload
       const { channelSid, messages: messagesToAdd } = action.payload;
+      const reversedNewMessages = messagesToAdd.reverse();
 
-      //get existing messages for the convo
       const existingMessages = state[channelSid] ?? [];
 
       const filteredExistingMessages = existingMessages.filter(
         (message: ReduxMessage) => {
-          return !messagesToAdd.find(
+          return !reversedNewMessages.find(
             (value) =>
               value.body === message.body &&
               value.author === message.author &&
@@ -113,7 +113,7 @@ const reducer = (state = initialState, action: Action): ChatMessagesState => {
       //add new messages to exisiting, ignore duplicates
       const messagesUnique = [
         ...filteredExistingMessages,
-        ...messagesToAdd.map(reduxifyMessage),
+        ...reversedNewMessages.map(reduxifyMessage),
       ];
 
       for (const message of messagesToAdd) {

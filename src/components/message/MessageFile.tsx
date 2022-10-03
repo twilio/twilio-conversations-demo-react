@@ -1,7 +1,6 @@
 import { Box, Button, Text, Truncate } from "@twilio-paste/core";
 import { ProductAssetsIcon } from "@twilio-paste/icons/cjs/ProductAssetsIcon";
 import { CloseIcon } from "@twilio-paste/icons/cjs/CloseIcon";
-import { Media } from "@twilio/conversations";
 import { ReduxMedia } from "../../store/reducers/messageListReducer";
 
 type MessageFileProps = {
@@ -28,6 +27,7 @@ const MessageFile: React.FC<MessageFileProps> = ({
         width: "calc(25% - 20px)",
         maxWidth: "200px",
         minWidth: "150px",
+        maxHeight: "200px",
         backgroundColor: "#fff",
         cursor: "default",
       }}
