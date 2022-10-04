@@ -12,6 +12,7 @@ export type ReduxConversation = {
     index?: number;
     dateCreated?: Date;
   };
+  unreadMessageCount: number | null;
 };
 
 const initialState: ReduxConversation[] = [];
@@ -51,6 +52,7 @@ const reducer = (
           lastMessage: {
             ...lastMessage,
           },
+          unreadMessageCount: null, // @todo populate this beforehand? probably not.
         },
       ].sort(convoSorter);
     case ActionType.UPDATE_CONVERSATION: {

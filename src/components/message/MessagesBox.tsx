@@ -83,7 +83,14 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
 
   useEffect(() => {
     if (messages?.length && messages[0].index !== -1) {
-      convo.updateLastReadMessageIndex(messages[0].index);
+      sdkConvo
+        .updateLastReadMessageIndex(messages[0].index)
+        .then((newUnread: number) => {
+          convo.unreadMessageCount = newUnread;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     }
   }, [messages, convo]);
 
