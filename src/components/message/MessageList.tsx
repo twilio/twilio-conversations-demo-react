@@ -46,7 +46,7 @@ interface MessageListProps {
   messages: ReduxMessage[];
   conversation: ReduxConversation;
   participants: ReduxParticipant[];
-  lastReadIndex: number;
+  lastReadIndex: number | null;
   hasMore: boolean;
   fetchMore: () => Promise<void>;
 }
