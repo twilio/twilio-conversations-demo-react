@@ -144,16 +144,6 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     let height = message.author === localStorage.getItem("username") ? 98 : 93; // empty message block with/without statuses
     height += 24; // padding top & bottom
 
-    // calculating media message height
-    if (messageHasMedia(message)) {
-      // @ts-stupid we know attachedMedia is not null here - we just checked that one line above.
-      if (message.attachedMedia?.some((m) => m.contentType.includes("image"))) {
-        return (height += 200);
-      }
-
-      return (height += 71); // file view height
-    }
-
     // calculating text message height
     const words = message.body?.split(" ") ?? [];
     let lineChars = 0;
@@ -174,6 +164,16 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
         lineChars = word.length;
       }
     });
+
+    // calculating media message height
+    if (messageHasMedia(message)) {
+      // @ts-stupid we know attachedMedia is not null here - we just checked that one line above.
+      if (message.attachedMedia?.some((m) => m.contentType.includes("image"))) {
+        return (height += 200);
+      }
+
+      return (height += 71); // file view height
+    }
 
     return height;
   };
