@@ -227,7 +227,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                     >;
 
                     content = (
-                      <div key={message.sid + "message"}>
+                      <div key={message.sid + "messageDiv"}>
                         {lastReadIndex !== -1 &&
                         horizonMessageCount &&
                         showHorizonIndex === message.index ? (

@@ -123,7 +123,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
 
   return (
     <Box
-      key={convo.sid}
+      key={convo.sid + "messagesBox"}
       paddingRight="space50"
       style={{
         display: "block",
