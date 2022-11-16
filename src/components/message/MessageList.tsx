@@ -35,7 +35,9 @@ import styles from "../../styles";
 import { Message } from "@twilio/conversations";
 import wrap from "word-wrap";
 
-const messageHasMedia = (message: ReduxMessage | Message): boolean => {
+const messageHasMedia = (
+  message: ReduxMessage | Message
+): message is ReduxMessage & { attachedMedia: ReduxMedia[] } => {
   return !!message.attachedMedia && message.attachedMedia.length > 0; // @todo category filter?
 };
 
@@ -148,12 +150,11 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
 
     // calculating media message height
     if (messageHasMedia(message)) {
-      // @ts-stupid we know attachedMedia is not null here - we just checked that one line above.
-      if (message.attachedMedia?.some((m) => m.contentType.includes("image"))) {
-        return (height += 200);
+      if (message.attachedMedia.some((m) => m.contentType.includes("image"))) {
+        return height + 200; // image view height
       }
 
-      return (height += 71); // file view height
+      return height + 71; // file view height
     }
 
     return height;
