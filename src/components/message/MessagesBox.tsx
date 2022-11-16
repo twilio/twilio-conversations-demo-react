@@ -22,7 +22,7 @@ import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 
 export async function loadMessages(
   conversation: ReduxConversation,
-  addMessage: AddMessagesType,
+  upsertMessage: AddMessagesType,
   currentMessages: ReduxMessage[] = []
 ): Promise<void> {
   const convoSid: string = conversation.sid;
@@ -32,7 +32,7 @@ export async function loadMessages(
     const paginator = await getMessages(getSdkConversationObject(conversation));
     const messages = paginator.items;
     //save to redux
-    addMessage(convoSid, messages);
+    upsertMessage(convoSid, messages);
   }
 }
 
@@ -40,7 +40,7 @@ interface MessageProps {
   convoSid: string;
   client?: Client;
   convo: ReduxConversation;
-  addMessage: AddMessagesType;
+  upsertMessage: AddMessagesType;
   messages: ReduxMessage[];
   loadingState: boolean;
   participants: ReduxParticipant[];
@@ -48,7 +48,7 @@ interface MessageProps {
 }
 
 const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
-  const { messages, convo, loadingState, lastReadIndex, addMessage } = props;
+  const { messages, convo, loadingState, lastReadIndex, upsertMessage } = props;
   const [hasMore, setHasMore] = useState(
     messages?.length === CONVERSATION_PAGE_SIZE
   );
@@ -61,7 +61,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
 
   useEffect(() => {
     if (!messages && convo && !loadingState) {
-      loadMessages(convo, addMessage);
+      loadMessages(convo, upsertMessage);
     }
   }, []);
 
@@ -85,7 +85,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
 
   useEffect(() => {
     if (messages?.length && messages[messages.length - 1].index !== -1) {
-      sdkConvo.updateLastReadMessageIndex(messages[messages.length - 1].index);
+      sdkConvo.advanceLastReadMessageIndex(messages[messages.length - 1].index);
     }
   }, [messages, convo]);
 
@@ -112,7 +112,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
     setLoading(true);
     setPaginator(result);
     setHasMore(result.hasPrevPage);
-    addMessage(convo.sid, moreMessages);
+    upsertMessage(convo.sid, moreMessages);
   };
 
   return (

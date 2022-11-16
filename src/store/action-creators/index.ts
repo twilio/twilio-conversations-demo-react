@@ -60,7 +60,7 @@ export const setLastReadIndex = (index: number) => {
   };
 };
 
-export const addMessages = (
+export const upsertMessages = (
   channelSid: string,
   messages: (Message | ReduxMessage)[]
 ) => {
