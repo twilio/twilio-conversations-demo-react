@@ -8,6 +8,7 @@ import React, {
 
 import { Client, Message, Paginator } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
+import _ from "lodash";
 
 import MessageList from "./MessageList";
 import { AddMessagesType } from "../../types";
@@ -18,14 +19,14 @@ import { getSdkConversationObject } from "../../conversations-objects";
 import { ReduxMessage } from "../../store/reducers/messageListReducer";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 
+/// Load first batch of messages from the conversation.
 export async function loadMessages(
   conversation: ReduxConversation,
   addMessage: AddMessagesType,
   currentMessages: ReduxMessage[] = []
 ): Promise<void> {
   const convoSid: string = conversation.sid;
-  const sidExists = !!currentMessages.filter(({ sid }) => sid === convoSid)
-    .length;
+  const sidExists = _.some(currentMessages, ({ sid }) => sid === convoSid);
   if (!sidExists) {
     const paginator = await getMessages(getSdkConversationObject(conversation));
     const messages = paginator.items;
