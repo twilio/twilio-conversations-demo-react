@@ -180,14 +180,12 @@ const MessageView: React.FC<SingleMessageProps> = (
               </div>
             ) : null}
 
-            {status[MessageStatus.Delivered] || status[MessageStatus.Read] ? (
-              <Reactions
-                reactions={props.reactions}
-                onReactionsChanged={(reactions) =>
-                  props.updateAttributes({ reactions })
-                }
-              />
-            ) : null}
+            <Reactions
+              reactions={props.reactions}
+              onReactionsChanged={(reactions) =>
+                props.updateAttributes({ reactions })
+              }
+            />
           </Box>
         </>
       )}
