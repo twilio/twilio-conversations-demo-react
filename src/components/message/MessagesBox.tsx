@@ -67,7 +67,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
   useLayoutEffect(() => {
     const currentHeight = listRef.current?.clientHeight;
     if (currentHeight && currentHeight > height && loading) {
-      // for preventing immediate downloading of the next messages page
+      // prevent an immediate download of the next messages page
       setTimeout(() => {
         setHeight(currentHeight ?? 0);
         setLoading(false);
