@@ -229,8 +229,6 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                       ReactionsType | undefined
                     >;
 
-                    // @todo move message rendering here!
-
                     content = (
                       <div key={message.sid + "message"}>
                         {lastReadIndex !== -1 &&
@@ -245,9 +243,9 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                           reactions={attributes["reactions"]}
                           text={message.body ?? ""}
                           media={
-                            message.attachedMedia?.length ? (
+                            messageHasMedia(message) ? (
                               <MessageMedia
-                                key={message.sid}
+                                key={message.sid + "media"}
                                 attachments={
                                   conversationAttachments?.[message.sid]
                                 }
