@@ -23,7 +23,7 @@ export type ReduxMedia = {
 export type ReduxMessage = {
   sid: string;
   index: number;
-  body: string | null;
+  body: string;
   author: string | null;
   attributes: JSONValue;
   participantSid: string | null;
@@ -46,7 +46,7 @@ const initialState: ChatMessagesState = {};
 const reduxifyMessage = (message: Message | ReduxMessage): ReduxMessage => ({
   sid: message.sid,
   index: message.index,
-  body: message.body,
+  body: message.body ?? "",
   author: message.author,
   participantSid: message.participantSid,
   attributes: message.attributes,

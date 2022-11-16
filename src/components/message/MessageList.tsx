@@ -33,6 +33,7 @@ import TimeAgo from "javascript-time-ago";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import styles from "../../styles";
 import { Message } from "@twilio/conversations";
+import wrap from "word-wrap";
 
 const messageHasMedia = (message: ReduxMessage | Message): boolean => {
   return !!message.attachedMedia && message.attachedMedia.length > 0; // @todo category filter?
@@ -137,29 +138,13 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
 
   const getMessageHeight = (index: number) => {
     const message = messages[index];
-    let height = message.author === localStorage.getItem("username") ? 98 : 93; // empty message block with/without statuses
+    const iAmAuthor = message.author === localStorage.getItem("username");
+    let height = iAmAuthor ? 98 : 93; // empty message block with/without statuses
     height += 24; // padding top & bottom
 
-    // calculating text message height
-    const words = message.body?.split(" ") ?? [];
-    let lineChars = 0;
-
-    if (words.length) {
-      height += 17;
-    }
-
-    words.forEach((word) => {
-      if (lineChars + word.length < 75) {
-        if (lineChars == 0) {
-          lineChars = word.length;
-        } else {
-          lineChars += word.length + 1;
-        }
-      } else {
-        height += 17;
-        lineChars = word.length;
-      }
-    });
+    height += wrap(message.body, { width: 75, indent: "", cut: true }).split(
+      "\n"
+    ).length;
 
     // calculating media message height
     if (messageHasMedia(message)) {
