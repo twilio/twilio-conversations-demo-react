@@ -8,9 +8,13 @@
 
 # production
 /build
+.build
 
 # misc
 /.idea
+.config
+.replit
+replit.nix
 .DS_Store
 .env
 .env.local
