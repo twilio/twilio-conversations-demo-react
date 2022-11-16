@@ -93,7 +93,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
 
   const onMessageSend = async () => {
     if (message.length == 0 && files.length == 0) {
-        return;
+      return;
     }
 
     const { convo, client } = props;
