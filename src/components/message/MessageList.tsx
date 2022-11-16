@@ -98,12 +98,11 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     if (lastReadIndex === -1 || horizonMessageCount) {
       return;
     }
-    const showIndex = 0;
     getSdkConversationObject(conversation)
       .getUnreadMessagesCount()
       .then((count) => {
         setHorizonMessageCount(count ?? 0);
-        setShowHorizonIndex(showIndex);
+        setShowHorizonIndex(0);
       });
   }, [messages, lastReadIndex]);
 
