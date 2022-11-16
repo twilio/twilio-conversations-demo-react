@@ -33,7 +33,7 @@ const reducer = (
       const { participants, sid } = action.payload;
 
       for (const participant of participants) {
-        participantsMap.set(sid, participant);
+        participantsMap.set(participant.sid, participant);
       }
 
       return Object.assign({}, state, {
