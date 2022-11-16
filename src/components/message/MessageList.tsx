@@ -107,16 +107,13 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
       });
   }, [messages, lastReadIndex]);
 
-  function setTopPadding(index: number) {
-    if (
-      props.messages[index] !== undefined &&
-      props.messages[index - 1] !== undefined &&
-      props.messages[index].author === props.messages[index - 1].author
-    ) {
-      return theme.space.space20;
-    }
-    return theme.space.space50;
-  }
+  const authorNotChanged = (newIndex: number) =>
+    props.messages[newIndex] !== undefined &&
+    props.messages[newIndex - 1] !== undefined &&
+    props.messages[newIndex].author === props.messages[newIndex - 1].author;
+
+  const setTopPadding = (index: number) =>
+    authorNotChanged(index) ? theme.space.space20 : theme.space.space50;
 
   const onDownloadAttachments = async (message: ReduxMessage) => {
     const attachedMedia = message.attachedMedia?.map(getSdkMediaObject);
@@ -302,9 +299,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                           lastMessageBottomPadding={
                             index === messagesLength - 1 ? 16 : 0
                           }
-                          sameAuthorAsPrev={
-                            setTopPadding(index) !== theme.space.space20
-                          }
+                          sameAuthorAsPrev={authorNotChanged(index)}
                           messageTime={getMessageTime(message)}
                           updateAttributes={(attribute) =>
                             getSdkMessageObject(message).updateAttributes({
