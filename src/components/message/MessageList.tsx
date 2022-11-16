@@ -34,6 +34,7 @@ import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import styles from "../../styles";
 import { Message } from "@twilio/conversations";
 import wrap from "word-wrap";
+import { MAX_MESSAGE_LINE_WIDTH } from "../../constants";
 
 const messageHasMedia = (
   message: ReduxMessage | Message
@@ -144,9 +145,11 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     let height = iAmAuthor ? 98 : 93; // empty message block with/without statuses
     height += 24; // padding top & bottom
 
-    height += wrap(message.body, { width: 75, indent: "", cut: true }).split(
-      "\n"
-    ).length;
+    height += wrap(message.body, {
+      width: MAX_MESSAGE_LINE_WIDTH,
+      indent: "",
+      cut: true,
+    }).split("\n").length;
 
     // calculating media message height
     if (messageHasMedia(message)) {
@@ -211,6 +214,12 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                       ReactionsType | undefined
                     >;
 
+                    const wrappedBody = wrap(message.body, {
+                      width: MAX_MESSAGE_LINE_WIDTH,
+                      indent: "",
+                      cut: true,
+                    });
+
                     content = (
                       <div key={message.sid + "messageDiv"}>
                         {lastReadIndex !== -1 &&
@@ -223,7 +232,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                         ) : null}
                         <MessageView
                           reactions={attributes["reactions"]}
-                          text={message.body ?? ""}
+                          text={wrappedBody}
                           media={
                             messageHasMedia(message) ? (
                               <MessageMedia
