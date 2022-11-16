@@ -40,10 +40,8 @@ const MessageInputField: React.FC<SendMessageProps> = (
   const typingInfo = getTypingMessage(props.typingData);
 
   const dispatch = useDispatch();
-  const { upsertMessages, addNotifications, addAttachment } = bindActionCreators(
-    actionCreators,
-    dispatch
-  );
+  const { upsertMessages, addNotifications, addAttachment } =
+    bindActionCreators(actionCreators, dispatch);
 
   useEffect(() => {
     setMessage("");
