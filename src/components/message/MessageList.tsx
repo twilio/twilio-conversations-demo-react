@@ -315,23 +315,20 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
       </AutoSizer>
       {imagePreview
         ? (function () {
-            const dateString = imagePreview?.message.dateCreated;
-            const date = dateString ? new Date(dateString) : "";
+            const dateString =
+              imagePreview?.message.dateCreated?.toLocaleDateString("default", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+              }) ?? "";
             return (
               <ImagePreviewModal
                 image={imagePreview.file}
                 isOpen={!!imagePreview}
                 author={imagePreview?.message.author ?? ""}
-                date={
-                  date
-                    ? date.toDateString() +
-                      ", " +
-                      date.getHours() +
-                      ":" +
-                      (date.getMinutes() < 10 ? "0" : "") +
-                      date.getMinutes()
-                    : ""
-                }
+                date={dateString}
                 handleClose={() => setImagePreview(null)}
                 onDownload={() => {
                   saveAs(
