@@ -85,7 +85,7 @@ const AppContainer: React.FC = () => {
 
   const dispatch = useDispatch();
   const {
-    addMessages,
+    upsertMessages,
     updateLoadingState,
     updateParticipants,
     updateUnreadMessages,
@@ -156,7 +156,7 @@ const AppContainer: React.FC = () => {
           updateParticipants(result, conversation.sid);
 
           const messages = await conversation.getMessages();
-          addMessages(conversation.sid, messages.items);
+          upsertMessages(conversation.sid, messages.items);
           loadUnreadMessagesCount(conversation, updateUnreadMessages);
         }
       }, addNotifications);
@@ -170,7 +170,7 @@ const AppContainer: React.FC = () => {
       }, addNotifications);
     });
     client.on("messageAdded", (message: Message) => {
-      addMessage(message, addMessages, updateUnreadMessages);
+      upsertMessage(message, upsertMessages, updateUnreadMessages);
       if (message.author === localStorage.getItem("username")) {
         clearAttachments(message.conversation.sid, "-1");
       }
@@ -199,6 +199,7 @@ const AppContainer: React.FC = () => {
     });
 
     client.on("messageUpdated", ({ message }) => {
+      upsertMessage(message, upsertMessages, updateUnreadMessages);
       handlePromiseRejection(() => {}, addNotifications);
     });
 
@@ -238,17 +239,17 @@ const AppContainer: React.FC = () => {
     };
   }, []);
 
-  function addMessage(
+  function upsertMessage(
     message: Message,
-    addMessages: AddMessagesType,
+    upsertMessages: AddMessagesType,
     updateUnreadMessages: SetUnreadMessagesType
   ) {
     //transform the message and add it to redux
     handlePromiseRejection(() => {
       if (sidRef.current === message.conversation.sid) {
-        message.conversation.updateLastReadMessageIndex(message.index);
+        message.conversation.advanceLastReadMessageIndex(message.index);
       }
-      addMessages(message.conversation.sid, [message]);
+      upsertMessages(message.conversation.sid, [message]);
       loadUnreadMessagesCount(message.conversation, updateUnreadMessages);
     }, addNotifications);
   }

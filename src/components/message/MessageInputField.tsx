@@ -40,7 +40,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
   const typingInfo = getTypingMessage(props.typingData);
 
   const dispatch = useDispatch();
-  const { addMessages, addNotifications, addAttachment } = bindActionCreators(
+  const { upsertMessages, addNotifications, addAttachment } = bindActionCreators(
     actionCreators,
     dispatch
   );
@@ -129,13 +129,13 @@ const MessageInputField: React.FC<SendMessageProps> = (
     }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    // addMessages(convo.sid, [newMessage]);
+    // upsertMessages(convo.sid, [newMessage]);
     setMessage("");
     setFiles([]);
     const messageIndex = await newMessageBuilder.build().send();
 
     try {
-      await sdkConvo.updateLastReadMessageIndex(messageIndex);
+      await sdkConvo.advanceLastReadMessageIndex(messageIndex ?? 0);
     } catch (e) {
       unexpectedErrorNotification(addNotifications);
       return Promise.reject(UNEXPECTED_ERROR_MESSAGE);

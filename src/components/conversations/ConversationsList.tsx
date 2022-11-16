@@ -131,7 +131,7 @@ const ConversationsList: React.FC = () => {
               if (lastMessage && lastMessage.index !== -1) {
                 await getSdkConversationObject(
                   convo
-                ).updateLastReadMessageIndex(lastMessage.index);
+                ).advanceLastReadMessageIndex(lastMessage.index);
               }
             } catch {
               unexpectedErrorNotification(addNotifications);
