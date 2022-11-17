@@ -40,10 +40,8 @@ const MessageInputField: React.FC<SendMessageProps> = (
   const typingInfo = getTypingMessage(props.typingData);
 
   const dispatch = useDispatch();
-  const { upsertMessages, addNotifications, addAttachment } = bindActionCreators(
-    actionCreators,
-    dispatch
-  );
+  const { upsertMessages, addNotifications, addAttachment } =
+    bindActionCreators(actionCreators, dispatch);
 
   useEffect(() => {
     setMessage("");
@@ -94,6 +92,10 @@ const MessageInputField: React.FC<SendMessageProps> = (
   };
 
   const onMessageSend = async () => {
+    if (message.length == 0 && files.length == 0) {
+      return;
+    }
+
     const { convo, client } = props;
     const currentDate: Date = new Date();
     const sdkConvo = getSdkConversationObject(convo);

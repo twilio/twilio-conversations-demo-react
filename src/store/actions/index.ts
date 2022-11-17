@@ -14,8 +14,8 @@ interface LogOutAction {
   type: ActionType.LOGOUT;
 }
 
-interface AddConversation {
-  type: ActionType.ADD_CONVERSATION;
+interface UpsertConversation {
+  type: ActionType.UPSERT_CONVERSATION;
   payload: Conversation;
 }
 
@@ -110,7 +110,7 @@ interface RemoveNotifications {
 export type Action =
   | LoginAction
   | LogOutAction
-  | AddConversation
+  | UpsertConversation
   | RemoveConversation
   | UpdateCurrentConversation
   | SetLastReadIndex

@@ -31,6 +31,7 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
 
   const onCancel = () => {
     setError("");
+    setFormDirty(false);
     setTitle(props.title);
     props.onCancel();
   };
@@ -88,9 +89,11 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
                 isFocused={true}
                 label="Conversation name"
                 input={title}
-                placeholder="Conversation name"
-                onChange={setTitle}
-                onBlur={() => setFormDirty(true)}
+                placeholder="Enter conversation name"
+                onChange={(s) => {
+                  setTitle(s);
+                  setFormDirty(s.length === 0);
+                }}
                 error={
                   error
                     ? error
