@@ -28,6 +28,8 @@ import {
 import { getSdkConversationObject } from "../../conversations-objects";
 import TimeAgo from "javascript-time-ago";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
+import wrap from "word-wrap";
+import { MAX_MESSAGE_LINE_WIDTH } from "../../constants";
 
 interface MessageListProps {
   messages: ReduxMessage[];
@@ -146,6 +148,12 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           ReactionsType | undefined
         >;
 
+        const wrappedBody = wrap(message.body ?? "", {
+          width: MAX_MESSAGE_LINE_WIDTH,
+          indent: "",
+          cut: true,
+        });
+
         return (
           <div key={message.sid + "message"}>
             {lastReadIndex !== -1 &&
@@ -155,7 +163,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
             ) : null}
             <MessageView
               reactions={attributes["reactions"]}
-              text={message.body ?? ""}
+              text={wrappedBody}
               media={
                 message.attachedMedia?.length ? (
                   <MessageMedia

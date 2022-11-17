@@ -35,3 +35,5 @@ export const NOTIFICATION_LEVEL = {
   DEFAULT: "default",
   MUTED: "muted",
 };
+
+export const MAX_MESSAGE_LINE_WIDTH = 75;
