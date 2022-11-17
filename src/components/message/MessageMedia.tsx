@@ -42,7 +42,7 @@ const MessageMedia: React.FC<MessageMediaProps> = ({
               position: "relative",
               borderRadius: "4px",
             }}
-            onClick={() => onOpen(img.sid, img)}
+            onClick={() => isMediaLoaded && onOpen(img.sid, img)}
           >
             <div
               style={{
@@ -92,9 +92,7 @@ const MessageMedia: React.FC<MessageMediaProps> = ({
             backgroundColor: "#fff",
             cursor: "pointer",
           }}
-          onClick={() =>
-            isMediaLoaded ? onOpen(file.sid, undefined, file) : null
-          }
+          onClick={() => isMediaLoaded && onOpen(file.sid, undefined, file)}
         >
           <Box
             style={{
