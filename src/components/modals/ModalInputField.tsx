@@ -37,6 +37,7 @@ interface ModalInputProps {
   showPassword?: boolean;
   isFocused?: boolean;
   setShowPassword?: Dispatch<SetStateAction<boolean>>;
+  id?: string;
 }
 
 const ModalInputField: React.FC<ModalInputProps> = (props: ModalInputProps) => {
@@ -48,6 +49,7 @@ const ModalInputField: React.FC<ModalInputProps> = (props: ModalInputProps) => {
         <div style={styles.modalInputLabel}>{props.label}</div>
       </Label>
       <Input
+        id={props.id}
         autoFocus={props.isFocused ?? false}
         type={props.inputType ?? InputType.Text}
         value={props.input}

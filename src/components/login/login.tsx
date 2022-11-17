@@ -71,6 +71,7 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
               input={username}
               onBlur={() => setFormDirty(true)}
               onChange={setUsername}
+              id="username"
             />
           </Box>
           <Box style={styles.passwordInput}>
@@ -87,6 +88,7 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
               inputType={showPassword ? InputType.Text : InputType.Password}
               showPassword={showPassword}
               setShowPassword={setShowPassword}
+              id="password"
             />
           </Box>
           <Box style={styles.loginButton}>
@@ -100,6 +102,7 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
                   setFormError(error);
                 }
               }}
+              id="login"
             >
               Sign in
             </Button>
