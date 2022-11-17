@@ -24,10 +24,10 @@ export const logout = () => {
   };
 };
 
-export const addConversation = (convo: Conversation) => {
+export const upsertConversation = (convo: Conversation) => {
   return (dispatch: Dispatch<Action>): void => {
     dispatch({
-      type: ActionType.ADD_CONVERSATION,
+      type: ActionType.UPSERT_CONVERSATION,
       payload: convo,
     });
   };
