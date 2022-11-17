@@ -91,7 +91,7 @@ const AppContainer: React.FC = () => {
     updateUnreadMessages,
     startTyping,
     endTyping,
-    addConversation,
+    upsertConversation,
     login,
     removeMessages,
     removeConversation,
@@ -133,7 +133,7 @@ const AppContainer: React.FC = () => {
     });
 
     client.on("conversationJoined", (conversation) => {
-      addConversation(conversation);
+      upsertConversation(conversation);
 
       conversation.on("typingStarted", (participant) => {
         handlePromiseRejection(
@@ -195,12 +195,11 @@ const AppContainer: React.FC = () => {
       );
     });
     client.on("conversationUpdated", ({ conversation }) => {
-      handlePromiseRejection(() => {}, addNotifications);
+      handlePromiseRejection(() => upsertConversation(conversation), addNotifications);
     });
 
     client.on("messageUpdated", ({ message }) => {
-      upsertMessage(message, upsertMessages, updateUnreadMessages);
-      handlePromiseRejection(() => {}, addNotifications);
+      handlePromiseRejection(() => upsertMessage(message, upsertMessages, updateUnreadMessages), addNotifications);
     });
 
     client.on("messageRemoved", (message) => {

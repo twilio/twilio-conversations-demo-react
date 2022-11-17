@@ -25,7 +25,7 @@ const reducer = (
   action: Action
 ): ReduxConversation[] => {
   switch (action.type) {
-    case ActionType.ADD_CONVERSATION:
+    case ActionType.UPSERT_CONVERSATION:
       const {
         sid,
         friendlyName,
