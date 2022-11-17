@@ -42,7 +42,6 @@ export default {
   } as CSSProperties,
   userTile: {
     display: "flex",
-    lineHeight: "32px",
     color: "#fff",
   },
   paginationSpinner: {

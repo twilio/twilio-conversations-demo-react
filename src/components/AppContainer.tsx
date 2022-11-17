@@ -7,6 +7,7 @@ import {
   Conversation,
   Participant,
   Client,
+  ConnectionState,
 } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
 
@@ -72,7 +73,9 @@ async function getSubscribedConversations(
 
 const AppContainer: React.FC = () => {
   /* eslint-disable */
+  const [connectionState, setConnectionState] = useState<ConnectionState>();
   const [client, setClient] = useState<Client>();
+  const [clientIteration, setClientIteration] = useState(0);
   const token = useSelector((state: AppState) => state.token);
   const conversations = useSelector((state: AppState) => state.convos);
   const sid = useSelector((state: AppState) => state.sid);
@@ -118,11 +121,17 @@ const AppContainer: React.FC = () => {
     callback(sid, identity || friendlyName || "");
   };
   useEffect(() => {
+    initFcmServiceWorker().catch(() => {
+      console.error(
+        "FCM initialization failed: no push notifications will be available"
+      );
+    });
+  }, []);
+  useEffect(() => {
     const client = new Client(token);
     setClient(client);
 
     const fcmInit = async () => {
-      await initFcmServiceWorker();
       await subscribeFcmNotifications(client);
     };
 
@@ -174,7 +183,6 @@ const AppContainer: React.FC = () => {
       if (message.author === localStorage.getItem("username")) {
         clearAttachments(message.conversation.sid, "-1");
       }
-
     });
     client.on("participantLeft", (participant) => {
       handlePromiseRejection(
@@ -195,11 +203,17 @@ const AppContainer: React.FC = () => {
       );
     });
     client.on("conversationUpdated", ({ conversation }) => {
-      handlePromiseRejection(() => upsertConversation(conversation), addNotifications);
+      handlePromiseRejection(
+        () => upsertConversation(conversation),
+        addNotifications
+      );
     });
 
     client.on("messageUpdated", ({ message }) => {
-      handlePromiseRejection(() => upsertMessage(message, upsertMessages, updateUnreadMessages), addNotifications);
+      handlePromiseRejection(
+        () => upsertMessage(message, upsertMessages, updateUnreadMessages),
+        addNotifications
+      );
     });
 
     client.on("messageRemoved", (message) => {
@@ -225,9 +239,23 @@ const AppContainer: React.FC = () => {
     client.on("tokenAboutToExpire", () => {
       if (username && password) {
         getToken(username, password).then((token) => {
+          client.updateToken(token);
           login(token);
         });
       }
+    });
+
+    client.on("tokenExpired", () => {
+      if (username && password) {
+        getToken(username, password).then((token) => {
+          login(token);
+          setClientIteration((x) => x + 1);
+        });
+      }
+    });
+
+    client.on("connectionStateChanged", (state) => {
+      setConnectionState(state);
     });
 
     updateLoadingState(false);
@@ -236,7 +264,7 @@ const AppContainer: React.FC = () => {
     return () => {
       client?.removeAllListeners();
     };
-  }, []);
+  }, [clientIteration]);
 
   function upsertMessage(
     message: Message,
@@ -275,6 +303,7 @@ const AppContainer: React.FC = () => {
               registration.unregister();
             }
           }}
+          connectionState={connectionState ?? "disconnected"}
         />
       </Box>
       <Box style={stylesheet.appContainer(alertsExist)}>
