@@ -105,7 +105,7 @@ This demo app uses Firebase for processing notifications. This setup is optional
 4. Note or copy the Server Key token for creating push credentials. 
 
 ### Create Push Credential
-We need to create a push credential to add a push grant to our access token. 
+Create a push credential to add a push grant to our access token. 
 1. Go to the [Credentials](twilio.com/console/project/credentials/push-credentials) section of the console.
 2. Create a new FCM Push Credential and set the Firebase Cloud Message Server Key Token as the `FCM Secret`.
 3. Note or copy the `CREDENTIAL SID` to set as `PUSH_CREDENTIAL_SID` env variable in your token creation Function. 
