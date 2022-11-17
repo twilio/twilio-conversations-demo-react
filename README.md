@@ -9,6 +9,7 @@ The latest available SDK version of this demo app: ![](https://img.shields.io/ba
 Welcome to the Conversations Demo Web application. This application demonstrates a basic Conversations client application with the ability to create and join conversations, add other participants into the conversations and exchange messages.
 
 What you'll need to get started:
+
 - A [fork](https://github.com/twilio/twilio-conversations-demo-react/fork) of this repo to work with.
 - A way to [generate Conversations access tokens](#generating-access-tokens).
 - Optional: A Firebase project to [set up push notifications](#setting-up-push-notifications).
