@@ -87,6 +87,7 @@ exports.handler = function(context, event, callback) {
     - Add `TWILIO_API_KEY_SID` and `TWILIO_API_KEY_SECRET`. Create API Keys [in the console](https://www.twilio.com/console/project/api-keys).
     - Optionally add `PUSH_CREDENTIAL_SID`, for more info see [Setting up Push Notifications](#setting-up-push-notifications)
 7. **Copy URL** from the "kebab" three dot menu next to it and and use it as `REACT_APP_ACCESS_TOKEN_SERVICE_URL` .env variable below.
+8. Click **Deploy All**.
 
 ### Set the Token Service URL
 
