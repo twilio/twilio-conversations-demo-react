@@ -1,5 +1,5 @@
 # dependencies
-/AutomationDemo/node_modules
+/AutomationTests/node_modules
 /node_modules
 /.pnp
 .pnp.js
