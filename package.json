@@ -9,7 +9,7 @@
     "axios": "0.21.3",
     "dotenv": "10.0.0",
     "file-saver": "2.0.5",
-    "firebase": "9.6.7",
+    "firebase": "9.15.0",
     "javascript-time-ago": "^2.5.7",
     "lodash": "4.17.21",
     "prop-types": "15.7.2",
