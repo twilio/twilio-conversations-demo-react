@@ -26,10 +26,13 @@
     "word-wrap": "^1.2.3"
   },
   "scripts": {
-    "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:wdio": "cd AutomationTests; npm install",
+    "eject": "react-scripts eject",
+    "generateCircleConfig": "npx ts-node --project tsconfig.tools.json ./tools/circle-config-generator/generate-circle-config.ts",
+    "start": "react-scripts start",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test:wdio": "cd AutomationTests; npm run wdio"
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +52,7 @@
     ]
   },
   "devDependencies": {
+    "@circleci/circleci-config-sdk": "^0.12.0",
     "@types/file-saver": "2.0.3",
     "@types/lodash": "4.14.182",
     "@types/react": "^17.0.0",
