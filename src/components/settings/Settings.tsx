@@ -8,7 +8,11 @@ import { Box, Spinner } from "@twilio-paste/core";
 import SettingsMenu from "./SettingsMenu";
 import ManageParticipantsModal from "../modals/manageParticipantsModal";
 import { Content } from "../../types";
-import { addParticipant, removeParticipant } from "../../api";
+import {
+  addChatParticipant,
+  addNonChatParticipant,
+  removeParticipant,
+} from "../../api";
 import AddChatParticipantModal from "../modals/addChatMemberModal";
 import AddSMSParticipantModal from "../modals/addSMSParticipantModal";
 import AddWhatsAppParticipantModal from "../modals/addWhatsAppParticipant";
@@ -113,8 +117,8 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
               addNotifications,
             });
             updateCurrentConversation("");
-          } catch {
-            unexpectedErrorNotification(addNotifications);
+          } catch (e) {
+            unexpectedErrorNotification(e.message, addNotifications);
           }
         }}
         updateConvo={(val: string) =>
@@ -212,10 +216,9 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           }}
           action={async () => {
             try {
-              await addParticipant(
+              await addNonChatParticipant(
                 SMS_PREFIX + name,
                 SMS_PREFIX + nameProxy,
-                false,
                 sdkConvo,
                 addNotifications
               );
@@ -264,10 +267,9 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           }}
           action={async () => {
             try {
-              await addParticipant(
+              await addNonChatParticipant(
                 WHATSAPP_PREFIX + name,
                 WHATSAPP_PREFIX + nameProxy,
-                false,
                 sdkConvo,
                 addNotifications
               );
@@ -302,13 +304,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           }}
           action={async () => {
             try {
-              await addParticipant(
-                name.trim(),
-                nameProxy,
-                true,
-                sdkConvo,
-                addNotifications
-              );
+              await addChatParticipant(name.trim(), sdkConvo, addNotifications);
               emptyData();
             } catch (e) {
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);

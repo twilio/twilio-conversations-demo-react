@@ -24,7 +24,7 @@ async function login(
   try {
     const token = await getToken(username.trim(), password);
     if (token === "") {
-      return "Something went wrong.";
+      return "Received an empty token from backend.";
     }
 
     localStorage.setItem("username", username);
