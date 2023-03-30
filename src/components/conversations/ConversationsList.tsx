@@ -42,14 +42,8 @@ async function updateCurrentConvo(
 ) {
   setSid(convo.sid);
 
-  try {
-    const participants = await getSdkConversationObject(
-      convo
-    ).getParticipants();
-    updateParticipants(participants, convo.sid);
-  } catch (e) {
-    return Promise.reject(e);
-  }
+  const participants = await getSdkConversationObject(convo).getParticipants();
+  updateParticipants(participants, convo.sid);
 }
 
 function setUnreadMessagesCount(

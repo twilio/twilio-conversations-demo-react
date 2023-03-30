@@ -32,12 +32,12 @@ export async function addConversation(
 ): Promise<Conversation> {
   if (client === undefined) {
     return Promise.reject(
-      "Client is suddenly undefined, are you sure everything is ok?"
+      new Error("Client is suddenly undefined, are you sure everything is ok?")
     );
   }
 
   if (name.length === 0) {
-    return Promise.reject("Conversation name is empty");
+    return Promise.reject(new Error("Conversation name is empty"));
   }
 
   try {
@@ -71,14 +71,16 @@ export async function addParticipant(
 ): Promise<ParticipantResponse> {
   if (convo === undefined) {
     return Promise.reject(
-      "Conversation is suddenly undefined, are you sure everything is ok?"
+      new Error(
+        "Conversation is suddenly undefined, are you sure everything is ok?"
+      )
     );
   }
 
   // if (!chatParticipant) {
-  //   return Promise.reject(
+  //   return Promise.reject(new Error(
   //     "Participant is suddenly undefined, are you sure everything is ok?"
-  //   );
+  //   ));
   // }
 
   if (chatParticipant && name.length > 0) {
@@ -90,6 +92,7 @@ export async function addParticipant(
       });
       return result;
     } catch (e) {
+      unexpectedErrorNotification(e.message, addNotifications);
       return Promise.reject(e);
     }
   }
@@ -110,7 +113,7 @@ export async function addParticipant(
       return Promise.reject(e);
     }
   }
-  return Promise.reject("This shouldn't even exist");
+  return Promise.reject(new Error("This shouldn't even exist"));
 }
 
 export async function getToken(
@@ -121,7 +124,9 @@ export async function getToken(
     .REACT_APP_ACCESS_TOKEN_SERVICE_URL as string;
   if (!requestAddress) {
     return Promise.reject(
-      "REACT_APP_ACCESS_TOKEN_SERVICE_URL is not configured, cannot login"
+      new Error(
+        "REACT_APP_ACCESS_TOKEN_SERVICE_URL is not configured, cannot login"
+      )
     );
   }
 
@@ -132,11 +137,15 @@ export async function getToken(
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      return Promise.reject(error.response.data ?? "Authentication error.");
+      return Promise.reject(
+        new Error(error.response.data ?? "Authentication error.")
+      );
     }
 
     process.stderr?.write(`ERROR received from ${requestAddress}: ${error}\n`);
-    return Promise.reject(`ERROR received from ${requestAddress}: ${error}\n`);
+    return Promise.reject(
+      new Error(`ERROR received from ${requestAddress}: ${error}\n`)
+    );
   }
 }
 
