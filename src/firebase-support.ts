@@ -32,7 +32,7 @@ export const subscribeFcmNotifications = async (
   }
 
   console.log("FcmNotifications: got fcm token", fcmToken);
-  convoClient.setPushRegistrationId("fcm", fcmToken);
+  await convoClient.setPushRegistrationId("fcm", fcmToken);
   onMessage(messaging, (payload) => {
     console.log("FcmNotifications: push received", payload);
     if (convoClient) {
