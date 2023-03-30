@@ -9,7 +9,7 @@ import { useTheme } from "@twilio-paste/theme";
 import { Text } from "@twilio-paste/text";
 
 import { actionCreators } from "../../store";
-import { MAX_FILE_SIZE, UNEXPECTED_ERROR_MESSAGE } from "../../constants";
+import { MAX_FILE_SIZE } from "../../constants";
 import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
 import MessageInput from "./MessageInput";
 import SendMessageButton from "./SendMessageButton";
@@ -139,8 +139,8 @@ const MessageInputField: React.FC<SendMessageProps> = (
     try {
       await sdkConvo.advanceLastReadMessageIndex(messageIndex ?? 0);
     } catch (e) {
-      unexpectedErrorNotification(addNotifications);
-      return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+      unexpectedErrorNotification(e.message, addNotifications);
+      return Promise.reject(e);
     }
   };
 

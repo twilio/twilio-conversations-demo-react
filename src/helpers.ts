@@ -2,7 +2,7 @@ import {
   NotificationsType,
   NotificationVariantType,
 } from "./store/reducers/notificationsReducer";
-import { NOTIFICATION_TIMEOUT, UNEXPECTED_ERROR_MESSAGE } from "./constants";
+import { NOTIFICATION_TIMEOUT } from "./constants";
 
 export const getTypingMessage = (typingData: string[]): string =>
   typingData.length > 1
@@ -47,6 +47,7 @@ export const successNotification = ({
 };
 
 export const unexpectedErrorNotification = (
+  e: string,
   addNotifications?: (messages: NotificationsType) => void
 ): void => {
   if (!addNotifications) {
@@ -55,7 +56,7 @@ export const unexpectedErrorNotification = (
   pushNotification(
     [
       {
-        message: UNEXPECTED_ERROR_MESSAGE,
+        message: e,
         variant: "error",
       },
     ],
@@ -72,8 +73,8 @@ export const handlePromiseRejection = async (
   }
   try {
     await func();
-  } catch {
-    unexpectedErrorNotification(addNotifications);
-    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+  } catch (e) {
+    unexpectedErrorNotification(e.message, addNotifications);
+    return Promise.reject(e);
   }
 };

@@ -113,8 +113,8 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
               addNotifications,
             });
             updateCurrentConversation("");
-          } catch {
-            unexpectedErrorNotification(addNotifications);
+          } catch (e) {
+            unexpectedErrorNotification(e.message, addNotifications);
           }
         }}
         updateConvo={(val: string) =>

@@ -8,7 +8,6 @@ import {
 } from "../../types";
 import { actionCreators, AppState } from "../../store";
 import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
-import { UNEXPECTED_ERROR_MESSAGE } from "../../constants";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
 import { getSdkConversationObject } from "../../conversations-objects";
 import { ReduxMessage } from "../../store/reducers/messageListReducer";
@@ -48,8 +47,8 @@ async function updateCurrentConvo(
       convo
     ).getParticipants();
     updateParticipants(participants, convo.sid);
-  } catch {
-    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+  } catch (e) {
+    return Promise.reject(e);
   }
 }
 
@@ -133,8 +132,8 @@ const ConversationsList: React.FC = () => {
                   convo
                 ).advanceLastReadMessageIndex(lastMessage.index);
               }
-            } catch {
-              unexpectedErrorNotification(addNotifications);
+            } catch (e) {
+              unexpectedErrorNotification(e.message, addNotifications);
             }
           }}
         />

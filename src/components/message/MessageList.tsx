@@ -209,8 +209,8 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                     message: "Message deleted.",
                     addNotifications,
                   });
-                } catch {
-                  unexpectedErrorNotification(addNotifications);
+                } catch (e) {
+                  unexpectedErrorNotification(e.message, addNotifications);
                 }
               }}
               topPadding={setTopPadding(index)}

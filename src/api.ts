@@ -16,7 +16,6 @@ import {
   CONVERSATION_MESSAGES,
   CONVERSATION_PAGE_SIZE,
   PARTICIPANT_MESSAGES,
-  UNEXPECTED_ERROR_MESSAGE,
 } from "./constants";
 import { NotificationsType } from "./store/reducers/notificationsReducer";
 import { successNotification, unexpectedErrorNotification } from "./helpers";
@@ -31,29 +30,36 @@ export async function addConversation(
   client?: Client,
   addNotifications?: (notifications: NotificationsType) => void
 ): Promise<Conversation> {
-  if (name.length > 0 && client !== undefined) {
-    try {
-      const conversation = await client.createConversation({
-        friendlyName: name,
-      });
-      await conversation.join();
-
-      const participants = await getConversationParticipants(conversation);
-      updateParticipants(participants, conversation.sid);
-
-      successNotification({
-        message: CONVERSATION_MESSAGES.CREATED,
-        addNotifications,
-      });
-
-      return conversation;
-    } catch (e) {
-      unexpectedErrorNotification(addNotifications);
-
-      return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
-    }
+  if (client === undefined) {
+    return Promise.reject(
+      "Client is suddenly undefined, are you sure everything is ok?"
+    );
   }
-  return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+
+  if (name.length === 0) {
+    return Promise.reject("Conversation name is empty");
+  }
+
+  try {
+    const conversation = await client.createConversation({
+      friendlyName: name,
+    });
+    await conversation.join();
+
+    const participants = await getConversationParticipants(conversation);
+    updateParticipants(participants, conversation.sid);
+
+    successNotification({
+      message: CONVERSATION_MESSAGES.CREATED,
+      addNotifications,
+    });
+
+    return conversation;
+  } catch (e) {
+    unexpectedErrorNotification(e.message, addNotifications);
+
+    return Promise.reject(e);
+  }
 }
 
 export async function addParticipant(
@@ -64,8 +70,16 @@ export async function addParticipant(
   addNotifications?: (notifications: NotificationsType) => void
 ): Promise<ParticipantResponse> {
   if (convo === undefined) {
-    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+    return Promise.reject(
+      "Conversation is suddenly undefined, are you sure everything is ok?"
+    );
   }
+
+  // if (!chatParticipant) {
+  //   return Promise.reject(
+  //     "Participant is suddenly undefined, are you sure everything is ok?"
+  //   );
+  // }
 
   if (chatParticipant && name.length > 0) {
     try {
@@ -91,12 +105,12 @@ export async function addParticipant(
 
       return result;
     } catch (e) {
-      unexpectedErrorNotification(addNotifications);
+      unexpectedErrorNotification(e.message, addNotifications);
 
       return Promise.reject(e);
     }
   }
-  return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+  return Promise.reject("This shouldn't even exist");
 }
 
 export async function getToken(
@@ -217,9 +231,9 @@ export const removeParticipant = async (
       message: PARTICIPANT_MESSAGES.REMOVED,
       addNotifications,
     });
-  } catch {
-    unexpectedErrorNotification(addNotifications);
-    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+  } catch (e) {
+    unexpectedErrorNotification(e.message, addNotifications);
+    return Promise.reject(e);
   }
 };
 
@@ -232,8 +246,8 @@ export const getBlobFile = async (
     const response = await fetch(url);
     return response.blob();
   } catch (e) {
-    unexpectedErrorNotification(addNotifications);
-    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+    unexpectedErrorNotification(e.message, addNotifications);
+    return Promise.reject(e);
   }
 };
 
