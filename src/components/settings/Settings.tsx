@@ -225,7 +225,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
               emptyData();
               handleSMSClose();
             } catch (e) {
-              setErrorData(e as any);
+              setErrorData(e.body as any);
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
             }
           }}
@@ -276,7 +276,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
               emptyData();
               handleWhatsAppClose();
             } catch (e) {
-              setErrorData(e as any);
+              setErrorData(e.body as any);
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
             }
           }}
@@ -307,8 +307,8 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
               await addChatParticipant(name.trim(), sdkConvo, addNotifications);
               emptyData();
             } catch (e) {
+              setErrorData(e.body as any);
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
-              setErrorData(e as any);
             }
           }}
         />
