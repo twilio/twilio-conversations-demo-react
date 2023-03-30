@@ -30,6 +30,7 @@ import {
   getSdkParticipantObject,
 } from "../../conversations-objects";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 interface SettingsProps {
   participants: ReduxParticipant[];
@@ -37,6 +38,7 @@ interface SettingsProps {
   convo: ReduxConversation;
 }
 
+const invalidPhoneNumberErrorMessage = "Invalid phone number";
 const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
   const [isManageParticipantOpen, setIsManageParticipantOpen] = useState(false);
   const handleParticipantClose = () => setIsManageParticipantOpen(false);
@@ -182,11 +184,19 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           title="Manage Participants"
           setName={(name: string) => {
             setName(name);
-            setErrors("");
+            setError(
+              !isValidPhoneNumber(`+${name}`)
+                ? invalidPhoneNumberErrorMessage
+                : ""
+            );
           }}
           setProxyName={(name: string) => {
             setNameProxy(name);
-            setErrors("");
+            setErrorProxy(
+              !isValidPhoneNumber(`+${name}`)
+                ? invalidPhoneNumberErrorMessage
+                : ""
+            );
           }}
           error={error}
           errorProxy={errorProxy}
@@ -226,11 +236,19 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           title="Manage Participants"
           setName={(name: string) => {
             setName(name);
-            setErrors("");
+            setError(
+              !isValidPhoneNumber(`+${name}`)
+                ? invalidPhoneNumberErrorMessage
+                : ""
+            );
           }}
           setProxyName={(name: string) => {
             setNameProxy(name);
-            setErrors("");
+            setErrorProxy(
+              !isValidPhoneNumber(`+${name}`)
+                ? invalidPhoneNumberErrorMessage
+                : ""
+            );
           }}
           error={error}
           errorProxy={errorProxy}
@@ -285,7 +303,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           action={async () => {
             try {
               await addParticipant(
-                name,
+                name.trim(),
                 nameProxy,
                 true,
                 sdkConvo,
