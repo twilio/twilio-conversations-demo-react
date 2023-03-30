@@ -62,10 +62,8 @@ export async function addConversation(
   }
 }
 
-export async function addParticipant(
+export async function addChatParticipant(
   name: string,
-  proxyName: string,
-  chatParticipant: boolean,
   convo?: Conversation,
   addNotifications?: (notifications: NotificationsType) => void
 ): Promise<ParticipantResponse> {
@@ -77,43 +75,58 @@ export async function addParticipant(
     );
   }
 
-  // if (!chatParticipant) {
-  //   return Promise.reject(new Error(
-  //     "Participant is suddenly undefined, are you sure everything is ok?"
-  //   ));
-  // }
-
-  if (chatParticipant && name.length > 0) {
-    try {
-      const result = await convo.add(name);
-      successNotification({
-        message: PARTICIPANT_MESSAGES.ADDED,
-        addNotifications,
-      });
-      return result;
-    } catch (e) {
-      unexpectedErrorNotification(e.message, addNotifications);
-      return Promise.reject(e);
-    }
+  if (name.length === 0) {
+    return Promise.reject(new Error("Participant name is empty"));
   }
-  if (!chatParticipant && name.length > 0 && proxyName.length > 0) {
-    try {
-      const result = await convo.addNonChatParticipant(proxyName, name, {
-        friendlyName: name,
-      });
-      successNotification({
-        message: PARTICIPANT_MESSAGES.ADDED,
-        addNotifications,
-      });
 
-      return result;
-    } catch (e) {
-      unexpectedErrorNotification(e.message, addNotifications);
-
-      return Promise.reject(e);
-    }
+  try {
+    const result = await convo.add(name);
+    successNotification({
+      message: PARTICIPANT_MESSAGES.ADDED,
+      addNotifications,
+    });
+    return result;
+  } catch (e) {
+    unexpectedErrorNotification(e.message, addNotifications);
+    return Promise.reject(e);
   }
-  return Promise.reject(new Error("This shouldn't even exist"));
+}
+
+export async function addNonChatParticipant(
+  number: string,
+  proxyNumber: string,
+  convo?: Conversation,
+  addNotifications?: (notifications: NotificationsType) => void
+): Promise<ParticipantResponse> {
+  if (convo === undefined) {
+    return Promise.reject(
+      new Error(
+        "Conversation is suddenly undefined, are you sure everything is ok?"
+      )
+    );
+  }
+
+  if (number.length === 0 || proxyNumber.length === 0) {
+    return Promise.reject(
+      new Error("Both participant number and proxy number must be specified")
+    );
+  }
+
+  try {
+    const result = await convo.addNonChatParticipant(proxyNumber, number, {
+      friendlyName: number,
+    });
+    successNotification({
+      message: PARTICIPANT_MESSAGES.ADDED,
+      addNotifications,
+    });
+
+    return result;
+  } catch (e) {
+    unexpectedErrorNotification(e.message, addNotifications);
+
+    return Promise.reject(e);
+  }
 }
 
 export async function getToken(
