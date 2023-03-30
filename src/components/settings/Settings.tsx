@@ -292,6 +292,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
                 addNotifications
               );
               emptyData();
+              handleChatClose();
             } catch (e) {
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
               setErrorData(e as any);

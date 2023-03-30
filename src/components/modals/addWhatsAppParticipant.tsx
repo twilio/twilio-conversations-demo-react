@@ -31,7 +31,17 @@ const AddWhatsAppParticipantModal: React.FC<AddWhatsAppParticipantModalProps> =
           modalBody={
             <ModalBody>
               <h3>Add WhatsApp participant</h3>
-              <Box as="form">
+              <Box
+                as="form"
+                onKeyPress={async (e) => {
+                  if (e.key === "Enter") {
+                    if (props.action) {
+                      e.preventDefault();
+                      props.action();
+                    }
+                  }
+                }}
+              >
                 <ModalInputField
                   isFocused={true}
                   label="WhatsApp number"
