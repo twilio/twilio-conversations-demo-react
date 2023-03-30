@@ -5,7 +5,7 @@
   "dependencies": {
     "@twilio-paste/core": "14.2.0",
     "@twilio-paste/icons": "8.1.0",
-    "@twilio/conversations": "~2.2.0-rc.11",
+    "@twilio/conversations": "2.2.0",
     "axios": "0.21.3",
     "dotenv": "10.0.0",
     "file-saver": "2.0.5",
@@ -21,7 +21,8 @@
     "react-scripts": "5.0.1",
     "redux": "4.1.0",
     "redux-thunk": "2.3.0",
-    "typescript": "^4.1.2"
+    "typescript": "^4.1.2",
+    "word-wrap": "^1.2.3"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -33,7 +33,7 @@ async function login(
 
     return "";
   } catch (error) {
-    return error;
+    return error as string;
   }
 }
 
