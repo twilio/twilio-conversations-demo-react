@@ -3862,18 +3862,18 @@
   dependencies:
     lodash "^4.17.21"
 
-"@twilio/conversations@~2.2.0-rc.11":
-  version "2.2.0-rc.11"
-  resolved "https://registry.npmjs.org/@twilio/conversations/-/conversations-2.2.0-rc.11.tgz"
-  integrity sha512-rgaqRlWIOpsMO5gFpBoayqheG3c7WFwGGzzbJtNt+QB8b/aWPSoVzpM/tsNcuurlxdU8AaTR/et2hk1ke0UkqQ==
+"@twilio/conversations@2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@twilio/conversations/-/conversations-2.2.0.tgz#2b8e9d9196f410b5cfd11f26e2e85a9bbc40eaa2"
+  integrity sha512-qT00zQ8AfBrY9PgHxLXgLmMNriZIGaT6ZLmAdQkNk32TVN76kDpHgW2EDTMohmLtwpLWwBYDGKBjoVSx6GaY7w==
   dependencies:
     "@babel/runtime" "^7.17.0"
-    "@twilio/declarative-type-validator" "^0.2.0-rc.3"
-    "@twilio/deprecation-decorator" "^0.1.0-rc.12"
-    "@twilio/mcs-client" "^0.6.0-rc.8"
-    "@twilio/notifications" "^2.0.0-rc.3"
-    "@twilio/operation-retrier" "^4.0.8-rc.4"
-    "@twilio/replay-event-emitter" "^0.3.0-rc.4"
+    "@twilio/declarative-type-validator" "^0.2.1"
+    "@twilio/deprecation-decorator" "^0.2.0"
+    "@twilio/mcs-client" "^0.6.1"
+    "@twilio/notifications" "^2.0.1"
+    "@twilio/operation-retrier" "^4.0.9"
+    "@twilio/replay-event-emitter" "^0.3.1"
     core-js "^3.17.3"
     iso8601-duration "=1.2.0"
     isomorphic-form-data "^2.0.0"
@@ -3892,47 +3892,55 @@
     "@babel/runtime" "^7.14.5"
     core-js "^3.17.3"
 
-"@twilio/declarative-type-validator@^0.2.0-rc.3":
-  version "0.2.0-rc.3"
-  resolved "https://registry.npmjs.org/@twilio/declarative-type-validator/-/declarative-type-validator-0.2.0-rc.3.tgz"
-  integrity sha512-T6og0Cz4TCuwuUWIxW9+R20U/cr6YGtNPBkrDCAY5NcLdL0eHZxqO6on6GGGAyzIi6BpgHqL4ndN4il9+gEM2Q==
+"@twilio/declarative-type-validator@^0.2.1", "@twilio/declarative-type-validator@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@twilio/declarative-type-validator/-/declarative-type-validator-0.2.4.tgz#23d3afd2555a5d1b81f7e0269bde76f68825d8ef"
+  integrity sha512-3n/qfahRnA/fGFmyvRzKToo4Kdh4DuWDcsqczov7hOEcXux0ZIsFpnse7NpFt0ggfpAqfZsiwyCAhWZatfth0w==
   dependencies:
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
 
-"@twilio/deprecation-decorator@^0.1.0-rc.12":
-  version "0.1.0-rc.12"
-  resolved "https://registry.npmjs.org/@twilio/deprecation-decorator/-/deprecation-decorator-0.1.0-rc.12.tgz"
-  integrity sha512-TNdDoj3Bgnse5DwSa927QqtMjM2oicXyfRf4FzB0oL44Y+IhGPFnvTrQPx4s/O1HipZhT5fnEl0wd12+CpymRQ==
+"@twilio/deprecation-decorator@^0.2.0":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@twilio/deprecation-decorator/-/deprecation-decorator-0.2.2.tgz#15d173d0aa2e1adf9421e4e6aadc6df8a64450a1"
+  integrity sha512-EJKEZyH9TD/NEgBxyV/5RbqKGj5VJPhf9fTnhOnc3ie1FBLbPXIN+FnS0FeSQo2GLtPjRfU4xf25JXPleJZCPw==
   dependencies:
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
     loglevel "1.8.0"
 
-"@twilio/mcs-client@^0.6.0-rc.8":
-  version "0.6.0-rc.8"
-  resolved "https://registry.npmjs.org/@twilio/mcs-client/-/mcs-client-0.6.0-rc.8.tgz"
-  integrity sha512-KP3gKY9rxG2UKRCRLnghDU6enyralYUOk+QKmKkj5QEDv7w6esbls+73a600VvK8qge919D6HvHPlsut18y6cg==
+"@twilio/mcs-client@^0.6.1":
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/@twilio/mcs-client/-/mcs-client-0.6.4.tgz#8aa8919e99003278d709baf91b2f60c4e1984756"
+  integrity sha512-KtSBrOUhnbheKFJhp5BP7LSakj/8qfrgH5WGq1Y7NPAY7VlsCyZYDyTyZa+kW8FFsQJd4QLVxq1725omffGqSA==
   dependencies:
     "@babel/runtime" "^7.17.0"
-    "@twilio/declarative-type-validator" "^0.2.0-rc.3"
-    "@twilio/operation-retrier" "^4.0.8-rc.4"
+    "@twilio/declarative-type-validator" "^0.2.4"
+    "@twilio/operation-retrier" "^4.0.12"
     core-js "^3.17.3"
     loglevel "^1.8.0"
     xmlhttprequest "^1.8.0"
 
-"@twilio/notifications@^2.0.0-rc.3":
-  version "2.0.0-rc.3"
-  resolved "https://registry.npmjs.org/@twilio/notifications/-/notifications-2.0.0-rc.3.tgz"
-  integrity sha512-IYTg8cWCG8QLAkqEiPkX3WJmCO5Z2xpk1tWKXMtpn9dMeOW+9m/P+hLpMPTuV/+l+4ULGwHCjipnSbJk4gRXIw==
+"@twilio/notifications@^2.0.1":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@twilio/notifications/-/notifications-2.0.3.tgz#b49907bfa03f187aad13bfde168f4d416541686a"
+  integrity sha512-7aQ2R/Sh1+7tLUKz7GCXT9jPv4InZCXOSYSu4ujJbaHXFw5NbDyQMmJ8vRPGt6nVEe2wivPx949TZDH4TAueVg==
   dependencies:
     "@babel/runtime" "^7.17.0"
-    "@twilio/declarative-type-validator" "^0.2.0-rc.3"
-    "@twilio/operation-retrier" "^4.0.8-rc.4"
+    "@twilio/declarative-type-validator" "^0.2.4"
+    "@twilio/operation-retrier" "^4.0.12"
     core-js "^3.17.3"
     loglevel "^1.8.0"
     twilsock "~0.12.2"
     uuid "^3.4.0"
+
+"@twilio/operation-retrier@^4.0.12", "@twilio/operation-retrier@^4.0.9":
+  version "4.0.12"
+  resolved "https://registry.yarnpkg.com/@twilio/operation-retrier/-/operation-retrier-4.0.12.tgz#0e6b909181f68099dd04efbb653dbe96d5d0b9a9"
+  integrity sha512-T9kEqABx88I1VsGLA1KK4qcd+cHzLL8TaLkXSVnxgZe+VKVFwpa5RhXiWoGFBEMStjLlTjcThyfJsK1ymwt8nw==
+  dependencies:
+    "@babel/runtime" "^7.17.0"
+    core-js "^3.17.3"
 
 "@twilio/operation-retrier@^4.0.7":
   version "4.0.7"
@@ -3942,18 +3950,10 @@
     "@babel/runtime" "^7.14.5"
     core-js "^3.17.3"
 
-"@twilio/operation-retrier@^4.0.8-rc.4":
-  version "4.0.8-rc.4"
-  resolved "https://registry.npmjs.org/@twilio/operation-retrier/-/operation-retrier-4.0.8-rc.4.tgz"
-  integrity sha512-AEVfSlJsNWbKwUKEU9Dgix/X/Nhnguh0hCLWebGyVcUjEkRS9C4ka88Rn71uOixKuR69i5OIbBJYUGYf8Ssd9Q==
-  dependencies:
-    "@babel/runtime" "^7.17.0"
-    core-js "^3.17.3"
-
-"@twilio/replay-event-emitter@^0.3.0-rc.4":
-  version "0.3.0-rc.4"
-  resolved "https://registry.npmjs.org/@twilio/replay-event-emitter/-/replay-event-emitter-0.3.0-rc.4.tgz"
-  integrity sha512-Aue4ZB/jiBHEhD5tRLT/Gk6MEv1m1tcT5FvIzs4INTAySiVlOhI099WHe5Zm0cvKYSOu4MmqkxA5clb6DwU6kg==
+"@twilio/replay-event-emitter@^0.3.1":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@twilio/replay-event-emitter/-/replay-event-emitter-0.3.4.tgz#44bec4c6c9f532428520cb18e2f3f547b89452f6"
+  integrity sha512-VPfgYQR2FPOQC+9naHNZfP+jx4PCDVhnAGbddvk6d0xMgq8WkyYGohDlszL1kIWeSAA8QtTaMI8+4z543WiRqw==
   dependencies:
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
