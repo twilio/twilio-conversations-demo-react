@@ -75,6 +75,6 @@ export const handlePromiseRejection = async (
     await func();
   } catch (e) {
     unexpectedErrorNotification(e.message, addNotifications);
-    return Promise.reject(e);
+    throw e;
   }
 };

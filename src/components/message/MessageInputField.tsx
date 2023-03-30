@@ -140,7 +140,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
       await sdkConvo.advanceLastReadMessageIndex(messageIndex ?? 0);
     } catch (e) {
       unexpectedErrorNotification(e.message, addNotifications);
-      return Promise.reject(e);
+      throw e;
     }
   };
 

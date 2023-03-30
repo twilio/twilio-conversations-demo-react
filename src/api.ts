@@ -31,13 +31,13 @@ export async function addConversation(
   addNotifications?: (notifications: NotificationsType) => void
 ): Promise<Conversation> {
   if (client === undefined) {
-    return Promise.reject(
-      new Error("Client is suddenly undefined, are you sure everything is ok?")
+    throw new Error(
+      "Client is suddenly undefined, are you sure everything is ok?"
     );
   }
 
   if (name.length === 0) {
-    return Promise.reject(new Error("Conversation name is empty"));
+    throw new Error("Conversation name is empty");
   }
 
   try {
@@ -57,8 +57,7 @@ export async function addConversation(
     return conversation;
   } catch (e) {
     unexpectedErrorNotification(e.message, addNotifications);
-
-    return Promise.reject(e);
+    throw e;
   }
 }
 
@@ -68,15 +67,13 @@ export async function addChatParticipant(
   addNotifications?: (notifications: NotificationsType) => void
 ): Promise<ParticipantResponse> {
   if (convo === undefined) {
-    return Promise.reject(
-      new Error(
-        "Conversation is suddenly undefined, are you sure everything is ok?"
-      )
+    throw new Error(
+      "Conversation is suddenly undefined, are you sure everything is ok?"
     );
   }
 
   if (name.length === 0) {
-    return Promise.reject(new Error("Participant name is empty"));
+    throw new Error("Participant name is empty");
   }
 
   try {
@@ -88,7 +85,7 @@ export async function addChatParticipant(
     return result;
   } catch (e) {
     unexpectedErrorNotification(e.message, addNotifications);
-    return Promise.reject(e);
+    throw e;
   }
 }
 
@@ -99,16 +96,14 @@ export async function addNonChatParticipant(
   addNotifications?: (notifications: NotificationsType) => void
 ): Promise<ParticipantResponse> {
   if (convo === undefined) {
-    return Promise.reject(
-      new Error(
-        "Conversation is suddenly undefined, are you sure everything is ok?"
-      )
+    throw new Error(
+      "Conversation is suddenly undefined, are you sure everything is ok?"
     );
   }
 
   if (number.length === 0 || proxyNumber.length === 0) {
-    return Promise.reject(
-      new Error("Both participant number and proxy number must be specified")
+    throw new Error(
+      "Both participant number and proxy number must be specified"
     );
   }
 
@@ -124,8 +119,7 @@ export async function addNonChatParticipant(
     return result;
   } catch (e) {
     unexpectedErrorNotification(e.message, addNotifications);
-
-    return Promise.reject(e);
+    throw e;
   }
 }
 
@@ -136,10 +130,8 @@ export async function getToken(
   const requestAddress = process.env
     .REACT_APP_ACCESS_TOKEN_SERVICE_URL as string;
   if (!requestAddress) {
-    return Promise.reject(
-      new Error(
-        "REACT_APP_ACCESS_TOKEN_SERVICE_URL is not configured, cannot login"
-      )
+    throw new Error(
+      "REACT_APP_ACCESS_TOKEN_SERVICE_URL is not configured, cannot login"
     );
   }
 
@@ -150,15 +142,11 @@ export async function getToken(
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      return Promise.reject(
-        new Error(error.response.data ?? "Authentication error.")
-      );
+      throw new Error(error.response.data ?? "Authentication error.");
     }
 
     process.stderr?.write(`ERROR received from ${requestAddress}: ${error}\n`);
-    return Promise.reject(
-      new Error(`ERROR received from ${requestAddress}: ${error}\n`)
-    );
+    throw new Error(`ERROR received from ${requestAddress}: ${error}\n`);
   }
 }
 
@@ -255,7 +243,7 @@ export const removeParticipant = async (
     });
   } catch (e) {
     unexpectedErrorNotification(e.message, addNotifications);
-    return Promise.reject(e);
+    throw e;
   }
 };
 
@@ -269,7 +257,7 @@ export const getBlobFile = async (
     return response.blob();
   } catch (e) {
     unexpectedErrorNotification(e.message, addNotifications);
-    return Promise.reject(e);
+    throw e;
   }
 };
 
