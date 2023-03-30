@@ -3,8 +3,8 @@
   "version": "1.2.0",
   "private": true,
   "dependencies": {
-    "@twilio-paste/core": "14.2.0",
-    "@twilio-paste/icons": "8.1.0",
+    "@twilio-paste/core": "19.0.0",
+    "@twilio-paste/icons": "11.0.0",
     "@twilio/conversations": "2.2.0",
     "axios": "0.21.3",
     "dotenv": "10.0.0",
