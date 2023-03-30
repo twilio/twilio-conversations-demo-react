@@ -1,10 +1,11 @@
-import firebase from "firebase/compat/app";
-import "firebase/compat/messaging";
+import { initializeApp } from "firebase/app";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { Client, PushNotification } from "@twilio/conversations";
 
-export const initFcmServiceWorker = async (): Promise<void> => {
-  firebase.initializeApp((window as any).firebaseConfig);
+const app = initializeApp((window as any).firebaseConfig);
+const messaging = getMessaging(app);
 
+export const initFcmServiceWorker = async (): Promise<void> => {
   try {
     const registration = await navigator.serviceWorker.register(
       "firebase-messaging-sw.js"
@@ -24,8 +25,7 @@ export const subscribeFcmNotifications = async (
     return;
   }
 
-  const messaging = firebase.messaging();
-  const fcmToken = await messaging.getToken();
+  const fcmToken = await getToken(messaging);
   if (!fcmToken) {
     console.log("FcmNotifications: can't get fcm token");
     return;
@@ -33,7 +33,7 @@ export const subscribeFcmNotifications = async (
 
   console.log("FcmNotifications: got fcm token", fcmToken);
   convoClient.setPushRegistrationId("fcm", fcmToken);
-  messaging.onMessage((payload) => {
+  onMessage(messaging, (payload) => {
     console.log("FcmNotifications: push received", payload);
     if (convoClient) {
       convoClient.handlePushNotification(payload);
