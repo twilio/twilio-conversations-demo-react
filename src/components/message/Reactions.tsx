@@ -113,7 +113,7 @@ export const ReactionsBox: React.FC<ReactionsProps> = ({
     : theme.textColors.colorTextIconInverse;
 
   const reactionsBackgroundColor = isReactionsByCurrentUser
-    ? theme.backgroundColors.colorBackgroundPrimaryLighter
+    ? theme.backgroundColors.colorBackgroundPrimaryWeaker
     : theme.backgroundColors.colorBackgroundBody;
 
   return (
