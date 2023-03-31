@@ -90,6 +90,8 @@ export default {
     borderBottom: "1px solid #CACDD8",
   } as CSSProperties,
   loginContainer: {
+    display: "flex",
+    flexDirection: "column",
     height: "100%",
     backgroundColor: "#001489",
   } as CSSProperties,
