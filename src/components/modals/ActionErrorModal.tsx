@@ -44,7 +44,8 @@ const ActionErrorModal: React.FC<ActionErrorModalProps> = ({
           <>
             <br />
             <br />
-            Error code [{error.code}]: {error.message}
+            Error code [<b>{error.code}</b>
+            ]: <b>{error.message}</b>
           </>
         ) : null}
       </div>
