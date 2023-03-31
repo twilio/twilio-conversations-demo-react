@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { Client, PushNotification } from "@twilio/conversations";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const app = initializeApp((window as any).firebaseConfig);
 const messaging = getMessaging(app);
 

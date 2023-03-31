@@ -1,15 +1,10 @@
 import { useEffect, useState } from "react";
 import {
-  Box,
   Spinner,
-  Text,
-  Truncate,
   ChatAttachment,
   ChatAttachmentDescription,
   ChatAttachmentLink,
 } from "@twilio-paste/core";
-import { ProductAssetsIcon } from "@twilio-paste/icons/cjs/ProductAssetsIcon";
-import { Media } from "@twilio/conversations";
 import { ReduxMedia } from "../../store/reducers/messageListReducer";
 import { DownloadIcon } from "@twilio-paste/icons/cjs/DownloadIcon";
 
@@ -88,7 +83,7 @@ const MessageMedia: React.FC<MessageMediaProps> = ({
         ))}
       </div>
 
-      {files.map((file, index) => (
+      {files.map((file) => (
         <ChatAttachment
           attachmentIcon={
             !isMediaLoaded || sending ? (

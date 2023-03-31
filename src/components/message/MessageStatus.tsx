@@ -5,13 +5,10 @@ import {
 } from "../../store/reducers/messageListReducer";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import { useEffect, useState } from "react";
-import { Box } from "@twilio-paste/core";
 import DeliveredIcon from "../icons/Delivered";
 import SendingIcon from "../icons/Sending";
 import FailedIcon from "../icons/Failed";
 import ReadIcon from "../icons/Read";
-import MessageActions from "./MessageActions";
-import { useTheme } from "@twilio-paste/theme";
 
 type MessageStatusProps = {
   message: ReduxMessage;
@@ -33,8 +30,6 @@ const statusStyle = {
 const statusIconStyle = {};
 
 const MessageStatus: React.FC<MessageStatusProps> = (props) => {
-  const theme = useTheme();
-
   const [status, setStatus] = useState<MessageStatuses>({});
 
   useEffect(() => {
