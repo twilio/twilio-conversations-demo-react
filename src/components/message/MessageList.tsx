@@ -4,6 +4,9 @@ import { bindActionCreators } from "redux";
 import { saveAs } from "file-saver";
 
 import { useTheme } from "@twilio-paste/theme";
+import {
+  ChatLog,
+} from "@twilio-paste/core";
 
 import { getBlobFile, getMessageStatus } from "../../api";
 import MessageView from "./MessageView";
@@ -131,7 +134,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   };
 
   return (
-    <>
+    <ChatLog>
       {messages.map((message, index) => {
         const messageImages: ReduxMedia[] = [];
         const messageFiles: ReduxMedia[] = [];
@@ -259,7 +262,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
             );
           })()
         : null}
-    </>
+    </ChatLog>
   );
 };
 
