@@ -204,7 +204,40 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
             variant={isOutbound ? "outbound" : "inbound"}
             key={`${message.sid}.message`}
           >
-            <ChatBubble>{message.body ?? ""}</ChatBubble>
+            <ChatBubble>
+              {typeof message.body === "string" && message.body !== ""
+                ? message.body
+                : ""}
+              <MessageMedia
+                key={message.sid}
+                attachments={conversationAttachments?.[message.sid]}
+                onDownload={async () => await onDownloadAttachments(message)}
+                images={messageImages}
+                files={messageFiles}
+                sending={message.index === -1}
+                onOpen={(
+                  mediaSid: string,
+                  image?: ReduxMedia,
+                  file?: ReduxMedia
+                ) => {
+                  if (file) {
+                    onFileOpen(
+                      conversationAttachments?.[message.sid][mediaSid],
+                      file
+                    );
+                    return;
+                  }
+                  if (image) {
+                    setImagePreview({
+                      message,
+                      file: conversationAttachments?.[message.sid][mediaSid],
+                      sid: mediaSid,
+                    });
+                  }
+                }}
+              />
+            </ChatBubble>
+
             <ChatMessageMeta aria-label={`said by ${message.author ?? ""}`}>
               {metaItems}
             </ChatMessageMeta>
