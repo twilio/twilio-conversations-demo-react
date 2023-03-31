@@ -173,7 +173,7 @@ const AppContainer: React.FC = () => {
 
     client.on("conversationRemoved", (conversation: Conversation) => {
       updateCurrentConversation("");
-      handlePromiseRejection(() => {
+      handlePromiseRejection(async () => {
         removeConversation(conversation.sid);
         updateParticipants([], conversation.sid);
       }, addNotifications);

@@ -68,13 +68,12 @@ export const handlePromiseRejection = async (
   func: () => void,
   addNotifications?: (messages: NotificationsType) => void
 ): Promise<void> => {
-  if (!addNotifications) {
-    return;
-  }
   try {
     await func();
   } catch (e) {
-    unexpectedErrorNotification(e.message, addNotifications);
+    if (addNotifications) {
+      unexpectedErrorNotification(e.message, addNotifications);
+    }
     throw e;
   }
 };
