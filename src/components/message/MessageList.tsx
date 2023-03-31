@@ -30,6 +30,8 @@ import TimeAgo from "javascript-time-ago";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import Reactions from "./Reactions";
 import { MessageStatus } from "./MessageStatus";
+import { MAX_MESSAGE_LINE_WIDTH } from "../../constants";
+import wrap from "word-wrap";
 
 interface MessageListProps {
   messages: ReduxMessage[];
@@ -153,11 +155,11 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           ReactionsType | undefined
         >;
 
-        // const wrappedBody = wrap(message.body ?? "", {
-        //   width: MAX_MESSAGE_LINE_WIDTH,
-        //   indent: "",
-        //   cut: true,
-        // });
+        const wrappedBody = wrap(message.body ?? "", {
+          width: MAX_MESSAGE_LINE_WIDTH,
+          indent: "",
+          cut: true,
+        });
 
         const isOutbound = message.author === localStorage.getItem("username");
         let metaItems = [
@@ -195,9 +197,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
             key={`${message.sid}.message`}
           >
             <ChatBubble>
-              {typeof message.body === "string" && message.body !== ""
-                ? message.body
-                : ""}
+              {wrappedBody}
               <MessageMedia
                 key={message.sid}
                 attachments={conversationAttachments?.[message.sid]}
