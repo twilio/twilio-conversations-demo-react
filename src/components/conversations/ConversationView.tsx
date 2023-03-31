@@ -166,7 +166,6 @@ const ConversationView: React.FC<SingleConvoProps> = (
           <Box
             style={{
               width: 288,
-              fontFamily: "Inter",
               fontWeight: theme.fontWeights.fontWeightSemibold,
               fontSize: 14,
               color: muted
