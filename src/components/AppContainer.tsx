@@ -19,7 +19,7 @@ import {
   SetParticipantsType,
   SetUnreadMessagesType,
 } from "../types";
-import { getConversationParticipants, getToken } from "../api";
+import { getToken } from "../api";
 import useAppAlert from "../hooks/useAppAlerts";
 import Notifications from "./Notifications";
 import stylesheet from "../styles";
@@ -53,7 +53,7 @@ async function handleParticipantsUpdate(
   participant: Participant,
   updateParticipants: SetParticipantsType
 ) {
-  const result = await getConversationParticipants(participant.conversation);
+  const result = await participant.conversation.getParticipants();
   updateParticipants(result, participant.conversation.sid);
 }
 
@@ -161,7 +161,7 @@ const AppContainer: React.FC = () => {
 
       handlePromiseRejection(async () => {
         if (conversation.status === "joined") {
-          const result = await getConversationParticipants(conversation);
+          const result = await conversation.getParticipants();
           updateParticipants(result, conversation.sid);
 
           const messages = await conversation.getMessages();

@@ -46,7 +46,7 @@ export async function addConversation(
     });
     await conversation.join();
 
-    const participants = await getConversationParticipants(conversation);
+    const participants = await conversation.getParticipants();
     updateParticipants(participants, conversation.sid);
 
     successNotification({
@@ -225,10 +225,6 @@ export async function getMessageStatus(
 
   return statuses;
 }
-
-export const getConversationParticipants = async (
-  conversation: Conversation
-): Promise<Participant[]> => await conversation.getParticipants();
 
 export const removeParticipant = async (
   conversation: Conversation,
