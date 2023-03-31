@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { saveAs } from "file-saver";
@@ -38,6 +38,7 @@ import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import wrap from "word-wrap";
 import { MAX_MESSAGE_LINE_WIDTH } from "../../constants";
 import Reactions from "./Reactions";
+import { MessageStatus } from "./MessageStatus";
 
 interface MessageListProps {
   messages: ReduxMessage[];
@@ -53,6 +54,12 @@ function getMessageTime(message: ReduxMessage) {
     ? new TimeAgo("en-US").format(dateCreated, "twitter-now")
     : "";
 }
+
+const MetaItemWithMargin: React.FC<{ children: ReactNode }> = (props) => (
+  <ChatMessageMetaItem>
+    <div style={{ marginTop: "5px" }}>{props.children}</div>
+  </ChatMessageMetaItem>
+);
 
 const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   const { messages, conversation, lastReadIndex } = props;
@@ -163,8 +170,8 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
         });
 
         const isOutbound = message.author === localStorage.getItem("username");
-        const reactionMeta = (
-          <ChatMessageMetaItem>
+        let metaItems = [
+          <ChatMessageMetaItem key={0}>
             <Reactions
               reactions={attributes.reactions}
               onReactionsChanged={(reactions) => {
@@ -174,19 +181,22 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                 });
               }}
             />
-          </ChatMessageMetaItem>
-        );
-
-        const metaItems = [
-          <ChatMessageMetaItem>
-            {message.author ?? ""} ・ {getMessageTime(message)}
           </ChatMessageMetaItem>,
+          <MetaItemWithMargin key={1}>
+            <MessageStatus
+              message={message}
+              channelParticipants={props.participants}
+            />
+          </MetaItemWithMargin>,
+          <MetaItemWithMargin key={2}>
+            {isOutbound
+              ? `${message.author ?? ""}・${getMessageTime(message)}`
+              : `${getMessageTime(message)}・${message.author ?? ""}`}
+          </MetaItemWithMargin>,
         ];
 
         if (isOutbound) {
-          metaItems.push(reactionMeta);
-        } else {
-          metaItems.unshift(reactionMeta);
+          metaItems = metaItems.reverse();
         }
 
         return (
