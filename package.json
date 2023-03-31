@@ -5,7 +5,7 @@
   "dependencies": {
     "@twilio-paste/core": "19.0.0",
     "@twilio-paste/icons": "11.0.0",
-    "@twilio/conversations": "2.2.0",
+    "@twilio/conversations": "2.4.0-rc.0",
     "axios": "0.21.3",
     "dotenv": "10.0.0",
     "file-saver": "2.0.5",
