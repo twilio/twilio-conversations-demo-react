@@ -34,7 +34,13 @@ async function login(
 
     return "";
   } catch (error) {
-    return error as string;
+    let message = "Unknown Error";
+    if (error instanceof Error) {
+      message = error.message;
+    } else {
+      message = String(error);
+    }
+    return message;
   }
 }
 
@@ -72,8 +78,15 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
                   : ""
               }
               input={username}
-              onBlur={() => setFormDirty(true)}
-              onChange={setUsername}
+              onChange={(username: string) => {
+                setUsername(username);
+                setFormError("");
+              }}
+              onBlur={() => {
+                if (password) {
+                  setFormDirty(true);
+                }
+              }}
               id="username"
             />
           </Box>
@@ -87,7 +100,11 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
                   : formError ?? ""
               }
               input={password}
-              onChange={setPassword}
+              onChange={(password: string) => {
+                setPassword(password);
+                setFormError("");
+              }}
+              onBlur={() => setFormDirty(true)}
               inputType={showPassword ? InputType.Text : InputType.Password}
               showPassword={showPassword}
               setShowPassword={setShowPassword}
