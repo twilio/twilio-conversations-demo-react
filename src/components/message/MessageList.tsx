@@ -37,6 +37,7 @@ import TimeAgo from "javascript-time-ago";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import wrap from "word-wrap";
 import { MAX_MESSAGE_LINE_WIDTH } from "../../constants";
+import Reactions from "./Reactions";
 
 interface MessageListProps {
   messages: ReduxMessage[];
@@ -162,13 +163,19 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
         });
 
         const isOutbound = message.author === localStorage.getItem("username");
+        const reactionMeta = (
+          <ChatMessageMetaItem>
+            <Reactions
+              reactions={attributes.reactions}
+              onReactionsChanged={(reactions) => {
                 getSdkMessageObject(message).updateAttributes({
                   ...attributes,
-                  ...attribute,
-                })
-              }
+                  reactions,
+                });
+              }}
             />
-          </div>
+          </ChatMessageMetaItem>
+        );
 
         const metaItems = [
           <ChatMessageMetaItem>
@@ -176,6 +183,11 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           </ChatMessageMetaItem>,
         ];
 
+        if (isOutbound) {
+          metaItems.push(reactionMeta);
+        } else {
+          metaItems.unshift(reactionMeta);
+        }
 
         return (
           <ChatMessage
