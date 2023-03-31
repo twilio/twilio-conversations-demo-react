@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
-import { Box, Spinner, Text, Truncate } from "@twilio-paste/core";
-import { ProductAssetsIcon } from "@twilio-paste/icons/cjs/ProductAssetsIcon";
-import { Media } from "@twilio/conversations";
+import {
+  Spinner,
+  ChatAttachment,
+  ChatAttachmentDescription,
+  ChatAttachmentLink,
+} from "@twilio-paste/core";
 import { ReduxMedia } from "../../store/reducers/messageListReducer";
+import { DownloadIcon } from "@twilio-paste/icons/cjs/DownloadIcon";
 
 type MessageMediaProps = {
   onDownload: () => Promise<Error | undefined>;
@@ -78,68 +82,25 @@ const MessageMedia: React.FC<MessageMediaProps> = ({
           </div>
         ))}
       </div>
-      {files.map((file, index) => (
-        <Box
-          key={String(file.filename) + index}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            padding: "12px 16px",
-            marginTop: "6px",
-            border: "1px solid #CACDD8",
-            boxSizing: "border-box",
-            minWidth: "150px",
-            backgroundColor: "#fff",
-            cursor: "pointer",
-          }}
-          onClick={() => isMediaLoaded && onOpen(file.sid, undefined, file)}
-        >
-          <Box
-            style={{
-              marginRight: "16px",
-              alignItems: "start",
-            }}
-          >
-            {!isMediaLoaded || sending ? (
-              <Spinner
-                decorative={false}
-                color="colorTextLink"
-                title="Loading"
-              />
-            ) : (
-              <ProductAssetsIcon
-                decorative={false}
-                title="Open File"
-                size="sizeIcon60"
-                color="colorTextLink"
-                style={{
-                  fontWeight: "bold",
-                }}
-              />
-            )}
-          </Box>
 
-          <Box
-            style={{
-              maxWidth: "calc(100% - 42px)",
-            }}
-          >
-            <Text as="p" fontWeight="fontWeightMedium">
-              <Truncate title={file.filename ?? ""}>
-                {file.filename ?? ""}
-              </Truncate>
-            </Text>
-            {sending || !isMediaLoaded ? (
-              <Text as="p" color="colorTextInverseWeaker">
-                {!sending || !isMediaLoaded ? "Downloading..." : "Uploading..."}
-              </Text>
+      {files.map((file) => (
+        <ChatAttachment
+          attachmentIcon={
+            !isMediaLoaded || sending ? (
+              <Spinner decorative={false} title="Loading" />
             ) : (
-              <Text as="p" color="colorTextInverseWeaker">
-                {Math.round((file.size / Math.pow(2, 20)) * 100) / 100} MB
-              </Text>
-            )}
-          </Box>
-        </Box>
+              <DownloadIcon decorative />
+            )
+          }
+          key={`${file.filename ?? ""}.index`}
+        >
+          <ChatAttachmentLink href="#">
+            {file?.filename ?? ""}
+          </ChatAttachmentLink>
+          <ChatAttachmentDescription>
+            {`${Math.round((file.size / Math.pow(2, 20)) * 100) / 100} MB`}
+          </ChatAttachmentDescription>
+        </ChatAttachment>
       ))}
     </>
   );

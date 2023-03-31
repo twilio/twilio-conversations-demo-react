@@ -1,5 +1,4 @@
 import { useState } from "react";
-import axios from "axios";
 import { Button } from "@twilio-paste/button";
 import { Box } from "@twilio-paste/core";
 import { ProductConversationsIcon } from "@twilio-paste/icons/esm/ProductConversationsIcon";

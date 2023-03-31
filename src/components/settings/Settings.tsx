@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { Client } from "@twilio/conversations";
-import { Box, Spinner } from "@twilio-paste/core";
 
 import SettingsMenu from "./SettingsMenu";
 import ManageParticipantsModal from "../modals/manageParticipantsModal";
@@ -49,7 +48,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
 
   const [isAddChatOpen, setIsAddChatOpen] = useState(false);
   // TODO: move to app loading state
-  const [isLoading, setLoading] = useState(false);
+  // const [isLoading, setLoading] = useState(false);
   const handleChatOpen = () => setIsAddChatOpen(true);
   const handleChatClose = () => setIsAddChatOpen(false);
 
@@ -225,7 +224,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
               emptyData();
               handleSMSClose();
             } catch (e) {
-              setErrorData(e.body as any);
+              setErrorData(e.body);
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
             }
           }}
@@ -276,7 +275,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
               emptyData();
               handleWhatsAppClose();
             } catch (e) {
-              setErrorData(e.body as any);
+              setErrorData(e.body);
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
             }
           }}
@@ -308,13 +307,13 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
               emptyData();
               handleChatClose();
             } catch (e) {
-              setErrorData(e.body as any);
+              setErrorData(e.body);
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
             }
           }}
         />
       )}
-      {isLoading ? (
+      {/* {isLoading ? (
         <Box
           display="flex"
           justifyContent="center"
@@ -325,7 +324,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
         >
           <Spinner size="sizeIcon110" decorative={false} title="Loading" />
         </Box>
-      ) : null}
+      ) : null} */}
     </>
   );
 };
