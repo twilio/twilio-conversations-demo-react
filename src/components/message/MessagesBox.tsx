@@ -124,7 +124,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
         display: "flex",
         flexDirection: "column-reverse",
         width: "100%",
-        overflow: "scroll",
+        overflowY: "auto",
         paddingLeft: 16,
         height: "100%",
       }}
@@ -147,7 +147,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
         inverse={true}
         scrollThreshold="20px"
       >
-        <div ref={listRef} style={{ overflow: "scroll" }}>
+        <div ref={listRef}>
           <MessageList
             messages={messages ?? []}
             conversation={convo}

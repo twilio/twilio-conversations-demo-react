@@ -133,7 +133,6 @@ const ConversationView: React.FC<SingleConvoProps> = (
   return (
     <Box
       style={{
-        width: 320,
         paddingTop: 14,
         paddingBottom: 14,
         paddingLeft: 16,
