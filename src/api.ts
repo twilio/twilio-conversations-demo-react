@@ -145,7 +145,7 @@ export async function getToken(
       throw new Error(error.response.data ?? "Authentication error.");
     }
 
-    process.stderr?.write(`ERROR received from ${requestAddress}: ${error}\n`);
+    console.error(`ERROR received from ${requestAddress}: ${error}\n`);
     throw new Error(`ERROR received from ${requestAddress}: ${error}\n`);
   }
 }
