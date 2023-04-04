@@ -205,10 +205,8 @@ const MessageInputField: React.FC<SendMessageProps> = (
               sdkConvo.typing();
               setMessage(e);
             }}
-            onKeyPress={async (e) => {
-              if (e.key === "Enter") {
-                await onMessageSend();
-              }
+            onEnterKeyPress={async () => {
+              await onMessageSend();
             }}
             onFileRemove={onFileRemove}
           />
