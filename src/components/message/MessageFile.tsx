@@ -1,7 +1,6 @@
 import { Box, Button, Text, Truncate } from "@twilio-paste/core";
 import { ProductAssetsIcon } from "@twilio-paste/icons/cjs/ProductAssetsIcon";
 import { CloseIcon } from "@twilio-paste/icons/cjs/CloseIcon";
-import { Media } from "@twilio/conversations";
 import { ReduxMedia } from "../../store/reducers/messageListReducer";
 
 type MessageFileProps = {

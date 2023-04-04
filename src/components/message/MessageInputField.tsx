@@ -9,15 +9,12 @@ import { useTheme } from "@twilio-paste/theme";
 import { Text } from "@twilio-paste/text";
 
 import { actionCreators } from "../../store";
-import { MAX_FILE_SIZE, UNEXPECTED_ERROR_MESSAGE } from "../../constants";
+import { MAX_FILE_SIZE } from "../../constants";
 import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
 import MessageInput from "./MessageInput";
 import SendMessageButton from "./SendMessageButton";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
-import {
-  getSdkConversationObject,
-  getSdkMessageObject,
-} from "../../conversations-objects";
+import { getSdkConversationObject } from "../../conversations-objects";
 import { ReduxMessage } from "../../store/reducers/messageListReducer";
 
 interface SendMessageProps {
@@ -40,8 +37,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
   const typingInfo = getTypingMessage(props.typingData);
 
   const dispatch = useDispatch();
-  const { upsertMessages, addNotifications, addAttachment } =
-    bindActionCreators(actionCreators, dispatch);
+  const { addNotifications } = bindActionCreators(actionCreators, dispatch);
 
   useEffect(() => {
     setMessage("");
@@ -96,8 +92,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
       return;
     }
 
-    const { convo, client } = props;
-    const currentDate: Date = new Date();
+    const { convo } = props;
     const sdkConvo = getSdkConversationObject(convo);
 
     const newMessageBuilder = sdkConvo.prepareMessage().setBody(message);
@@ -114,7 +109,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
     //   attachedMedia: [],
     // } as ReduxMessage;
 
-    for (const [key, file] of files.entries()) {
+    for (const file of files) {
       const fileData = new FormData();
       fileData.set(file.name, file, file.name);
 
@@ -139,8 +134,8 @@ const MessageInputField: React.FC<SendMessageProps> = (
     try {
       await sdkConvo.advanceLastReadMessageIndex(messageIndex ?? 0);
     } catch (e) {
-      unexpectedErrorNotification(addNotifications);
-      return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+      unexpectedErrorNotification(e.message, addNotifications);
+      throw e;
     }
   };
 

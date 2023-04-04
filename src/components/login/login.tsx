@@ -1,5 +1,4 @@
 import { useState } from "react";
-import axios from "axios";
 import { Button } from "@twilio-paste/button";
 import { Box } from "@twilio-paste/core";
 import { ProductConversationsIcon } from "@twilio-paste/icons/esm/ProductConversationsIcon";
@@ -9,6 +8,8 @@ import { InputType } from "../../types";
 import ModalInputField from "../modals/ModalInputField";
 import styles from "../../styles";
 import TwilioLogo from "../icons/TwilioLogo";
+import useAppAlert from "../../hooks/useAppAlerts";
+import React from "react";
 
 type SetTokenType = (token: string) => void;
 
@@ -24,7 +25,7 @@ async function login(
   try {
     const token = await getToken(username.trim(), password);
     if (token === "") {
-      return "Something went wrong.";
+      return "Received an empty token from backend.";
     }
 
     localStorage.setItem("username", username);
@@ -33,7 +34,13 @@ async function login(
 
     return "";
   } catch (error) {
-    return error as string;
+    let message = "Unknown Error";
+    if (error instanceof Error) {
+      message = error.message;
+    } else {
+      message = String(error);
+    }
+    return message;
   }
 }
 
@@ -43,9 +50,11 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
   const [formError, setFormError] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [, AlertsView] = useAppAlert();
 
   return (
     <Box style={styles.loginContainer}>
+      <AlertsView />
       <Box style={styles.loginContent}>
         <Box>
           <ProductConversationsIcon
@@ -69,8 +78,15 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
                   : ""
               }
               input={username}
-              onBlur={() => setFormDirty(true)}
-              onChange={setUsername}
+              onChange={(username: string) => {
+                setUsername(username);
+                setFormError("");
+              }}
+              onBlur={() => {
+                if (password) {
+                  setFormDirty(true);
+                }
+              }}
               id="username"
             />
           </Box>
@@ -84,7 +100,11 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
                   : formError ?? ""
               }
               input={password}
-              onChange={setPassword}
+              onChange={(password: string) => {
+                setPassword(password);
+                setFormError("");
+              }}
+              onBlur={() => setFormDirty(true)}
               inputType={showPassword ? InputType.Text : InputType.Password}
               showPassword={showPassword}
               setShowPassword={setShowPassword}

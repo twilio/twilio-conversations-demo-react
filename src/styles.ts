@@ -66,10 +66,11 @@ export default {
     flexDirection: "column",
   } as CSSProperties,
   convoList: {
-    overflow: "scroll",
+    overflowY: "auto",
     position: "absolute",
     top: "65px",
     bottom: "60px",
+    width: "320px",
   } as CSSProperties,
   collapseButtonBox: {
     display: "flex",
@@ -90,6 +91,8 @@ export default {
     borderBottom: "1px solid #CACDD8",
   } as CSSProperties,
   loginContainer: {
+    display: "flex",
+    flexDirection: "column",
     height: "100%",
     backgroundColor: "#001489",
   } as CSSProperties,
@@ -99,14 +102,12 @@ export default {
   loginTitle: {
     paddingTop: "2px",
     color: "#FFFFFF",
-    fontFamily: "Inter",
     fontSize: "20px",
     lineHeight: "28px",
     fontWeight: 500,
   } as CSSProperties,
   subTitle: {
     color: "#AEB2C1",
-    fontFamily: "Inter",
     fontSize: "14px",
     lineHeight: "20px",
     paddingBottom: "40px",
@@ -138,7 +139,6 @@ export default {
     marginRight: "24px",
   } as CSSProperties,
   loginButton: {
-    fontFamily: "Inter",
     paddingTop: "32px",
     paddingBottom: "24px",
     marginLeft: "24px",
@@ -154,7 +154,6 @@ export default {
     overflow: "hidden",
   } as CSSProperties,
   modalInputLabel: {
-    fontFamily: "Inter",
     fontSize: "14px",
     fontWeight: 700,
     lineHeight: "20px",

@@ -1,19 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { saveAs } from "file-saver";
 
-import { useTheme } from "@twilio-paste/theme";
+import {
+  ChatLog,
+  ChatMessage,
+  ChatMessageMeta,
+  ChatMessageMetaItem,
+  ChatBubble,
+} from "@twilio-paste/core";
 
-import { getBlobFile, getMessageStatus } from "../../api";
-import MessageView from "./MessageView";
+import { getBlobFile } from "../../api";
 import { actionCreators, AppState } from "../../store";
 import ImagePreviewModal from "../modals/ImagePreviewModal";
-import Horizon from "./Horizon";
-import {
-  successNotification,
-  unexpectedErrorNotification,
-} from "../../helpers";
 import type { ReactionsType } from "./Reactions";
 import MessageMedia from "./MessageMedia";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
@@ -28,8 +28,10 @@ import {
 import { getSdkConversationObject } from "../../conversations-objects";
 import TimeAgo from "javascript-time-ago";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
-import wrap from "word-wrap";
+import Reactions from "./Reactions";
+import { MessageStatus } from "./MessageStatus";
 import { MAX_MESSAGE_LINE_WIDTH } from "../../constants";
+import wrap from "word-wrap";
 
 interface MessageListProps {
   messages: ReduxMessage[];
@@ -46,15 +48,20 @@ function getMessageTime(message: ReduxMessage) {
     : "";
 }
 
+const MetaItemWithMargin: React.FC<{ children: ReactNode }> = (props) => (
+  <ChatMessageMetaItem>
+    <div style={{ marginTop: "5px" }}>{props.children}</div>
+  </ChatMessageMetaItem>
+);
+
 const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   const { messages, conversation, lastReadIndex } = props;
   if (messages === undefined) {
     return <div className="empty" />;
   }
 
-  const theme = useTheme();
+  // const theme = useTheme();
   const myRef = useRef<HTMLInputElement>(null);
-  const messagesLength: number = messages.length;
 
   const dispatch = useDispatch();
   const { addAttachment, addNotifications } = bindActionCreators(
@@ -72,7 +79,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   } | null>(null);
 
   const [horizonMessageCount, setHorizonMessageCount] = useState<number>(0);
-  const [showHorizonIndex, setShowHorizonIndex] = useState<number>(0);
+  // const [showHorizonIndex, setShowHorizonIndex] = useState<number>(0);
   const [scrolledToHorizon, setScrollToHorizon] = useState(false);
 
   useEffect(() => {
@@ -89,25 +96,25 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     if (lastReadIndex === -1 || horizonMessageCount) {
       return;
     }
-    const showIndex = 0;
+    // const showIndex = 0;
     getSdkConversationObject(conversation)
       .getUnreadMessagesCount()
       .then((count) => {
         setHorizonMessageCount(count ?? 0);
-        setShowHorizonIndex(showIndex);
+        // setShowHorizonIndex(showIndex);
       });
   }, [messages, lastReadIndex]);
 
-  function setTopPadding(index: number) {
-    if (
-      props.messages[index] !== undefined &&
-      props.messages[index - 1] !== undefined &&
-      props.messages[index].author === props.messages[index - 1].author
-    ) {
-      return theme.space.space20;
-    }
-    return theme.space.space50;
-  }
+  // function setTopPadding(index: number) {
+  //   if (
+  //     props.messages[index] !== undefined &&
+  //     props.messages[index - 1] !== undefined &&
+  //     props.messages[index].author === props.messages[index - 1].author
+  //   ) {
+  //     return theme.space.space20;
+  //   }
+  //   return theme.space.space50;
+  // }
 
   const onDownloadAttachments = async (message: ReduxMessage) => {
     const attachedMedia = message.attachedMedia?.map(getSdkMediaObject);
@@ -131,8 +138,8 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   };
 
   return (
-    <>
-      {messages.map((message, index) => {
+    <ChatLog>
+      {messages.map((message) => {
         const messageImages: ReduxMedia[] = [];
         const messageFiles: ReduxMedia[] = [];
         (message.attachedMedia || []).forEach((file) => {
@@ -154,77 +161,149 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           cut: true,
         });
 
-        return (
-          <div key={message.sid + "message"}>
-            {lastReadIndex !== -1 &&
-            horizonMessageCount &&
-            showHorizonIndex === message.index ? (
-              <Horizon ref={myRef} messageCount={horizonMessageCount} />
-            ) : null}
-            <MessageView
-              reactions={attributes["reactions"]}
-              text={wrappedBody}
-              media={
-                message.attachedMedia?.length ? (
-                  <MessageMedia
-                    key={message.sid}
-                    attachments={conversationAttachments?.[message.sid]}
-                    onDownload={async () =>
-                      await onDownloadAttachments(message)
-                    }
-                    images={messageImages}
-                    files={messageFiles}
-                    sending={message.index === -1}
-                    onOpen={(
-                      mediaSid: string,
-                      image?: ReduxMedia,
-                      file?: ReduxMedia
-                    ) => {
-                      if (file) {
-                        onFileOpen(
-                          conversationAttachments?.[message.sid][mediaSid],
-                          file
-                        );
-                        return;
-                      }
-                      if (image) {
-                        setImagePreview({
-                          message,
-                          file: conversationAttachments?.[message.sid][
-                            mediaSid
-                          ],
-                          sid: mediaSid,
-                        });
-                      }
-                    }}
-                  />
-                ) : null
-              }
-              author={message.author ?? ""}
-              getStatus={getMessageStatus(message, props.participants)}
-              onDeleteMessage={async () => {
-                try {
-                  await getSdkMessageObject(message).remove();
-                  successNotification({
-                    message: "Message deleted.",
-                    addNotifications,
-                  });
-                } catch {
-                  unexpectedErrorNotification(addNotifications);
-                }
-              }}
-              topPadding={setTopPadding(index)}
-              lastMessageBottomPadding={index === messagesLength - 1 ? 16 : 0}
-              sameAuthorAsPrev={setTopPadding(index) !== theme.space.space20}
-              messageTime={getMessageTime(message)}
-              updateAttributes={(attribute) =>
+        const isOutbound = message.author === localStorage.getItem("username");
+        let metaItems = [
+          <ChatMessageMetaItem key={0}>
+            <Reactions
+              reactions={attributes.reactions}
+              onReactionsChanged={(reactions) => {
                 getSdkMessageObject(message).updateAttributes({
                   ...attributes,
-                  ...attribute,
-                })
-              }
+                  reactions,
+                });
+              }}
             />
-          </div>
+          </ChatMessageMetaItem>,
+          <MetaItemWithMargin key={1}>
+            <MessageStatus
+              message={message}
+              channelParticipants={props.participants}
+            />
+          </MetaItemWithMargin>,
+          <MetaItemWithMargin key={2}>
+            {isOutbound
+              ? `${message.author ?? ""}・${getMessageTime(message)}`
+              : `${getMessageTime(message)}・${message.author ?? ""}`}
+          </MetaItemWithMargin>,
+        ];
+
+        if (isOutbound) {
+          metaItems = metaItems.reverse();
+        }
+
+        return (
+          <ChatMessage
+            variant={isOutbound ? "outbound" : "inbound"}
+            key={`${message.sid}.message`}
+          >
+            <ChatBubble>
+              {wrappedBody}
+              <MessageMedia
+                key={message.sid}
+                attachments={conversationAttachments?.[message.sid]}
+                onDownload={async () => await onDownloadAttachments(message)}
+                images={messageImages}
+                files={messageFiles}
+                sending={message.index === -1}
+                onOpen={(
+                  mediaSid: string,
+                  image?: ReduxMedia,
+                  file?: ReduxMedia
+                ) => {
+                  if (file) {
+                    onFileOpen(
+                      conversationAttachments?.[message.sid][mediaSid],
+                      file
+                    );
+                    return;
+                  }
+                  if (image) {
+                    setImagePreview({
+                      message,
+                      file: conversationAttachments?.[message.sid][mediaSid],
+                      sid: mediaSid,
+                    });
+                  }
+                }}
+              />
+            </ChatBubble>
+
+            <ChatMessageMeta aria-label={`said by ${message.author ?? ""}`}>
+              {metaItems}
+            </ChatMessageMeta>
+          </ChatMessage>
+
+          // todo: delete only when full functionality is transferred over
+          // <div key={message.sid + "message"}>
+          //   {lastReadIndex !== -1 &&
+          //   horizonMessageCount &&
+          //   showHorizonIndex === message.index ? (
+          //     <Horizon ref={myRef} messageCount={horizonMessageCount} />
+          //   ) : null}
+          //   <MessageView
+          //     reactions={attributes["reactions"]}
+          //     text={wrappedBody}
+          //     media={
+          //       message.attachedMedia?.length ? (
+          //         <MessageMedia
+          //           key={message.sid}
+          //           attachments={conversationAttachments?.[message.sid]}
+          //           onDownload={async () =>
+          //             await onDownloadAttachments(message)
+          //           }
+          //           images={messageImages}
+          //           files={messageFiles}
+          //           sending={message.index === -1}
+          //           onOpen={(
+          //             mediaSid: string,
+          //             image?: ReduxMedia,
+          //             file?: ReduxMedia
+          //           ) => {
+          //             if (file) {
+          //               onFileOpen(
+          //                 conversationAttachments?.[message.sid][mediaSid],
+          //                 file
+          //               );
+          //               return;
+          //             }
+          //             if (image) {
+          //               setImagePreview({
+          //                 message,
+          //                 file: conversationAttachments?.[message.sid][
+          //                   mediaSid
+          //                 ],
+          //                 sid: mediaSid,
+          //               });
+          //             }
+          //           }}
+          //         />
+          //       ) : null
+          //     }
+          //     author={message.author ?? ""}
+          //     getStatus={getMessageStatus(message, props.participants)}
+          //     onDeleteMessage={async () => {
+          //       try {
+          //         await getSdkMessageObject(message).remove();
+          //         successNotification({
+          //           message: "Message deleted.",
+          //           addNotifications,
+          //         });
+          //       } catch (e) {
+          //         unexpectedErrorNotification(e.message, addNotifications);
+          //       }
+          //     }}
+          //     topPadding={setTopPadding(index)}
+          //     lastMessageBottomPadding={index === messagesLength - 1 ? 16 : 0}
+          //     sameAuthorAsPrev={setTopPadding(index) !== theme.space.space20}
+          //     messageTime={getMessageTime(message)}
+          //     updateAttributes={(attribute) =>
+          //       getSdkMessageObject(message).updateAttributes({
+          //         ...attributes,
+          //         ...attribute,
+          //       })
+          //     }
+          //   />
+          // </div>
         );
       })}
       {imagePreview
@@ -259,7 +338,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
             );
           })()
         : null}
-    </>
+    </ChatLog>
   );
 };
 

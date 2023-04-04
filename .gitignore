@@ -23,9 +23,13 @@ replit.nix
 .env.test.local
 .env.production.local
 react-app-env.d.ts
+public/firebase-config.js
+public/firebase-messaging-sw.js
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
 AutomationTests/environments/env_data
+
+dynamicConfig.yml

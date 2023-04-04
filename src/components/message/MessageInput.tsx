@@ -96,7 +96,6 @@ const MessageInput: React.FC<MessageInputProps> = (
             fontStyle: "normal",
             fontSize: "14px",
             lineHeight: "20px",
-            fontFamily: "Inter",
           }}
           onFocus={(e) =>
             e.currentTarget.setSelectionRange(cursorPosition, cursorPosition)
