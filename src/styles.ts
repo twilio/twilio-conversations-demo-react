@@ -75,6 +75,7 @@ export default {
     lineHeight: "20px",
     fontWeight: "400",
     alignItems: "center",
+    justifyContent: "center",
   } as CSSProperties,
   paginationSpinner: {
     display: "flex",
