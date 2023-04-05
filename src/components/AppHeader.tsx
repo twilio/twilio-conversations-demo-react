@@ -7,7 +7,6 @@ import React, { useMemo } from "react";
 import styles from "../styles";
 import { ConnectionState } from "@twilio/conversations";
 import { LogoTwilioIcon } from "@twilio-paste/icons/esm/LogoTwilioIcon";
-import { ConnectivityAvailableIcon } from "@twilio-paste/icons/esm/ConnectivityAvailableIcon";
 
 type AppHeaderProps = {
   user: string;
@@ -69,14 +68,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             }
             style={styles.userStatus}
           >
-            {label === "online" && (
-              <ConnectivityAvailableIcon
-                decorative={false}
-                color={"colorTextIconAvailable"}
-                size={"sizeIcon10"}
-                title="Online"
-              />
-            )}
             {label === "online"
               ? "Online"
               : label === "connecting"
