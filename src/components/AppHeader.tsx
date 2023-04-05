@@ -61,10 +61,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             as="span"
             color={
               label === "online"
-                ? "colorTextIconAvailable"
+                ? "colorTextPrimaryWeak"
                 : label === "connecting"
                 ? "colorTextIconBusy"
-                : "colorTextIconError"
+                : "colorTextWeaker"
             }
             style={styles.userStatus}
           >
