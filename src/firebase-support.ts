@@ -1,12 +1,30 @@
-import { initializeApp } from "firebase/app";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { FirebaseApp, initializeApp } from "firebase/app";
+import {
+  Messaging,
+  getMessaging,
+  getToken,
+  onMessage,
+} from "firebase/messaging";
 import { Client, PushNotification } from "@twilio/conversations";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const app = initializeApp((window as any).firebaseConfig);
-const messaging = getMessaging(app);
+let app: FirebaseApp;
+let messaging: Messaging;
+let initialized = false;
+
+try {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  app = initializeApp((window as any).firebaseConfig);
+  messaging = getMessaging(app);
+  initialized = true;
+} catch {
+  console.warn("Couldn't initialize firebase app");
+}
 
 export const initFcmServiceWorker = async (): Promise<void> => {
+  if (!initialized) {
+    return;
+  }
+
   try {
     const registration = await navigator.serviceWorker.register(
       "firebase-messaging-sw.js"
@@ -20,6 +38,10 @@ export const initFcmServiceWorker = async (): Promise<void> => {
 export const subscribeFcmNotifications = async (
   convoClient: Client
 ): Promise<void> => {
+  if (!initialized) {
+    return;
+  }
+
   const permission = await Notification.requestPermission();
   if (permission !== "granted") {
     console.log("FcmNotifications: can't request permission:", permission);
@@ -43,6 +65,10 @@ export const subscribeFcmNotifications = async (
 };
 
 export const showNotification = (pushNotification: PushNotification): void => {
+  if (!initialized) {
+    return;
+  }
+
   // TODO: remove when new version of sdk will be released
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
