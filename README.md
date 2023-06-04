@@ -155,6 +155,9 @@ Select your [conversations service](https://www.twilio.com/console/conversations
 
 ### Run application
 
+Run `docker compose up --build` to build and locally run the application inside a Docker container.
+
+Alternatively,
 - Run `yarn` to fetch project dependencies.
 - Run `yarn start` to run the application locally.
 
