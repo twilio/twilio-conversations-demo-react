@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      # Source dir is mounted (instead of copying) to enable Webpack's hot reload feature
+      - "./src:/opt/demo-app/src"

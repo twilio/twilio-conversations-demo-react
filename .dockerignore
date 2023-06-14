@@ -1,0 +1,10 @@
+*
+
+!.eslintrc.json
+!tsconfig.json
+!webpack.config.js
+!.env
+!public/
+!yarn.lock
+!package.json
+!src/
