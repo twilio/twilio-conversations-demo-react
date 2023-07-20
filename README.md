@@ -106,6 +106,16 @@ $REACT_APP_ACCESS_TOKEN_SERVICE_URL?identity=<USER_PROVIDED_USERNAME>&password=<
  ```
 And return HTTP 401 in case of invalid credentials.
 
+## Deploy
+
+### Deploy to Vercel
+
+Automatically clone this repo and deploy it through Vercel. 
+
+Note: This deployment requires a [token service url](#generating-access-tokens). Vercel will ask for the `REACT_APP_ACCESS_TOKEN_SERVICE_URL` env variable. 
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F&env=REACT_APP_ACCESS_TOKEN_SERVICE_URL&envDescription=A%20link%20to%20your%20access%20token%20server.%20Use%20the%20Twilio%20Functions%20example%20from%20the%20readme%20for%20quick%20testing.&envLink=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F%23generating-access-tokens&project-name=twilio-conversations&repository-name=twilio-conversations)
+
 ## Setting up Push Notifications
 
 This demo app uses Firebase for processing notifications. This setup is optional. Note: Support may be limited for some browswers. 
