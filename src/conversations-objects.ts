@@ -42,6 +42,6 @@ export const getSdkMediaObject = (reduxMedia: ReduxMedia): Media =>
   getSdkObject(mediaMap, reduxMedia.sid, "media");
 
 export const getSdkParticipantObject = (
-  reduxParticipany: ReduxParticipant
+  reduxParticipant: ReduxParticipant
 ): Participant =>
-  getSdkObject(participantsMap, reduxParticipany.sid, "participant");
+  getSdkObject(participantsMap, reduxParticipant.sid, "participant");
