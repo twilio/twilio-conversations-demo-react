@@ -2,16 +2,14 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
 	"name": "Node.js & TypeScript",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+	"build": { "dockerfile": "../Dockerfile" },
 	"secrets": {
         "REACT_APP_ACCESS_TOKEN_SERVICE_URL": {
           "description": "token service url, expected to provide a valid token for valid credentials",
           "documentationUrl": "https://github.com/twilio/twilio-conversations-demo-react#set-the-token-service-url"
         }
 	},
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "yarn && yarn start",
+	"initializeCommand": "echo $(REACT_APP_ACCESS_TOKEN_SERVICE_URL) > .env",
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [3000],
 	// Use 'hostRequirements' to set minimum machine specs
