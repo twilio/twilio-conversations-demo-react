@@ -3,6 +3,8 @@ import { Button } from "@twilio-paste/button";
 import { PlusIcon } from "@twilio-paste/icons/esm/PlusIcon";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import styles from "../../styles";
+import AvatarGroup from "../AvatarGroup";
+import Avatar from "../Avatar";
 
 interface ParticipantsViewProps {
   participants: ReduxParticipant[];
@@ -16,7 +18,11 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = (
     return (
       <>
         <Box style={styles.addParticipantsButton}>
-          <Button fullWidth variant="secondary" onClick={props.onParticipantListOpen}>
+          <Button
+            fullWidth
+            variant="secondary"
+            onClick={props.onParticipantListOpen}
+          >
             <PlusIcon decorative={false} title="Add participants" />
             {"Add participants"}
           </Button>
@@ -25,23 +31,15 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = (
     );
   }
 
+  const participantAvatars: JSX.Element[] = props.participants.map(
+    (participant) => {
+      return <Avatar name={participant.identity ?? " "} />;
+    }
+  );
+
   return (
     <>
-      <Box
-        style={{
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-        }}
-        color="colorTextWeak"
-        fontFamily="fontFamilyText"
-        fontSize="fontSize30"
-        lineHeight="lineHeight40"
-        fontWeight="fontWeightNormal"
-        paddingRight="space60"
-      >
-        {`${props.participants.length} participants`}
-      </Box>
+      <AvatarGroup participants={props.participants} />
     </>
   );
 };

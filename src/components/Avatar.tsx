@@ -9,11 +9,22 @@ type AvatarProps = {
 
 // name = friendlyName ?? identity
 const Avatar: React.FC<AvatarProps> = ({ name, size }) => {
-	if (name.startsWith("whatsapp:") || name.startsWith("sms:") || name.startsWith("+")) {
-		return <PasteAvatar size={size ?? "sizeIcon70"} variant="user" name={name} icon={UserIcon} />
-	}
-	return <PasteAvatar size={size ?? "sizeIcon70"} variant="user" name={name} />
-	// use src for specified avatar images - once we have them!
+  if (
+    name.startsWith("whatsapp:") ||
+    name.startsWith("sms:") ||
+    name.startsWith("+")
+  ) {
+    return (
+      <PasteAvatar
+        size={size ?? "sizeIcon70"}
+        variant="user"
+        name={name}
+        icon={UserIcon}
+      />
+    );
+  }
+  return <PasteAvatar size={size ?? "sizeIcon70"} variant="user" name={name} />;
+  // use src for specified avatar images - once we have them!
 };
 
 export { Avatar };
