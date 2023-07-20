@@ -9,16 +9,14 @@
           "description": "token service url, expected to provide a valid token for valid credentials",
           "documentationUrl": "https://github.com/twilio/twilio-conversations-demo-react#set-the-token-service-url"
         }
-	}
+	},
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "yarn & yarn start",
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [3000]
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "yarn install",
 
 	// Configure tool-specific properties.
 	// "customizations": {},
