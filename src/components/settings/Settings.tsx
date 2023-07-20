@@ -39,12 +39,13 @@ interface SettingsProps {
   participants: ReduxParticipant[];
   client?: Client;
   convo: ReduxConversation;
+  isManageParticipantOpen: boolean;
+  setIsManageParticipantOpen: (open: boolean) => void;
 }
 
 const invalidPhoneNumberErrorMessage = "Invalid phone number";
 const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
-  const [isManageParticipantOpen, setIsManageParticipantOpen] = useState(false);
-  const handleParticipantClose = () => setIsManageParticipantOpen(false);
+  const handleParticipantClose = () => props.setIsManageParticipantOpen(false);
 
   const [isAddChatOpen, setIsAddChatOpen] = useState(false);
   // TODO: move to app loading state
@@ -107,7 +108,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
   return (
     <>
       <SettingsMenu
-        onParticipantListOpen={() => setIsManageParticipantOpen(true)}
+        onParticipantListOpen={() => props.setIsManageParticipantOpen(true)}
         leaveConvo={async () => {
           try {
             await sdkConvo.leave();
@@ -147,10 +148,10 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
         }}
         error={errorData}
       />
-      {isManageParticipantOpen && (
+      {props.isManageParticipantOpen && (
         <ManageParticipantsModal
           handleClose={handleParticipantClose}
-          isModalOpen={isManageParticipantOpen}
+          isModalOpen={props.isManageParticipantOpen}
           title="Manage Participants"
           participantsCount={props.participants.length}
           participantsList={props.participants}
@@ -211,7 +212,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           onBack={() => {
             emptyData();
             handleSMSClose();
-            setIsManageParticipantOpen(true);
+            props.setIsManageParticipantOpen(true);
           }}
           action={async () => {
             try {
@@ -262,7 +263,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           onBack={() => {
             emptyData();
             handleWhatsAppClose();
-            setIsManageParticipantOpen(true);
+            props.setIsManageParticipantOpen(true);
           }}
           action={async () => {
             try {
@@ -299,7 +300,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           onBack={() => {
             emptyData();
             handleChatClose();
-            setIsManageParticipantOpen(true);
+            props.setIsManageParticipantOpen(true);
           }}
           action={async () => {
             try {
