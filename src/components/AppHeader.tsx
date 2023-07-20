@@ -1,4 +1,3 @@
-import { ProductConversationsIcon } from "@twilio-paste/icons/esm/ProductConversationsIcon";
 import { UserIcon } from "@twilio-paste/icons/esm/UserIcon";
 import { Avatar } from "@twilio-paste/avatar";
 import { Text } from "@twilio-paste/core";
@@ -7,6 +6,7 @@ import { ChevronDownIcon } from "@twilio-paste/icons/esm/ChevronDownIcon";
 import React, { useMemo } from "react";
 import styles from "../styles";
 import { ConnectionState } from "@twilio/conversations";
+import { LogoTwilioIcon } from "@twilio-paste/icons/esm/LogoTwilioIcon";
 
 type AppHeaderProps = {
   user: string;
@@ -34,13 +34,18 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   return (
     <div style={styles.appHeader}>
       <div style={styles.flex}>
-        <ProductConversationsIcon
-          color="colorTextInverse"
-          size="sizeIcon70"
-          decorative={false}
-          title="app logo"
-        />
-        <div style={styles.appLogoTitle}>Twilio Conversations</div>
+        <div style={styles.appLogoWrapper}>
+          <LogoTwilioIcon
+            decorative={false}
+            color={"colorTextBrandHighlight"}
+            size={"sizeIcon40"}
+            title="app logo"
+          />
+        </div>
+        <div style={styles.appLogoTitle}>
+          Twilio Conversations
+          <div style={styles.appLogoSubTitle}>Demo application</div>
+        </div>
       </div>
       <div style={styles.userTile}>
         <Avatar size="sizeIcon70" name="avatar example" icon={UserIcon} />
@@ -49,22 +54,19 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             padding: "0 10px",
           }}
         >
-          {user}
+          <Text as="span" style={styles.userName}>
+            {user}
+          </Text>
           <Text
             as="span"
             color={
               label === "online"
-                ? "colorTextIconAvailable"
+                ? "colorTextPrimaryWeak"
                 : label === "connecting"
                 ? "colorTextIconBusy"
-                : "colorTextIconError"
+                : "colorTextWeaker"
             }
-            style={{
-              fontSize: "10px",
-              display: "block",
-              paddingTop: 5,
-              lineHeight: 0,
-            }}
+            style={styles.userStatus}
           >
             {label === "online"
               ? "Online"

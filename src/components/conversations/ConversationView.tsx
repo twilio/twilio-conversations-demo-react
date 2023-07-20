@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box } from "@twilio-paste/core";
+import { Box, Text } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 
 import {
@@ -133,7 +133,6 @@ const ConversationView: React.FC<SingleConvoProps> = (
   return (
     <Box
       style={{
-        width: 320,
         paddingTop: 14,
         paddingBottom: 14,
         paddingLeft: 16,
@@ -166,8 +165,7 @@ const ConversationView: React.FC<SingleConvoProps> = (
           <Box
             style={{
               width: 288,
-              fontFamily: "Inter",
-              fontWeight: theme.fontWeights.fontWeightMedium,
+              fontWeight: theme.fontWeights.fontWeightSemibold,
               fontSize: 14,
               color: muted
                 ? theme.textColors.colorTextInverseWeaker
@@ -216,27 +214,18 @@ const ConversationView: React.FC<SingleConvoProps> = (
               textOverflow: "ellipsis",
             }}
           >
-            {!props.typingInfo.length ? (
-              <Box>
+            {!props.typingInfo.length && lastMsgStatus ? (
+              <Box display="flex" paddingRight={"space20"} alignItems="center">
                 {lastMsgStatus === MessageStatus.Sending && props.myMessage && (
-                  <Box style={{ paddingRight: 6 }}>
-                    <SendingIcon />
-                  </Box>
+                  <SendingIcon />
                 )}
-                {lastMsgStatus === MessageStatus.Delivered && props.myMessage && (
-                  <Box style={{ paddingRight: 6 }}>
-                    <DeliveredIcon />
-                  </Box>
-                )}
+                {lastMsgStatus === MessageStatus.Delivered &&
+                  props.myMessage && <DeliveredIcon />}
                 {lastMsgStatus === MessageStatus.Failed && props.myMessage && (
-                  <Box style={{ paddingRight: 6 }}>
-                    <FailedIcon />
-                  </Box>
+                  <FailedIcon color="#D61F1F" />
                 )}
                 {lastMsgStatus === MessageStatus.Read && props.myMessage && (
-                  <Box style={{ paddingRight: 6 }}>
-                    <ReadIcon />
-                  </Box>
+                  <ReadIcon />
                 )}
               </Box>
             ) : null}
@@ -247,10 +236,31 @@ const ConversationView: React.FC<SingleConvoProps> = (
                 textOverflow: "ellipsis",
               }}
             >
-              {lastMessage}
+              {lastMsgStatus === MessageStatus.Failed ? (
+                <Text
+                  as="span"
+                  color="colorTextError"
+                  fontWeight={"fontWeightSemibold"}
+                >
+                  {"Message failed to send"}
+                </Text>
+              ) : (
+                <Text as="span" color="colorTextWeak">
+                  {lastMessage}
+                </Text>
+              )}
             </Box>
           </Box>
-          <Box style={{ whiteSpace: "nowrap", paddingLeft: 4 }}>{time}</Box>
+          <Box style={{ whiteSpace: "nowrap", paddingLeft: 4 }}>
+            <Text
+              as="span"
+              color={"colorTextWeak"}
+              fontSize="fontSize20"
+              fontWeight={"fontWeightSemibold"}
+            >
+              {time}
+            </Text>
+          </Box>
         </Box>
       </Box>
     </Box>

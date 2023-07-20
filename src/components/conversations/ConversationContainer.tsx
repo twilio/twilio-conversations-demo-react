@@ -73,7 +73,6 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
               flexDirection: "column",
               justifyContent: "center",
               textAlign: "center",
-              fontFamily: "Inter",
               fontSize: theme.fontSizes.fontSize30,
               fontWeight: theme.fontWeights.fontWeightNormal,
               lineHeight: "20px",

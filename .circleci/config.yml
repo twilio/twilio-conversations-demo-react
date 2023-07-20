@@ -1,0 +1,21 @@
+version: 2.1
+orbs:
+  continuation: circleci/continuation@volatile
+  node: circleci/node@5.0.2
+setup: true
+jobs:
+  generate-config:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Generate config
+          command: |
+            yarn
+            yarn generateCircleConfig
+      - continuation/continue:
+          configuration_path: ./dynamicConfig.yml
+workflows:
+  dynamic-workflow:
+    jobs:
+      - generate-config
