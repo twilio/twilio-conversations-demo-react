@@ -13,7 +13,13 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "yarn && yarn start",
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3000]
+	"forwardPorts": [3000],
+	// Use 'hostRequirements' to set minimum machine specs
+	"hostRequirements": {
+		"cpus": 8,
+		"memory": "16gb",
+		"storage": "32gb"
+	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
