@@ -9,12 +9,15 @@ import { useTheme } from "@twilio-paste/theme";
 import { Text } from "@twilio-paste/text";
 
 import { actionCreators } from "../../store";
-import { MAX_FILE_SIZE } from "../../constants";
+import { MAX_FILE_SIZE, UNEXPECTED_ERROR_MESSAGE } from "../../constants";
 import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
 import MessageInput from "./MessageInput";
 import SendMessageButton from "./SendMessageButton";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
-import { getSdkConversationObject } from "../../conversations-objects";
+import {
+  getSdkConversationObject,
+  getSdkMessageObject,
+} from "../../conversations-objects";
 import { ReduxMessage } from "../../store/reducers/messageListReducer";
 
 interface SendMessageProps {
@@ -37,7 +40,8 @@ const MessageInputField: React.FC<SendMessageProps> = (
   const typingInfo = getTypingMessage(props.typingData);
 
   const dispatch = useDispatch();
-  const { addNotifications } = bindActionCreators(actionCreators, dispatch);
+  const { upsertMessages, addNotifications, addAttachment } =
+    bindActionCreators(actionCreators, dispatch);
 
   useEffect(() => {
     setMessage("");
@@ -92,7 +96,8 @@ const MessageInputField: React.FC<SendMessageProps> = (
       return;
     }
 
-    const { convo } = props;
+    const { convo, client } = props;
+    const currentDate: Date = new Date();
     const sdkConvo = getSdkConversationObject(convo);
 
     const newMessageBuilder = sdkConvo.prepareMessage().setBody(message);
@@ -109,7 +114,7 @@ const MessageInputField: React.FC<SendMessageProps> = (
     //   attachedMedia: [],
     // } as ReduxMessage;
 
-    for (const file of files) {
+    for (const [key, file] of files.entries()) {
       const fileData = new FormData();
       fileData.set(file.name, file, file.name);
 
@@ -134,8 +139,8 @@ const MessageInputField: React.FC<SendMessageProps> = (
     try {
       await sdkConvo.advanceLastReadMessageIndex(messageIndex ?? 0);
     } catch (e) {
-      unexpectedErrorNotification(e.message, addNotifications);
-      throw e;
+      unexpectedErrorNotification(addNotifications);
+      return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
     }
   };
 
@@ -205,8 +210,10 @@ const MessageInputField: React.FC<SendMessageProps> = (
               sdkConvo.typing();
               setMessage(e);
             }}
-            onEnterKeyPress={async () => {
-              await onMessageSend();
+            onKeyPress={async (e) => {
+              if (e.key === "Enter") {
+                await onMessageSend();
+              }
             }}
             onFileRemove={onFileRemove}
           />

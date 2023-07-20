@@ -32,17 +32,7 @@ const AddSMSParticipantModal: React.FC<AddSMSParticipantModalProps> = (
         modalBody={
           <ModalBody>
             <h3>Add SMS participant</h3>
-            <Box
-              as="form"
-              onKeyPress={async (e) => {
-                if (e.key === "Enter") {
-                  if (props.action) {
-                    e.preventDefault();
-                    props.action();
-                  }
-                }
-              }}
-            >
+            <Box as="form">
               <ModalInputField
                 isFocused={true}
                 label="Phone number"

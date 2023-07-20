@@ -91,12 +91,9 @@ const MessageView: React.FC<SingleMessageProps> = (
               <Box
                 style={{
                   paddingTop: theme.space.space30,
-                  overflowWrap: "break-word",
                 }}
               >
-                {props.text.split("\n").map((text) => (
-                  <span style={{ display: "block" }}>{text}</span>
-                ))}
+                {props.text}
               </Box>
               <Box
                 style={{

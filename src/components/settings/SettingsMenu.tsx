@@ -86,11 +86,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
                 onSave={async (title) => {
                   try {
                     await props.updateConvo(title);
-                  } catch (e) {
-                    unexpectedErrorNotification(
-                      e.message,
-                      props.addNotifications
-                    );
+                  } catch {
+                    unexpectedErrorNotification(props.addNotifications);
                   }
                   setIsTitleModalOpen(false);
                 }}

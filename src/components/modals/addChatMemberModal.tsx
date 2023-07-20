@@ -29,17 +29,7 @@ const AddChatParticipantModal: React.FC<AddChatParticipantModalProps> = (
         modalBody={
           <ModalBody>
             <h3>Add Chat participant</h3>
-            <Box
-              as="form"
-              onKeyPress={async (e) => {
-                if (e.key === "Enter") {
-                  if (props.action) {
-                    e.preventDefault();
-                    props.action();
-                  }
-                }
-              }}
-            >
+            <Box as="form">
               <ModalInputField
                 label="User identity"
                 isFocused={true}

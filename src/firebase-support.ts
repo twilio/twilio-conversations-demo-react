@@ -1,29 +1,9 @@
-import { FirebaseApp, initializeApp } from "firebase/app";
-import {
-  Messaging,
-  getMessaging,
-  getToken,
-  onMessage,
-} from "firebase/messaging";
+import firebase from "firebase/compat/app";
+import "firebase/compat/messaging";
 import { Client, PushNotification } from "@twilio/conversations";
 
-let app: FirebaseApp;
-let messaging: Messaging;
-let initialized = false;
-
-try {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  app = initializeApp((window as any).firebaseConfig);
-  messaging = getMessaging(app);
-  initialized = true;
-} catch {
-  console.warn("Couldn't initialize firebase app");
-}
-
 export const initFcmServiceWorker = async (): Promise<void> => {
-  if (!initialized) {
-    return;
-  }
+  firebase.initializeApp((window as any).firebaseConfig);
 
   try {
     const registration = await navigator.serviceWorker.register(
@@ -38,25 +18,22 @@ export const initFcmServiceWorker = async (): Promise<void> => {
 export const subscribeFcmNotifications = async (
   convoClient: Client
 ): Promise<void> => {
-  if (!initialized) {
-    return;
-  }
-
   const permission = await Notification.requestPermission();
   if (permission !== "granted") {
     console.log("FcmNotifications: can't request permission:", permission);
     return;
   }
 
-  const fcmToken = await getToken(messaging);
+  const messaging = firebase.messaging();
+  const fcmToken = await messaging.getToken();
   if (!fcmToken) {
     console.log("FcmNotifications: can't get fcm token");
     return;
   }
 
   console.log("FcmNotifications: got fcm token", fcmToken);
-  await convoClient.setPushRegistrationId("fcm", fcmToken);
-  onMessage(messaging, (payload) => {
+  convoClient.setPushRegistrationId("fcm", fcmToken);
+  messaging.onMessage((payload) => {
     console.log("FcmNotifications: push received", payload);
     if (convoClient) {
       convoClient.handlePushNotification(payload);
@@ -65,10 +42,6 @@ export const subscribeFcmNotifications = async (
 };
 
 export const showNotification = (pushNotification: PushNotification): void => {
-  if (!initialized) {
-    return;
-  }
-
   // TODO: remove when new version of sdk will be released
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

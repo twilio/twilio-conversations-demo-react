@@ -2,12 +2,15 @@ export const WHATSAPP_PREFIX = "whatsapp:+";
 export const SMS_PREFIX = "+";
 export const MAX_FILE_SIZE = 52428800;
 export const COPY_SUCCESS_MESSAGE = "Message copied.";
+export const UNEXPECTED_ERROR_MESSAGE =
+  "Something went wrong. Please try again.";
 export const CONNECTION_ERROR_MESSAGE = "No internet connection.";
 export const NOTIFICATION_TIMEOUT = 4000;
 export const ERROR_MODAL_MESSAGES = {
   ADD_PARTICIPANT: {
     title: "Unable to add participant",
-    description: "There is an error while adding participant to conversation",
+    description:
+      "You don’t have permission to add participants to the conversation",
   },
   CHANGE_CONVERSATION_NAME: {
     title: "Unable to save Conversation name",
@@ -32,5 +35,3 @@ export const NOTIFICATION_LEVEL = {
   DEFAULT: "default",
   MUTED: "muted",
 };
-
-export const MAX_MESSAGE_LINE_WIDTH = 75;

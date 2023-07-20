@@ -11,7 +11,7 @@ const Horizon: React.FC<HorizonProps> = React.forwardRef(
         ref={ref}
         style={{
           textAlign: "center",
-          backgroundColor: theme.backgroundColors.colorBackgroundPrimaryWeaker,
+          backgroundColor: theme.backgroundColors.colorBackgroundPrimaryLighter,
           padding: 2,
           fontSize: "14px",
           lineHeight: "20px",

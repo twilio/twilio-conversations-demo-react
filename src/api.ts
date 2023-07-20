@@ -16,6 +16,7 @@ import {
   CONVERSATION_MESSAGES,
   CONVERSATION_PAGE_SIZE,
   PARTICIPANT_MESSAGES,
+  UNEXPECTED_ERROR_MESSAGE,
 } from "./constants";
 import { NotificationsType } from "./store/reducers/notificationsReducer";
 import { successNotification, unexpectedErrorNotification } from "./helpers";
@@ -30,97 +31,72 @@ export async function addConversation(
   client?: Client,
   addNotifications?: (notifications: NotificationsType) => void
 ): Promise<Conversation> {
-  if (client === undefined) {
-    throw new Error(
-      "Client is suddenly undefined, are you sure everything is ok?"
-    );
+  if (name.length > 0 && client !== undefined) {
+    try {
+      const conversation = await client.createConversation({
+        friendlyName: name,
+      });
+      await conversation.join();
+
+      const participants = await getConversationParticipants(conversation);
+      updateParticipants(participants, conversation.sid);
+
+      successNotification({
+        message: CONVERSATION_MESSAGES.CREATED,
+        addNotifications,
+      });
+
+      return conversation;
+    } catch (e) {
+      unexpectedErrorNotification(addNotifications);
+
+      return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
+    }
   }
-
-  if (name.length === 0) {
-    throw new Error("Conversation name is empty");
-  }
-
-  try {
-    const conversation = await client.createConversation({
-      friendlyName: name,
-    });
-    await conversation.join();
-
-    const participants = await conversation.getParticipants();
-    updateParticipants(participants, conversation.sid);
-
-    successNotification({
-      message: CONVERSATION_MESSAGES.CREATED,
-      addNotifications,
-    });
-
-    return conversation;
-  } catch (e) {
-    unexpectedErrorNotification(e.message, addNotifications);
-    throw e;
-  }
+  return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
 }
 
-export async function addChatParticipant(
+export async function addParticipant(
   name: string,
+  proxyName: string,
+  chatParticipant: boolean,
   convo?: Conversation,
   addNotifications?: (notifications: NotificationsType) => void
 ): Promise<ParticipantResponse> {
   if (convo === undefined) {
-    throw new Error(
-      "Conversation is suddenly undefined, are you sure everything is ok?"
-    );
+    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
   }
 
-  if (name.length === 0) {
-    throw new Error("Participant name is empty");
+  if (chatParticipant && name.length > 0) {
+    try {
+      const result = await convo.add(name);
+      successNotification({
+        message: PARTICIPANT_MESSAGES.ADDED,
+        addNotifications,
+      });
+      return result;
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
+  if (!chatParticipant && name.length > 0 && proxyName.length > 0) {
+    try {
+      const result = await convo.addNonChatParticipant(proxyName, name, {
+        friendlyName: name,
+      });
+      successNotification({
+        message: PARTICIPANT_MESSAGES.ADDED,
+        addNotifications,
+      });
 
-  try {
-    const result = await convo.add(name);
-    successNotification({
-      message: PARTICIPANT_MESSAGES.ADDED,
-      addNotifications,
-    });
-    return result;
-  } catch (e) {
-    unexpectedErrorNotification(e.message, addNotifications);
-    throw e;
+      return result;
+    } catch (e) {
+      unexpectedErrorNotification(addNotifications);
+
+      return Promise.reject(e);
+    }
   }
-}
-
-export async function addNonChatParticipant(
-  number: string,
-  proxyNumber: string,
-  convo?: Conversation,
-  addNotifications?: (notifications: NotificationsType) => void
-): Promise<ParticipantResponse> {
-  if (convo === undefined) {
-    throw new Error(
-      "Conversation is suddenly undefined, are you sure everything is ok?"
-    );
-  }
-
-  if (number.length === 0 || proxyNumber.length === 0) {
-    throw new Error(
-      "Both participant number and proxy number must be specified"
-    );
-  }
-
-  try {
-    const result = await convo.addNonChatParticipant(proxyNumber, number, {
-      friendlyName: number,
-    });
-    successNotification({
-      message: PARTICIPANT_MESSAGES.ADDED,
-      addNotifications,
-    });
-
-    return result;
-  } catch (e) {
-    unexpectedErrorNotification(e.message, addNotifications);
-    throw e;
-  }
+  return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
 }
 
 export async function getToken(
@@ -130,7 +106,7 @@ export async function getToken(
   const requestAddress = process.env
     .REACT_APP_ACCESS_TOKEN_SERVICE_URL as string;
   if (!requestAddress) {
-    throw new Error(
+    return Promise.reject(
       "REACT_APP_ACCESS_TOKEN_SERVICE_URL is not configured, cannot login"
     );
   }
@@ -142,11 +118,11 @@ export async function getToken(
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      throw new Error(error.response.data ?? "Authentication error.");
+      return Promise.reject(error.response.data ?? "Authentication error.");
     }
 
-    console.error(`ERROR received from ${requestAddress}: ${error}\n`);
-    throw new Error(`ERROR received from ${requestAddress}: ${error}\n`);
+    process.stderr?.write(`ERROR received from ${requestAddress}: ${error}\n`);
+    return Promise.reject(`ERROR received from ${requestAddress}: ${error}\n`);
   }
 }
 
@@ -226,6 +202,10 @@ export async function getMessageStatus(
   return statuses;
 }
 
+export const getConversationParticipants = async (
+  conversation: Conversation
+): Promise<Participant[]> => await conversation.getParticipants();
+
 export const removeParticipant = async (
   conversation: Conversation,
   participant: Participant,
@@ -237,9 +217,9 @@ export const removeParticipant = async (
       message: PARTICIPANT_MESSAGES.REMOVED,
       addNotifications,
     });
-  } catch (e) {
-    unexpectedErrorNotification(e.message, addNotifications);
-    throw e;
+  } catch {
+    unexpectedErrorNotification(addNotifications);
+    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
   }
 };
 
@@ -252,8 +232,8 @@ export const getBlobFile = async (
     const response = await fetch(url);
     return response.blob();
   } catch (e) {
-    unexpectedErrorNotification(e.message, addNotifications);
-    throw e;
+    unexpectedErrorNotification(addNotifications);
+    return Promise.reject(UNEXPECTED_ERROR_MESSAGE);
   }
 };
 
