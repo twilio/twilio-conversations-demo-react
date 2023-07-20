@@ -1,14 +1,23 @@
-import { Box } from "@twilio-paste/core";
+import {
+  Box,
+  Popover,
+  PopoverButton,
+  PopoverContainer,
+  Stack,
+  Tooltip,
+} from "@twilio-paste/core";
 import { Button } from "@twilio-paste/button";
 import { PlusIcon } from "@twilio-paste/icons/esm/PlusIcon";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import styles from "../../styles";
 import AvatarGroup from "../AvatarGroup";
-import Avatar from "../Avatar";
+
+const MAX_DISPLAYED_PARTICIPANTS = 5;
 
 interface ParticipantsViewProps {
   participants: ReduxParticipant[];
   onParticipantListOpen: () => void;
+  maxDisplayedParticipants?: number;
 }
 
 const ParticipantsView: React.FC<ParticipantsViewProps> = (
@@ -31,15 +40,20 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = (
     );
   }
 
-  const participantAvatars: JSX.Element[] = props.participants.map(
-    (participant) => {
-      return <Avatar name={participant.identity ?? " "} />;
-    }
-  );
-
   return (
     <>
-      <AvatarGroup participants={props.participants} />
+      <Stack orientation="horizontal" spacing="space10">
+        <AvatarGroup
+          names={props.participants.map(
+            (participant) => participant.identity ?? " "
+          )}
+        />
+        <Tooltip text={"Bottom Text"} placement={"bottom-start"}>
+          <Button variant="link" size={"small"}>
+            and N other Participants
+          </Button>
+        </Tooltip>
+      </Stack>
     </>
   );
 };

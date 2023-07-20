@@ -1,6 +1,7 @@
 import { Avatar as PasteAvatar } from "@twilio-paste/avatar";
 import { UserIcon } from "@twilio-paste/icons/cjs/UserIcon";
 import { IconSize } from "@twilio-paste/style-props";
+import { Tooltip } from "@twilio-paste/core";
 
 type AvatarProps = {
   name: string;
@@ -23,7 +24,11 @@ const Avatar: React.FC<AvatarProps> = ({ name, size }) => {
       />
     );
   }
-  return <PasteAvatar size={size ?? "sizeIcon70"} variant="user" name={name} />;
+  return (
+    <Tooltip text={name} placement={"bottom-start"}>
+      <PasteAvatar size={size ?? "sizeIcon70"} variant="user" name={name} />
+    </Tooltip>
+  );
   // use src for specified avatar images - once we have them!
 };
 
