@@ -6,8 +6,7 @@ import {
   MediaFigure,
   MediaObject,
 } from "@twilio-paste/media-object";
-import { UserIcon } from "@twilio-paste/icons/cjs/UserIcon";
-import { Avatar } from "@twilio-paste/avatar";
+import { Avatar } from "../Avatar";
 import { Button } from "@twilio-paste/button";
 import { DownloadIcon } from "@twilio-paste/icons/cjs/DownloadIcon";
 
@@ -44,7 +43,7 @@ const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
       >
         <MediaObject verticalAlign="center" style={{ minWidth: "100%" }}>
           <MediaFigure spacing="space40">
-            <Avatar size="sizeIcon80" name={author} icon={UserIcon} />
+            <Avatar size="sizeIcon80" name={author} />
           </MediaFigure>
           <MediaBody>
             <Text as="p" fontSize="fontSize50" lineHeight="lineHeight60">
