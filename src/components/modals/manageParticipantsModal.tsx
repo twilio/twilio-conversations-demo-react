@@ -12,7 +12,7 @@ import {
 import { MenuButton, Menu, MenuItem, useMenuState } from "@twilio-paste/menu";
 import { Text } from "@twilio-paste/text";
 import { ChevronDownIcon } from "@twilio-paste/icons/esm/ChevronDownIcon";
-import { Avatar } from "@twilio-paste/avatar";
+import { Avatar } from "../Avatar";
 import { UserIcon } from "@twilio-paste/icons/cjs/UserIcon";
 
 import ConvoModal from "./ConvoModal";
@@ -117,7 +117,6 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = (
                                 user.attributes["friendlyName"]) ??
                               "unknown"
                             }
-                            icon={UserIcon}
                           />
                         </Td>
                         <Td textAlign="left">

@@ -2760,6 +2760,14 @@
     "@types/react-is" "17.0.3"
     react-is "18.0.0"
 
+"@twilio-paste/avatar@^8.1.0":
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/@twilio-paste/avatar/-/avatar-8.1.0.tgz#8379d4416c97695e70cc3a5c9262e3fb6510d4e1"
+  integrity sha512-e/BLra3PhZUoy/esUrcHuUwghjHMdQXvtNHVw2ctzj0vwHjhsmP2TJ280lm42foEL1o1P1Luj2REC5ZJCdgxfg==
+  dependencies:
+    "@types/react-is" "17.0.3"
+    react-is "18.0.0"
+
 "@twilio-paste/badge@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@twilio-paste/badge/-/badge-7.0.0.tgz#355d9859178833d665c186c9f2e6bfc73f500f20"

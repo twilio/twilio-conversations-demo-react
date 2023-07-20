@@ -1,5 +1,5 @@
 import { UserIcon } from "@twilio-paste/icons/esm/UserIcon";
-import { Avatar } from "@twilio-paste/avatar";
+import { Avatar } from "./Avatar";
 import { Text } from "@twilio-paste/core";
 import { Menu, MenuButton, useMenuState, MenuItem } from "@twilio-paste/menu";
 import { ChevronDownIcon } from "@twilio-paste/icons/esm/ChevronDownIcon";
@@ -48,7 +48,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         </div>
       </div>
       <div style={styles.userTile}>
-        <Avatar size="sizeIcon70" name="avatar example" icon={UserIcon} />
+        <Avatar name={user} />
         <div
           style={{
             padding: "0 10px",
