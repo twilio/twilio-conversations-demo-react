@@ -1,98 +1,109 @@
 import { Box } from "@twilio-paste/core";
-import { ChatComposer } from "@twilio-paste/core/chat-composer";
-import {
-  $getRoot,
-  ClearEditorPlugin,
-  CLEAR_EDITOR_COMMAND,
-  COMMAND_PRIORITY_LOW,
-  EditorState,
-  KEY_ENTER_COMMAND,
-  useLexicalComposerContext,
-} from "@twilio-paste/lexical-library";
-import { useEffect } from "react";
+import { useState, useLayoutEffect, KeyboardEventHandler } from "react";
 import MessageFile from "./MessageFile";
 
 interface MessageInputProps {
   message: string;
   onChange: (message: string) => void;
-  onEnterKeyPress: () => void;
+  onKeyPress: KeyboardEventHandler<HTMLInputElement>;
   onFileRemove: (file: string) => void;
   assets: File[];
 }
 
-interface EnterKeyPluginProps {
-  onEnterKeyPress: () => void;
-}
-
-const EnterKeyPlugin = (props: EnterKeyPluginProps) => {
-  const { onEnterKeyPress } = props;
-  const [editor] = useLexicalComposerContext();
-
-  useEffect(() => {
-    return editor.registerCommand(
-      KEY_ENTER_COMMAND,
-      () => {
-        onEnterKeyPress();
-        return true;
-      },
-      COMMAND_PRIORITY_LOW
-    );
-  }, [editor, onEnterKeyPress]);
-
-  return null;
-};
-
-// when message gets cleared and given it's a prop passed in to MessageInput
-// we need to clear the Lexical editor.
-// TODO: there has to be a simpler way of doing a basic binding like this with Lexical
-
-interface MessagePropPluginProps {
-  message: string;
-}
-
-const MessagePropPlugin = (props: MessagePropPluginProps) => {
-  const { message } = props;
-  const [editor] = useLexicalComposerContext();
-
-  useEffect(() => {
-    if (message === undefined || message === null || message.length === 0) {
-      editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
+function useWindowSize() {
+  const [size, setSize] = useState(0);
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize(window.innerWidth);
     }
-  }, [editor, message]);
+    window.addEventListener("resize", updateSize);
+    updateSize();
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+  return size;
+}
 
-  return null;
-};
+function getTextWidth(text: string) {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (context !== null && context !== undefined) {
+    context.font = "14px Inter";
+    return context.measureText(text).width;
+  }
+  return 0;
+}
 
 const MessageInput: React.FC<MessageInputProps> = (
   props: MessageInputProps
 ) => {
-  const { onEnterKeyPress, message } = props;
-
+  const [cursorPosition, setCursorPostions] = useState<number>(0);
+  const width = useWindowSize();
+  //500 is the width of the rest of the components. So totalWidth-500=widthOfInput
   return (
     <Box>
-      <Box marginLeft={"space40"}>
-        <ChatComposer
-          config={{
-            namespace: "message-input",
-            onError: (e) => {
-              throw e;
-            },
+      {getTextWidth(props.message) < width - 500 && (
+        <input
+          type="text"
+          onChange={(e) => {
+            setCursorPostions(e.currentTarget.selectionStart ?? 0);
+            props.onChange(e.currentTarget.value);
           }}
-          ariaLabel="A basic chat composer"
+          aria-describedby="message_help_text"
+          id="message-input-shorter"
+          name="message-input-shorter"
+          value={props.message}
+          autoFocus
+          autoComplete="false"
+          autoSave="false"
           placeholder="Add your message"
-          onChange={(editorState: EditorState): void => {
-            editorState.read(() => {
-              const text = $getRoot().getTextContent();
-              props.onChange(text);
-            });
+          style={{
+            border: props.assets.length ? "none" : "1px solid #8891AA",
+            padding: "8px 12px",
+            height: "36px",
+            margin: `${
+              "0 6px " + (props.assets.length ? "12" : "4") + "px 6px"
+            }`,
+            borderRadius: "4px",
+            width: "100%",
           }}
-        >
-          <ClearEditorPlugin />
-          <MessagePropPlugin message={message} />
-          <EnterKeyPlugin onEnterKeyPress={onEnterKeyPress} />
-        </ChatComposer>
-      </Box>
-      {props.assets.length > 0 && (
+          onFocus={(e) =>
+            e.currentTarget.setSelectionRange(cursorPosition, cursorPosition)
+          }
+          onKeyPress={props.onKeyPress}
+        />
+      )}
+
+      {getTextWidth(props.message) >= width - 500 && (
+        <textarea
+          onChange={(e) => {
+            setCursorPostions(e.currentTarget.selectionStart);
+            props.onChange(e.currentTarget.value);
+          }}
+          aria-describedby="message_help_text"
+          id="message-input"
+          name="message-input"
+          value={props.message}
+          autoFocus
+          style={{
+            border: props.assets.length ? "none" : "1px solid #8891AA",
+            borderRadius: "4px",
+            width: "100%",
+            padding: "8px 12px",
+            minHeight: "36px",
+            margin: `${
+              "0 6px " + (props.assets.length ? "12" : "4") + "px 6px"
+            }`,
+            fontStyle: "normal",
+            fontSize: "14px",
+            lineHeight: "20px",
+            fontFamily: "Inter",
+          }}
+          onFocus={(e) =>
+            e.currentTarget.setSelectionRange(cursorPosition, cursorPosition)
+          }
+        />
+      )}
+      {props.assets.length ? (
         <Box
           style={{
             display: "flex",
@@ -107,7 +118,7 @@ const MessageInput: React.FC<MessageInputProps> = (
             />
           ))}
         </Box>
-      )}
+      ) : null}
     </Box>
   );
 };

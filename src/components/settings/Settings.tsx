@@ -3,15 +3,12 @@ import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { Client } from "@twilio/conversations";
+import { Box, Spinner } from "@twilio-paste/core";
 
 import SettingsMenu from "./SettingsMenu";
 import ManageParticipantsModal from "../modals/manageParticipantsModal";
 import { Content } from "../../types";
-import {
-  addChatParticipant,
-  addNonChatParticipant,
-  removeParticipant,
-} from "../../api";
+import { addParticipant, removeParticipant } from "../../api";
 import AddChatParticipantModal from "../modals/addChatMemberModal";
 import AddSMSParticipantModal from "../modals/addSMSParticipantModal";
 import AddWhatsAppParticipantModal from "../modals/addWhatsAppParticipant";
@@ -33,7 +30,6 @@ import {
   getSdkParticipantObject,
 } from "../../conversations-objects";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
-import { isValidPhoneNumber } from "libphonenumber-js";
 
 interface SettingsProps {
   participants: ReduxParticipant[];
@@ -41,14 +37,13 @@ interface SettingsProps {
   convo: ReduxConversation;
 }
 
-const invalidPhoneNumberErrorMessage = "Invalid phone number";
 const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
   const [isManageParticipantOpen, setIsManageParticipantOpen] = useState(false);
   const handleParticipantClose = () => setIsManageParticipantOpen(false);
 
   const [isAddChatOpen, setIsAddChatOpen] = useState(false);
   // TODO: move to app loading state
-  // const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const handleChatOpen = () => setIsAddChatOpen(true);
   const handleChatClose = () => setIsAddChatOpen(false);
 
@@ -116,8 +111,8 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
               addNotifications,
             });
             updateCurrentConversation("");
-          } catch (e) {
-            unexpectedErrorNotification(e.message, addNotifications);
+          } catch {
+            unexpectedErrorNotification(addNotifications);
           }
         }}
         updateConvo={(val: string) =>
@@ -187,19 +182,11 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           title="Manage Participants"
           setName={(name: string) => {
             setName(name);
-            setError(
-              !isValidPhoneNumber(`+${name}`)
-                ? invalidPhoneNumberErrorMessage
-                : ""
-            );
+            setErrors("");
           }}
           setProxyName={(name: string) => {
             setNameProxy(name);
-            setErrorProxy(
-              !isValidPhoneNumber(`+${name}`)
-                ? invalidPhoneNumberErrorMessage
-                : ""
-            );
+            setErrors("");
           }}
           error={error}
           errorProxy={errorProxy}
@@ -215,16 +202,17 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           }}
           action={async () => {
             try {
-              await addNonChatParticipant(
+              await addParticipant(
                 SMS_PREFIX + name,
                 SMS_PREFIX + nameProxy,
+                false,
                 sdkConvo,
                 addNotifications
               );
               emptyData();
               handleSMSClose();
             } catch (e) {
-              setErrorData(e.body);
+              setErrorData(e as any);
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
             }
           }}
@@ -238,19 +226,11 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           title="Manage Participants"
           setName={(name: string) => {
             setName(name);
-            setError(
-              !isValidPhoneNumber(`+${name}`)
-                ? invalidPhoneNumberErrorMessage
-                : ""
-            );
+            setErrors("");
           }}
           setProxyName={(name: string) => {
             setNameProxy(name);
-            setErrorProxy(
-              !isValidPhoneNumber(`+${name}`)
-                ? invalidPhoneNumberErrorMessage
-                : ""
-            );
+            setErrors("");
           }}
           error={error}
           errorProxy={errorProxy}
@@ -266,16 +246,17 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           }}
           action={async () => {
             try {
-              await addNonChatParticipant(
+              await addParticipant(
                 WHATSAPP_PREFIX + name,
                 WHATSAPP_PREFIX + nameProxy,
+                false,
                 sdkConvo,
                 addNotifications
               );
               emptyData();
               handleWhatsAppClose();
             } catch (e) {
-              setErrorData(e.body);
+              setErrorData(e as any);
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
             }
           }}
@@ -303,17 +284,22 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           }}
           action={async () => {
             try {
-              await addChatParticipant(name.trim(), sdkConvo, addNotifications);
+              await addParticipant(
+                name,
+                nameProxy,
+                true,
+                sdkConvo,
+                addNotifications
+              );
               emptyData();
-              handleChatClose();
             } catch (e) {
-              setErrorData(e.body);
               setErrorToShow(ERROR_MODAL_MESSAGES.ADD_PARTICIPANT);
+              setErrorData(e as any);
             }
           }}
         />
       )}
-      {/* {isLoading ? (
+      {isLoading ? (
         <Box
           display="flex"
           justifyContent="center"
@@ -324,7 +310,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
         >
           <Spinner size="sizeIcon110" decorative={false} title="Loading" />
         </Box>
-      ) : null} */}
+      ) : null}
     </>
   );
 };

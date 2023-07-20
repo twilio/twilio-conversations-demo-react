@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { Box, Text } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 import { Menu, MenuButton, useMenuState } from "@twilio-paste/menu";
@@ -113,7 +113,7 @@ export const ReactionsBox: React.FC<ReactionsProps> = ({
     : theme.textColors.colorTextIconInverse;
 
   const reactionsBackgroundColor = isReactionsByCurrentUser
-    ? theme.backgroundColors.colorBackgroundPrimaryWeaker
+    ? theme.backgroundColors.colorBackgroundPrimaryLighter
     : theme.backgroundColors.colorBackgroundBody;
 
   return (

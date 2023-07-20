@@ -19,7 +19,7 @@ import {
   SetParticipantsType,
   SetUnreadMessagesType,
 } from "../types";
-import { getToken } from "../api";
+import { getConversationParticipants, getToken } from "../api";
 import useAppAlert from "../hooks/useAppAlerts";
 import Notifications from "./Notifications";
 import stylesheet from "../styles";
@@ -53,7 +53,7 @@ async function handleParticipantsUpdate(
   participant: Participant,
   updateParticipants: SetParticipantsType
 ) {
-  const result = await participant.conversation.getParticipants();
+  const result = await getConversationParticipants(participant.conversation);
   updateParticipants(result, participant.conversation.sid);
 }
 
@@ -152,75 +152,72 @@ const AppContainer: React.FC = () => {
         );
       });
 
-      conversation.on("typingEnded", async (participant) => {
-        await handlePromiseRejection(
-          async () =>
-            updateTypingIndicator(participant, conversation.sid, endTyping),
+      conversation.on("typingEnded", (participant) => {
+        handlePromiseRejection(
+          () => updateTypingIndicator(participant, conversation.sid, endTyping),
           addNotifications
         );
       });
 
       handlePromiseRejection(async () => {
         if (conversation.status === "joined") {
-          const result = await conversation.getParticipants();
+          const result = await getConversationParticipants(conversation);
           updateParticipants(result, conversation.sid);
 
           const messages = await conversation.getMessages();
           upsertMessages(conversation.sid, messages.items);
-          await loadUnreadMessagesCount(conversation, updateUnreadMessages);
+          loadUnreadMessagesCount(conversation, updateUnreadMessages);
         }
       }, addNotifications);
     });
 
-    client.on("conversationRemoved", async (conversation: Conversation) => {
+    client.on("conversationRemoved", (conversation: Conversation) => {
       updateCurrentConversation("");
-      await handlePromiseRejection(async () => {
+      handlePromiseRejection(() => {
         removeConversation(conversation.sid);
         updateParticipants([], conversation.sid);
       }, addNotifications);
     });
-    client.on("messageAdded", async (message: Message) => {
-      await upsertMessage(message, upsertMessages, updateUnreadMessages);
+    client.on("messageAdded", (message: Message) => {
+      upsertMessage(message, upsertMessages, updateUnreadMessages);
       if (message.author === localStorage.getItem("username")) {
         clearAttachments(message.conversation.sid, "-1");
       }
     });
-    client.on("participantLeft", async (participant) => {
-      await handlePromiseRejection(
-        async () => handleParticipantsUpdate(participant, updateParticipants),
+    client.on("participantLeft", (participant) => {
+      handlePromiseRejection(
+        () => handleParticipantsUpdate(participant, updateParticipants),
         addNotifications
       );
     });
-    client.on("participantUpdated", async (event) => {
-      await handlePromiseRejection(
-        async () =>
-          handleParticipantsUpdate(event.participant, updateParticipants),
+    client.on("participantUpdated", (event) => {
+      handlePromiseRejection(
+        () => handleParticipantsUpdate(event.participant, updateParticipants),
         addNotifications
       );
     });
-    client.on("participantJoined", async (participant) => {
-      await handlePromiseRejection(
-        async () => handleParticipantsUpdate(participant, updateParticipants),
+    client.on("participantJoined", (participant) => {
+      handlePromiseRejection(
+        () => handleParticipantsUpdate(participant, updateParticipants),
         addNotifications
       );
     });
-    client.on("conversationUpdated", async ({ conversation }) => {
-      await handlePromiseRejection(
+    client.on("conversationUpdated", ({ conversation }) => {
+      handlePromiseRejection(
         () => upsertConversation(conversation),
         addNotifications
       );
     });
 
-    client.on("messageUpdated", async ({ message }) => {
-      await handlePromiseRejection(
-        async () =>
-          upsertMessage(message, upsertMessages, updateUnreadMessages),
+    client.on("messageUpdated", ({ message }) => {
+      handlePromiseRejection(
+        () => upsertMessage(message, upsertMessages, updateUnreadMessages),
         addNotifications
       );
     });
 
-    client.on("messageRemoved", async (message) => {
-      await handlePromiseRejection(
+    client.on("messageRemoved", (message) => {
+      handlePromiseRejection(
         () => removeMessages(message.conversation.sid, [message]),
         addNotifications
       );
@@ -228,7 +225,7 @@ const AppContainer: React.FC = () => {
 
     client.on("pushNotification", (event) => {
       // @ts-ignore
-      if (event.type !== "twilio.conversations.new_message") {
+      if (event.type != "twilio.conversations.new_message") {
         return;
       }
 
@@ -239,19 +236,21 @@ const AppContainer: React.FC = () => {
       }
     });
 
-    client.on("tokenAboutToExpire", async () => {
+    client.on("tokenAboutToExpire", () => {
       if (username && password) {
-        const token = await getToken(username, password);
-        await client.updateToken(token);
-        login(token);
+        getToken(username, password).then((token) => {
+          client.updateToken(token);
+          login(token);
+        });
       }
     });
 
-    client.on("tokenExpired", async () => {
+    client.on("tokenExpired", () => {
       if (username && password) {
-        const token = await getToken(username, password);
-        login(token);
-        setClientIteration((x) => x + 1);
+        getToken(username, password).then((token) => {
+          login(token);
+          setClientIteration((x) => x + 1);
+        });
       }
     });
 
@@ -260,24 +259,25 @@ const AppContainer: React.FC = () => {
     });
 
     updateLoadingState(false);
+    getSubscribedConversations(client);
 
     return () => {
       client?.removeAllListeners();
     };
   }, [clientIteration]);
 
-  async function upsertMessage(
+  function upsertMessage(
     message: Message,
     upsertMessages: AddMessagesType,
     updateUnreadMessages: SetUnreadMessagesType
   ) {
     //transform the message and add it to redux
-    await handlePromiseRejection(async () => {
+    handlePromiseRejection(() => {
       if (sidRef.current === message.conversation.sid) {
-        await message.conversation.advanceLastReadMessageIndex(message.index);
+        message.conversation.advanceLastReadMessageIndex(message.index);
       }
       upsertMessages(message.conversation.sid, [message]);
-      await loadUnreadMessagesCount(message.conversation, updateUnreadMessages);
+      loadUnreadMessagesCount(message.conversation, updateUnreadMessages);
     }, addNotifications);
   }
 
