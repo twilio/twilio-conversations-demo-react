@@ -123,6 +123,10 @@ export default {
     width: "100%",
     borderBottom: "1px solid #CACDD8",
   } as CSSProperties,
+  addParticipantsButton: {
+    padding: "14px 16px",
+    width: "100%",
+  } as CSSProperties,
   loginContainer: {
     display: "flex",
     flexDirection: "column",

@@ -1,7 +1,9 @@
 import { Box } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 
+import ParticipantsView from "./ParticipantsView";
 import Settings from "../settings/Settings";
+import React, { useState } from "react";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 
@@ -15,6 +17,7 @@ const ConversationDetails: React.FC<ConversationDetailsProps> = (
   props: ConversationDetailsProps
 ) => {
   const theme = useTheme();
+  const [isManageParticipantOpen, setIsManageParticipantOpen] = useState(false);
 
   return (
     <Box
@@ -57,23 +60,17 @@ const ConversationDetails: React.FC<ConversationDetailsProps> = (
             flexDirection: "row",
           }}
         >
-          <Box
-            style={{
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-            }}
-            color="colorTextWeak"
-            fontFamily="fontFamilyText"
-            fontSize="fontSize30"
-            lineHeight="lineHeight40"
-            fontWeight="fontWeightNormal"
-            paddingRight="space60"
-          >
-            {`${props.participants.length}`}
-            {props.participants.length > 1 ? " participants" : " participant"}
-          </Box>
-          <Settings convo={props.convo} participants={props.participants} />
+          <ParticipantsView
+            participants={props.participants}
+            onParticipantListOpen={() => setIsManageParticipantOpen(true)}
+          />
+
+          <Settings
+            convo={props.convo}
+            participants={props.participants}
+            isManageParticipantOpen={isManageParticipantOpen}
+            setIsManageParticipantOpen={setIsManageParticipantOpen}
+          />
         </Box>
       </Box>
     </Box>
