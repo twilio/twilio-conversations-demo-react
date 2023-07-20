@@ -22,7 +22,7 @@ const runAutomationTests = (config: Config) => {
     new commands.Run({ command: "yarn build:wdio" }),
     new commands.Run({
       command:
-        "yarn start & > /tmp/react-app.log; yarn test:wdio; cat /tmp/react-app.log",
+        "./AutomationTests/scripts/run-tests.sh",
     }),
   ]);
   config.addJob(job);
