@@ -10,7 +10,7 @@
         }
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "yarn & yarn start",
+	"postCreateCommand": "yarn && yarn start",
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [3000],
 	// Use 'hostRequirements' to set minimum machine specs
