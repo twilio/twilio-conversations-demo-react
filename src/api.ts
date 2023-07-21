@@ -17,6 +17,7 @@ import {
   CONVERSATION_MESSAGES,
   CONVERSATION_PAGE_SIZE,
   PARTICIPANT_MESSAGES,
+  USER_PROFILE_MESSAGES,
 } from "./constants";
 import { NotificationsType } from "./store/reducers/notificationsReducer";
 import { successNotification, unexpectedErrorNotification } from "./helpers";
@@ -130,6 +131,23 @@ export async function readUserProfile(
 ): Promise<User | undefined> {
   try {
     return await client?.getUser(identity);
+  } catch (e) {
+    unexpectedErrorNotification(e.message);
+    throw e;
+  }
+}
+
+export async function updateFriendlyName(
+  friendlyName: string,
+  user?: User
+): Promise<User | undefined> {
+  try {
+    const result = await user?.updateFriendlyName(friendlyName);
+    successNotification({
+      message: USER_PROFILE_MESSAGES.FRIENDLY_NAME_UPDATED,
+    });
+
+    return result;
   } catch (e) {
     unexpectedErrorNotification(e.message);
     throw e;

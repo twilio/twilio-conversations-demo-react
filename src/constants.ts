@@ -26,6 +26,10 @@ export const PARTICIPANT_MESSAGES = {
   REMOVED: "Participant removed.",
 };
 
+export const USER_PROFILE_MESSAGES = {
+  FRIENDLY_NAME_UPDATED: "User profile friendly name updated.",
+};
+
 export const CONVERSATION_PAGE_SIZE = 30;
 
 export const NOTIFICATION_LEVEL = {

@@ -5,6 +5,7 @@ import { Box, ModalBody } from "@twilio-paste/core";
 import { Button } from "@twilio-paste/button";
 import React, { useState } from "react";
 import { User } from "@twilio/conversations";
+import { updateFriendlyName } from "../../api";
 
 interface UserProfileModalProps {
   isModalOpen: boolean;
@@ -29,22 +30,32 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
         title="User profile"
         modalBody={
           <ModalBody>
-            <Box as="form"></Box>
-            <ModalInputField
-              label="Identity"
-              input={identity}
-              onChange={() => null}
-              readonly={true}
-            />
-            <br></br>
-            <ModalInputField
-              isFocused={true}
-              label="Name(friendly_name)"
-              input={friendlyName}
-              onChange={setFriendlyName}
-              maxLength={255}
-            />
-            <br></br>
+            <Box
+              as="form"
+              onKeyPress={async (e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  await updateFriendlyName(friendlyName, props.user);
+                  props.handleClose();
+                }
+              }}
+            >
+              <ModalInputField
+                label="Identity"
+                input={identity}
+                onChange={() => null}
+                readonly={true}
+              />
+              <br></br>
+              <ModalInputField
+                isFocused={true}
+                label="Name(friendly_name)"
+                input={friendlyName}
+                onChange={setFriendlyName}
+                maxLength={255}
+              />
+              <br></br>
+            </Box>
           </ModalBody>
         }
         modalFooter={
@@ -63,8 +74,8 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
               <Button
                 disabled={false}
                 variant="primary"
-                onClick={() => {
-                  props.user?.updateFriendlyName(friendlyName);
+                onClick={async () => {
+                  await updateFriendlyName(friendlyName, props.user);
                   props.handleClose();
                 }}
               >
