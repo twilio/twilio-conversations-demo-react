@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
-	"name": "Node.js & TypeScript",
+	"name": "Try Conversations",
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
 	"secrets": {
         "REACT_APP_ACCESS_TOKEN_SERVICE_URL": {
@@ -9,23 +9,16 @@
           "documentationUrl": "https://github.com/twilio/twilio-conversations-demo-react#set-the-token-service-url"
         }
 	},
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "yarn && yarn start",
+	// Use 'onCreateCommand' to run commands after the container is created. Cached in prebuilds.
+	"onCreateCommand": "yarn",
+	// Use 'postCreateCommand' to run commands after the container is created. No caching.
+	"postCreateCommand": "sudo cp .devcontainer/first-run-notice.txt /workspaces/.codespaces/shared/first-run-notice.txt && yarn start",
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [3000],
 	// Use 'hostRequirements' to set minimum machine specs
 	"hostRequirements": {
-		"cpus": 4,
-		"memory": "8gb",
+		"cpus": 2,
+		"memory": "4gb",
 		"storage": "32gb"
 	}
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
 }

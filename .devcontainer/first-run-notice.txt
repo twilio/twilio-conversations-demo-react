@@ -1,0 +1,3 @@
+👋 Welcome to the Conversations Demo Web application! This application demonstrates a basic Conversations client application with the ability to create and join conversations, add other participants into the conversations and exchange messages.
+
+📝 Please wait for the pop-up message to let you know that the port forwarding is done. Then, click "Open in Browser". If the pop-up isn't displayed, you can always open "PORTS" tab and click on "Open in Browser" button manually.
