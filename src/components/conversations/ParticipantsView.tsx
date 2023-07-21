@@ -66,7 +66,9 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = (
         orientation={["vertical", "horizontal", "horizontal"]}
         spacing="space30"
       >
-        <AvatarGroup names={displayedParticipants} />
+        <Button variant={"reset"} onClick={props.onParticipantListOpen}>
+          <AvatarGroup names={displayedParticipants} />
+        </Button>
         {hiddenParticipants.length > 0 ? (
           <Tooltip
             text={hiddenParticipants.join(", ")}
