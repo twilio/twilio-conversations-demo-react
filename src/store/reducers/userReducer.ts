@@ -17,7 +17,7 @@ const initialState: UsersState = {};
 
 const reduxifyUser = (user: User): ReduxUser => ({
   identity: user.identity,
-  friendlyName: user.friendlyName ?? ""
+  friendlyName: user.friendlyName ?? "",
 });
 
 const reducer = (
