@@ -3,22 +3,32 @@ import { Avatar } from "./Avatar";
 import { Text } from "@twilio-paste/core";
 import { Menu, MenuButton, useMenuState, MenuItem } from "@twilio-paste/menu";
 import { ChevronDownIcon } from "@twilio-paste/icons/esm/ChevronDownIcon";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import styles from "../styles";
-import { ConnectionState } from "@twilio/conversations";
+import { Client, ConnectionState, User } from "@twilio/conversations";
 import { LogoTwilioIcon } from "@twilio-paste/icons/esm/LogoTwilioIcon";
+import UserProfileModal from "./modals/UserProfileModal";
+import { readUserProfile } from "../api";
 
 type AppHeaderProps = {
   user: string;
   onSignOut: () => void;
   connectionState: ConnectionState;
+  client?: Client;
 };
 const AppHeader: React.FC<AppHeaderProps> = ({
   user,
   onSignOut,
   connectionState,
+  client,
 }) => {
   const menu = useMenuState();
+
+  const [showUserProfileModal, setUserProfileModal] = useState(false);
+
+  const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
+
+  const handleUserProfileModalClose = () => setUserProfileModal(false);
 
   const label: "online" | "connecting" | "offline" = useMemo(() => {
     switch (connectionState) {
@@ -30,6 +40,12 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         return "offline";
     }
   }, [connectionState]);
+
+  const handleUserProfileModalOpen = async () => {
+    const userProfileTemp = await readUserProfile(user, client);
+    setUserProfile(userProfileTemp);
+    setUserProfileModal(true);
+  };
 
   return (
     <div style={styles.appHeader}>
@@ -86,8 +102,18 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           <MenuItem {...menu} onClick={onSignOut}>
             Sign Out
           </MenuItem>
+          <MenuItem {...menu} onClick={handleUserProfileModalOpen}>
+            User Profile
+          </MenuItem>
         </Menu>
       </div>
+      {showUserProfileModal && (
+        <UserProfileModal
+          isModalOpen={showUserProfileModal}
+          handleClose={handleUserProfileModalClose}
+          user={userProfile}
+        ></UserProfileModal>
+      )}
     </div>
   );
 };

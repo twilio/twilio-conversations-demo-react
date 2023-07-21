@@ -31,6 +31,8 @@ interface ModalInputProps {
   onBlur?: () => void;
   error?: string;
   placeholder?: string;
+  readonly?: boolean;
+  maxLength?: number;
   help_text?: string;
   prefixType?: string;
   inputType?: InputType;
@@ -55,8 +57,10 @@ const ModalInputField: React.FC<ModalInputProps> = (props: ModalInputProps) => {
         value={props.input}
         placeholder={props.placeholder}
         onChange={(e) => props.onChange(e.currentTarget.value)}
+        readOnly={props.readonly ?? false}
         hasError={!!props.error}
         onBlur={props.onBlur}
+        maxLength={props.maxLength}
         insertBefore={prefixType}
         insertAfter={
           props.showPassword !== undefined && (
