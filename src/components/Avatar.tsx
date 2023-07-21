@@ -16,12 +16,14 @@ const Avatar: React.FC<AvatarProps> = ({ name, size }) => {
     name.startsWith("+")
   ) {
     return (
-      <PasteAvatar
-        size={size ?? "sizeIcon70"}
-        variant="user"
-        name={name}
-        icon={UserIcon}
-      />
+      <Tooltip text={name} placement={"bottom-start"}>
+        <PasteAvatar
+          size={size ?? "sizeIcon70"}
+          variant="user"
+          name={name}
+          icon={UserIcon}
+        />
+      </Tooltip>
     );
   }
   return (

@@ -16,6 +16,20 @@ interface ParticipantsViewProps {
   maxDisplayedParticipants?: number;
 }
 
+function fetchName(participant: ReduxParticipant): string {
+  let name: string = participant.identity ?? "unknown";
+  if (participant.attributes != null) {
+    const friendlyName: string | null =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      participant.attributes["friendlyName"];
+    if (friendlyName != null) {
+      name = friendlyName;
+    }
+  }
+  return name;
+}
+
 const ParticipantsView: React.FC<ParticipantsViewProps> = (
   props: ParticipantsViewProps
 ) => {
@@ -44,13 +58,14 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = (
 
   const displayedParticipants = [];
   const hiddenParticipants = [];
+
   for (let i = 0; i < props.participants.length; i++) {
     const participant = props.participants[i];
-    const identity = participant.identity ?? " ";
+    const name = fetchName(participant);
     if (i < maxDisplayedParticipants) {
-      displayedParticipants.push(identity);
+      displayedParticipants.push(name);
     } else {
-      hiddenParticipants.push(identity);
+      hiddenParticipants.push(name);
     }
 
     if (i == MAX_HIDDEN_PARTICIPANTS - 1) {
