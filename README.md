@@ -1,5 +1,7 @@
 # Conversations Demo Web Application Overview
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/twilio/twilio-conversations-demo-react)
+
 SDK version of this demo app: ![](https://img.shields.io/badge/SDK%20version-2.0.0-blue.svg)
 
 The latest available SDK version of this demo app: ![](https://img.shields.io/badge/SDK%20version-2.0.0-green.svg)
@@ -158,18 +160,23 @@ Replace this project's `firebase-config.example` in the `public` folder with a `
 
 Select your [conversations service](https://www.twilio.com/console/conversations/services), navigate to the **Push Notifications** section, and check the **Push notifications enabled** boxes for the push notifications you want. 
 
-### Build
+## Build & Run
+
+### Deploy on Github Codespaces
+
+- Click [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/twilio/twilio-conversations-demo-react)
+- Wait for the pop-up message to let you know that the port forwarding is done. Then, click "Open in Browser".
+- If the pop-up message isn't displayed, you can always open "PORTS" tab and click on "Open in Browser" button manually.
+
+### Run Application Locally
 
 - Run `yarn` to fetch project dependencies.
 - Run `yarn build` to fetch Twilio SDK files and build the application.
-
-### Run application
-
-Run `docker compose up --build` to build and locally run the application inside a Docker container.
-
-Alternatively,
-- Run `yarn` to fetch project dependencies.
 - Run `yarn start` to run the application locally.
+
+### Run Application Inside Docker
+
+- Run `docker compose up --build` to build and locally run the application inside a Docker container.
 
 ## License
 
