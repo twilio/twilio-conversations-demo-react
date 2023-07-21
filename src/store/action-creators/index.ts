@@ -1,6 +1,11 @@
 import { Dispatch } from "redux";
 
-import { Conversation, Message, Participant } from "@twilio/conversations";
+import {
+  Conversation,
+  Message,
+  Participant,
+  User,
+} from "@twilio/conversations";
 
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
@@ -107,6 +112,15 @@ export const updateParticipants = (
     dispatch({
       type: ActionType.UPDATE_PARTICIPANTS,
       payload: { participants, sid },
+    });
+  };
+};
+
+export const updateUser = (user: User) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.UPDATE_USER,
+      payload: user,
     });
   };
 };

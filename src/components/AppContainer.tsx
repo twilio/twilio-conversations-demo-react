@@ -91,6 +91,7 @@ const AppContainer: React.FC = () => {
     upsertMessages,
     updateLoadingState,
     updateParticipants,
+    updateUser,
     updateUnreadMessages,
     startTyping,
     endTyping,
@@ -184,6 +185,9 @@ const AppContainer: React.FC = () => {
       if (message.author === localStorage.getItem("username")) {
         clearAttachments(message.conversation.sid, "-1");
       }
+    });
+    client.on("userUpdated", async (event) => {
+      await updateUser(event.user);
     });
     client.on("participantLeft", async (participant) => {
       await handlePromiseRejection(

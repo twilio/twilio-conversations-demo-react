@@ -3,13 +3,16 @@ import {
   Media,
   Message,
   Participant,
+  User,
 } from "@twilio/conversations";
 import { ReduxConversation } from "./store/reducers/convoReducer";
 import { ReduxMedia, ReduxMessage } from "./store/reducers/messageListReducer";
 import { ReduxParticipant } from "./store/reducers/participantsReducer";
+import { ReduxUser } from "./store/reducers/userReducer";
 
 export const conversationsMap = new Map<string, Conversation>();
 export const messagesMap = new Map<string, Message>();
+export const usersMap = new Map<string, User>();
 export const mediaMap = new Map<string, Media>();
 export const participantsMap = new Map<string, Participant>();
 
@@ -19,7 +22,7 @@ const capitalize = (string: string): string =>
 const getSdkObject = <T>(
   objectMap: Map<string, T>,
   sid: string,
-  type: "conversation" | "message" | "media" | "participant"
+  type: "conversation" | "message" | "media" | "participant" | "user"
 ): T => {
   const sdkObject = objectMap.get(sid);
 
@@ -37,6 +40,9 @@ export const getSdkConversationObject = (
 
 export const getSdkMessageObject = (reduxMessage: ReduxMessage): Message =>
   getSdkObject(messagesMap, reduxMessage.sid, "message");
+
+export const getSdkUserObject = (reduxUser: ReduxUser): User =>
+  getSdkObject(usersMap, reduxUser.identity, "user");
 
 export const getSdkMediaObject = (reduxMedia: ReduxMedia): Media =>
   getSdkObject(mediaMap, reduxMedia.sid, "media");
