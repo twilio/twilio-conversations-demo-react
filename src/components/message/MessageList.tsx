@@ -196,6 +196,9 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
             variant={isOutbound ? "outbound" : "inbound"}
             key={`${message.sid}.message`}
           >
+            <ChatMessageMeta aria-label={`friendly_name`}>
+              {message.friendlyName ?? ""}
+            </ChatMessageMeta>
             <ChatBubble>
               {wrappedBody}
               <MessageMedia
@@ -227,7 +230,6 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                 }}
               />
             </ChatBubble>
-
             <ChatMessageMeta aria-label={`said by ${message.author ?? ""}`}>
               {metaItems}
             </ChatMessageMeta>

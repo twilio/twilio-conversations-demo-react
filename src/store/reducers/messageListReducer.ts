@@ -20,11 +20,17 @@ export type ReduxMedia = {
   category: "media" | "body" | "history";
 };
 
+export type ReduxUser = {
+  identity: string;
+  friendlyName: string | null;
+};
+
 export type ReduxMessage = {
   sid: string;
   index: number;
   body: string | null;
   author: string | null;
+  friendlyName: string | null;
   attributes: JSONValue;
   participantSid: string | null;
   dateCreated: Date | null;
@@ -48,6 +54,7 @@ const reduxifyMessage = (message: Message | ReduxMessage): ReduxMessage => ({
   index: message.index,
   body: message.body,
   author: message.author,
+  friendlyName: "friendly_name",
   participantSid: message.participantSid,
   attributes: message.attributes,
   dateCreated: message.dateCreated,
