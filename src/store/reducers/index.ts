@@ -6,6 +6,7 @@ import sidReducer from "./currentConvoReducer";
 import messageReducer, { ChatMessagesState } from "./messageListReducer";
 import loadingReducer from "./loadingReducer";
 import participantReducer, { ParticipantsType } from "./participantsReducer";
+import userReducer, { UsersState } from "./userReducer";
 import unreadMessagesReducer, {
   UnreadMessagesState,
 } from "./unreadMessagesReducer";
@@ -25,6 +26,7 @@ export type AppState = {
   unreadMessages: UnreadMessagesState;
   loadingStatus: boolean;
   participants: ParticipantsType;
+  users: UsersState;
   attachments: AttachmentsState;
   typingData: TypingDataState;
   lastReadIndex: number;
@@ -37,6 +39,7 @@ export const initialState = {
   messages: {},
   attachments: {},
   participants: {},
+  users: {},
   convos: [],
   unreadMessages: {},
   loadingStatus: true,
@@ -66,6 +69,7 @@ const appReducer = combineReducers({
   messages: messageReducer,
   loadingStatus: loadingReducer,
   participants: participantReducer,
+  users: userReducer,
   unreadMessages: unreadMessagesReducer,
   attachments: attachmentsReducer,
   typingData: typingDataReducer,

@@ -20,6 +20,11 @@ export type ReduxMedia = {
   category: "media" | "body" | "history";
 };
 
+export type ReduxUser = {
+  identity: string;
+  friendlyName: string | null;
+};
+
 export type ReduxMessage = {
   sid: string;
   index: number;
