@@ -6,6 +6,7 @@ import {
   Media,
   Client,
   Paginator,
+  User,
 } from "@twilio/conversations";
 
 import {
@@ -119,6 +120,18 @@ export async function addNonChatParticipant(
     return result;
   } catch (e) {
     unexpectedErrorNotification(e.message, addNotifications);
+    throw e;
+  }
+}
+
+export async function readUserProfile(
+  identity: string,
+  client?: Client
+): Promise<User | undefined> {
+  try {
+    return await client?.getUser(identity);
+  } catch (e) {
+    unexpectedErrorNotification(e.message);
     throw e;
   }
 }
