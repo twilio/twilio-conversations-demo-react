@@ -5,7 +5,6 @@ import { Box, ModalBody } from "@twilio-paste/core";
 import { Button } from "@twilio-paste/button";
 import React, { useState } from "react";
 import { User } from "@twilio/conversations";
-import ModalTextAreaField from "./ModalTextArea";
 
 interface UserProfileModalProps {
   isModalOpen: boolean;
@@ -20,10 +19,6 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
 
   const [friendlyName, setFriendlyName] = useState(
     props.user?.friendlyName ?? ""
-  );
-
-  const [attributes, setAttributes] = useState(
-    JSON.stringify(props.user?.attributes ?? "")
   );
 
   return (
@@ -50,13 +45,6 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
               maxLength={255}
             />
             <br></br>
-            <ModalTextAreaField
-              isFocused={true}
-              label="Attributes"
-              input={attributes}
-              onChange={setAttributes}
-              maxLength={16000}
-            />
           </ModalBody>
         }
         modalFooter={
@@ -77,11 +65,6 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
                 variant="primary"
                 onClick={() => {
                   props.user?.updateFriendlyName(friendlyName);
-                  if (attributes) {
-                    props.user?.updateAttributes(JSON.parse(attributes));
-                  } else {
-                    props.user?.updateAttributes("{}");
-                  }
                   props.handleClose();
                 }}
               >
