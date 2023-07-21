@@ -23,7 +23,7 @@ import {
 } from "../../store/reducers/messageListReducer";
 import {
   getSdkMediaObject,
-  getSdkMessageObject,
+  getSdkMessageObject, getSdkUserObject,
 } from "../../conversations-objects";
 import { getSdkConversationObject } from "../../conversations-objects";
 import TimeAgo from "javascript-time-ago";
@@ -105,6 +105,19 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
       });
   }, [messages, lastReadIndex]);
 
+  useEffect(() => {
+    if (lastReadIndex === -1 || horizonMessageCount) {
+      return;
+    }
+    // const showIndex = 0;
+    getSdkConversationObject(conversation)
+        .getUnreadMessagesCount()
+        .then((count) => {
+          setHorizonMessageCount(count ?? 0);
+          // setShowHorizonIndex(showIndex);
+        });
+  }, [messages, lastReadIndex]);
+
   // function setTopPadding(index: number) {
   //   if (
   //     props.messages[index] !== undefined &&
@@ -140,6 +153,22 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   return (
     <ChatLog>
       {messages.map((message) => {
+        useEffect(() => {
+          if (lastReadIndex === -1 || horizonMessageCount) {
+            return;
+          }
+          const participant = await message.getParticipant();
+          const user = await participant.getUser();
+
+          getSdkUserObject(user)
+              .getUnreadMessagesCount()
+              .then((count) => {
+                setHorizonMessageCount(count ?? 0);
+                // setShowHorizonIndex(showIndex);
+              });
+        }, [message.participantSid]);
+
+
         const messageImages: ReduxMedia[] = [];
         const messageFiles: ReduxMedia[] = [];
         (message.attachedMedia || []).forEach((file) => {

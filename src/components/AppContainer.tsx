@@ -8,6 +8,7 @@ import {
   Participant,
   Client,
   ConnectionState,
+  User,
 } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
 
@@ -31,6 +32,7 @@ import {
   subscribeFcmNotifications,
   showNotification,
 } from "../firebase-support";
+import {updateUser} from "../store/action-creators";
 
 async function loadUnreadMessagesCount(
   convo: Conversation,
@@ -184,6 +186,9 @@ const AppContainer: React.FC = () => {
       if (message.author === localStorage.getItem("username")) {
         clearAttachments(message.conversation.sid, "-1");
       }
+    });
+    client.on("userUpdated", async (event) => {
+      await updateUser(event.user);
     });
     client.on("participantLeft", async (participant) => {
       await handlePromiseRejection(

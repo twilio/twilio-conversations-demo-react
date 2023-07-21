@@ -1,36 +1,33 @@
-import { JSONValue, User } from "@twilio/conversations";
+import { User } from "@twilio/conversations";
 
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
-import {participantsMap} from "../../conversations-objects";
-import {ParticipantsType} from "./participantsReducer";
+import {participantsMap, usersMap} from "../../conversations-objects";
 
 export type ReduxUser = {
     identity: string;
     friendlyName: string;
 };
 
-const initialState = {};
+export type ReduxUserType = Record<string, ReduxUser>;
+
+const initialState: ReduxUserType = {}
 
 const reduxifyUser = (user: User): ReduxUser => ({
     identity: user.identity,
-    friendlyName: user.attributes
+    friendlyName: user.friendlyName ?? ""
 });
 
 const reducer = (
-    user: User = initialState,
+    state: ReduxUserType = initialState,
     action: Action
-): ReduxUser => {
+): ReduxUserType => {
     switch (action.type) {
-        case ActionType.UPDATE_PARTICIPANTS:
-            const { participants, sid } = action.payload;
-
-            for (const participant of participants) {
-                participantsMap.set(participant.sid, participant);
-            }
-
+        case ActionType.UPDATE_USER:
+            const user = action.payload;
+            usersMap.set(user.identity, user);
             return Object.assign({}, state, {
-                [sid]: participants.map(reduxifyParticipant),
+                [user.identity]: reduxifyUser(user),
             });
         default:
             return state;
