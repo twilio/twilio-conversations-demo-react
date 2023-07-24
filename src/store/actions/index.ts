@@ -1,4 +1,9 @@
-import { Conversation, Message, Participant, User } from "@twilio/conversations";
+import {
+  Conversation,
+  Message,
+  Participant,
+  User,
+} from "@twilio/conversations";
 
 import { ActionType } from "../action-types";
 import { ReduxConversation } from "../reducers/convoReducer";
