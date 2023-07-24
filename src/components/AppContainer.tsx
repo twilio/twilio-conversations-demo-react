@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { bindActionCreators } from "redux";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -91,6 +91,7 @@ const AppContainer: React.FC = () => {
     upsertMessages,
     updateLoadingState,
     updateParticipants,
+    updateUser,
     updateUnreadMessages,
     startTyping,
     endTyping,
@@ -184,6 +185,9 @@ const AppContainer: React.FC = () => {
       if (message.author === localStorage.getItem("username")) {
         clearAttachments(message.conversation.sid, "-1");
       }
+    });
+    client.on("userUpdated", async (event) => {
+      await updateUser(event.user);
     });
     client.on("participantLeft", async (participant) => {
       await handlePromiseRejection(
@@ -293,6 +297,7 @@ const AppContainer: React.FC = () => {
       <Box>
         <AppHeader
           user={username ?? ""}
+          client={client}
           onSignOut={async () => {
             logout();
 

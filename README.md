@@ -1,5 +1,7 @@
 # Conversations Demo Web Application Overview
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/twilio/twilio-conversations-demo-react)
+
 SDK version of this demo app: ![](https://img.shields.io/badge/SDK%20version-2.0.0-blue.svg)
 
 The latest available SDK version of this demo app: ![](https://img.shields.io/badge/SDK%20version-2.0.0-green.svg)
@@ -106,6 +108,16 @@ $REACT_APP_ACCESS_TOKEN_SERVICE_URL?identity=<USER_PROVIDED_USERNAME>&password=<
  ```
 And return HTTP 401 in case of invalid credentials.
 
+## Deploy
+
+### Deploy to Vercel
+
+Automatically clone this repo and deploy it through Vercel. 
+
+Note: This deployment requires a [token service url](#generating-access-tokens). Vercel will ask for the `REACT_APP_ACCESS_TOKEN_SERVICE_URL` env variable. 
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F&env=REACT_APP_ACCESS_TOKEN_SERVICE_URL&envDescription=A%20link%20to%20your%20access%20token%20server.%20Use%20the%20Twilio%20Functions%20example%20from%20the%20readme%20for%20quick%20testing.&envLink=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F%23generating-access-tokens&project-name=twilio-conversations&repository-name=twilio-conversations)
+
 ## Setting up Push Notifications
 
 This demo app uses Firebase for processing notifications. This setup is optional. Note: Support may be limited for some browswers. 
@@ -148,18 +160,23 @@ Replace this project's `firebase-config.example` in the `public` folder with a `
 
 Select your [conversations service](https://www.twilio.com/console/conversations/services), navigate to the **Push Notifications** section, and check the **Push notifications enabled** boxes for the push notifications you want. 
 
-### Build
+## Build & Run
+
+### Deploy on Github Codespaces
+
+- Click [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/twilio/twilio-conversations-demo-react)
+- Wait for the pop-up message to let you know that the port forwarding is done. Then, click "Open in Browser".
+- If the pop-up message isn't displayed, you can always open "PORTS" tab and click on "Open in Browser" button manually.
+
+### Run Application Locally
 
 - Run `yarn` to fetch project dependencies.
 - Run `yarn build` to fetch Twilio SDK files and build the application.
-
-### Run application
-
-Run `docker compose up --build` to build and locally run the application inside a Docker container.
-
-Alternatively,
-- Run `yarn` to fetch project dependencies.
 - Run `yarn start` to run the application locally.
+
+### Run Application Inside Docker
+
+- Run `docker compose up --build` to build and locally run the application inside a Docker container.
 
 ## License
 

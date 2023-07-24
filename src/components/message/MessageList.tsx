@@ -24,6 +24,7 @@ import {
 import {
   getSdkMediaObject,
   getSdkMessageObject,
+  getSdkParticipantObject,
 } from "../../conversations-objects";
 import { getSdkConversationObject } from "../../conversations-objects";
 import TimeAgo from "javascript-time-ago";
@@ -64,13 +65,14 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   const myRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useDispatch();
-  const { addAttachment, addNotifications } = bindActionCreators(
+  const { addAttachment, addNotifications, updateUser } = bindActionCreators(
     actionCreators,
     dispatch
   );
   const conversationAttachments = useSelector(
     (state: AppState) => state.attachments[conversation.sid]
   );
+  const users = useSelector((state: AppState) => state.users);
 
   const [imagePreview, setImagePreview] = useState<{
     message: ReduxMessage;
@@ -137,9 +139,37 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     saveAs(file, filename ?? "");
   };
 
+  const participantsBySid = new Map(props.participants.map((p) => [p.sid, p]));
+
+  const getAuthorFriendlyName = (message: ReduxMessage) => {
+    const author = message.author ?? "";
+    if (message.participantSid == null) return author;
+
+    const participant = participantsBySid.get(message.participantSid);
+    if (participant == null || participant.identity == null) return author;
+
+    const user = users[participant.identity];
+    return user?.friendlyName || author;
+  };
+
   return (
     <ChatLog>
       {messages.map((message) => {
+        const participant = message.participantSid
+          ? participantsBySid.get(message.participantSid)
+          : null;
+
+        if (participant && participant.identity) {
+          useEffect(() => {
+            if (!users[participant.identity ?? ""]) {
+              const sdkParticipant = getSdkParticipantObject(participant);
+              sdkParticipant.getUser().then((sdkUser) => {
+                updateUser(sdkUser);
+              });
+            }
+          }, [participant.identity]);
+        }
+
         const messageImages: ReduxMedia[] = [];
         const messageFiles: ReduxMedia[] = [];
         (message.attachedMedia || []).forEach((file) => {
@@ -182,8 +212,8 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           </MetaItemWithMargin>,
           <MetaItemWithMargin key={2}>
             {isOutbound
-              ? `${message.author ?? ""}・${getMessageTime(message)}`
-              : `${getMessageTime(message)}・${message.author ?? ""}`}
+              ? `${getAuthorFriendlyName(message)}・${getMessageTime(message)}`
+              : `${getMessageTime(message)}・${getAuthorFriendlyName(message)}`}
           </MetaItemWithMargin>,
         ];
 
@@ -227,8 +257,9 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                 }}
               />
             </ChatBubble>
-
-            <ChatMessageMeta aria-label={`said by ${message.author ?? ""}`}>
+            <ChatMessageMeta
+              aria-label={`said by ${getAuthorFriendlyName(message)}`}
+            >
               {metaItems}
             </ChatMessageMeta>
           </ChatMessage>
@@ -314,7 +345,11 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
               <ImagePreviewModal
                 image={imagePreview.file}
                 isOpen={!!imagePreview}
-                author={imagePreview?.message.author ?? ""}
+                author={
+                  imagePreview
+                    ? getAuthorFriendlyName(imagePreview.message)
+                    : ""
+                }
                 date={
                   date
                     ? date.toDateString() +

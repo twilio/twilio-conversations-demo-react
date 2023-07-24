@@ -1,4 +1,9 @@
-import { Conversation, Message, Participant } from "@twilio/conversations";
+import {
+  Conversation,
+  Message,
+  Participant,
+  User,
+} from "@twilio/conversations";
 
 import { ActionType } from "../action-types";
 import { ReduxConversation } from "../reducers/convoReducer";
@@ -57,6 +62,11 @@ interface UpdateLoadingState {
 interface UpdateParticipants {
   type: ActionType.UPDATE_PARTICIPANTS;
   payload: { participants: Participant[]; sid: string };
+}
+
+interface UpdateUser {
+  type: ActionType.UPDATE_USER;
+  payload: User;
 }
 
 interface UpdateUnreadMessages {
@@ -119,6 +129,7 @@ export type Action =
   | RemoveMessages
   | UpdateLoadingState
   | UpdateParticipants
+  | UpdateUser
   | UpdateUnreadMessages
   | UpdateConversation
   | AddAttachment
