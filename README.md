@@ -1,7 +1,5 @@
 # Conversations Demo Web Application Overview
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/twilio/twilio-conversations-demo-react)
-
 SDK version of this demo app: ![](https://img.shields.io/badge/SDK%20version-2.0.0-blue.svg)
 
 The latest available SDK version of this demo app: ![](https://img.shields.io/badge/SDK%20version-2.0.0-green.svg)
@@ -9,6 +7,26 @@ The latest available SDK version of this demo app: ![](https://img.shields.io/ba
 ## Getting Started
 
 Welcome to the Conversations Demo Web application. This application demonstrates a basic Conversations client application with the ability to create and join conversations, add other participants into the conversations and exchange messages.
+
+You can try out one of our 1-click deploys to test the app out prior to jumping to [Next Steps](#next-steps):
+
+## Deploy
+
+### Test out on Github Codespaces
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/twilio/twilio-conversations-demo-react)
+
+Note: This deployment requires a [token service url](#generating-access-tokens).
+
+### Deploy to Vercel
+
+Automatically clone this repo and deploy it through Vercel. 
+
+Note: This deployment requires a [token service url](#generating-access-tokens). Vercel will ask for the `REACT_APP_ACCESS_TOKEN_SERVICE_URL` env variable. 
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F&env=REACT_APP_ACCESS_TOKEN_SERVICE_URL&envDescription=A%20link%20to%20your%20access%20token%20server.%20Use%20the%20Twilio%20Functions%20example%20from%20the%20readme%20for%20quick%20testing.&envLink=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F%23generating-access-tokens&project-name=twilio-conversations&repository-name=twilio-conversations)
+
+## Next Steps
 
 What you'll need to get started:
 
@@ -107,16 +125,6 @@ This demo app expects your access token server to provide a valid token for vali
 $REACT_APP_ACCESS_TOKEN_SERVICE_URL?identity=<USER_PROVIDED_USERNAME>&password=<USER_PROVIDED_PASSWORD>
  ```
 And return HTTP 401 in case of invalid credentials.
-
-## Deploy
-
-### Deploy to Vercel
-
-Automatically clone this repo and deploy it through Vercel. 
-
-Note: This deployment requires a [token service url](#generating-access-tokens). Vercel will ask for the `REACT_APP_ACCESS_TOKEN_SERVICE_URL` env variable. 
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F&env=REACT_APP_ACCESS_TOKEN_SERVICE_URL&envDescription=A%20link%20to%20your%20access%20token%20server.%20Use%20the%20Twilio%20Functions%20example%20from%20the%20readme%20for%20quick%20testing.&envLink=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F%23generating-access-tokens&project-name=twilio-conversations&repository-name=twilio-conversations)
 
 ## Setting up Push Notifications
 
