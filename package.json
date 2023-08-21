@@ -11,7 +11,7 @@
     "axios": "0.21.3",
     "dotenv": "10.0.0",
     "file-saver": "2.0.5",
-    "firebase": "9.15.0",
+    "firebase": "10.2.0",
     "javascript-time-ago": "^2.5.7",
     "libphonenumber-js": "1.10.24",
     "lodash": "4.17.21",
