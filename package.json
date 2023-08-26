@@ -5,7 +5,7 @@
   "dependencies": {
     "@twilio-paste/avatar": "^8.1.0",
     "@twilio-paste/chat-composer": "^3.0.0",
-    "@twilio-paste/core": "19.0.0",
+    "@twilio-paste/core": "20.1.0",
     "@twilio-paste/icons": "11.0.0",
     "@twilio/conversations": "2.4.0-rc.0",
     "axios": "0.21.3",
