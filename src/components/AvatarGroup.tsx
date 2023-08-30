@@ -14,7 +14,7 @@ const AvatarGroup: React.FC<AvatarGroupProps> = ({ names, size }) => {
       size={size ?? "sizeIcon70"}
       variant="user"
       children={names.map((name) => (
-        <Avatar name={name} size={size} />
+        <Avatar key={name} name={name} size={size} />
       ))}
     />
   );

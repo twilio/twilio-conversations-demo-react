@@ -87,9 +87,11 @@ const MessageInput: React.FC<MessageInputProps> = (
             });
           }}
         >
-          <ClearEditorPlugin />
-          <MessagePropPlugin message={message} />
-          <EnterKeyPlugin onEnterKeyPress={onEnterKeyPress} />
+          <>
+            <ClearEditorPlugin />
+            <MessagePropPlugin message={message} />
+            <EnterKeyPlugin onEnterKeyPress={onEnterKeyPress} />
+          </>
         </ChatComposer>
       </Box>
       {props.assets.length > 0 && (
