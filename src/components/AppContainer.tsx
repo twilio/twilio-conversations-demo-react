@@ -57,6 +57,7 @@ async function handleParticipantsUpdate(
   updateParticipants(result, participant.conversation.sid);
 }
 
+/* never used
 async function getSubscribedConversations(
   client: Client
 ): Promise<Conversation[]> {
@@ -70,6 +71,7 @@ async function getSubscribedConversations(
 
   return conversations;
 }
+*/
 
 const AppContainer: React.FC = () => {
   /* eslint-disable */
