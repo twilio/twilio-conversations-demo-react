@@ -17,9 +17,13 @@ const Notifications: React.FC = () => {
     if (!notifications.length) {
       return;
     }
-    notifications.forEach((notification) =>
-      toaster.push(notification as ToasterPush)
-    );
+    notifications.forEach((notification) => {
+      const value: ToasterPush = {
+        ...notification,
+        id: notification.id?.toString(), // convert number to string.
+      };
+      toaster.push(value);
+    });
     removeNotifications(notifications.length);
   }, [notifications]);
 
