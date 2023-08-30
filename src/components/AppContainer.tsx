@@ -12,6 +12,7 @@ import {
 import { Box } from "@twilio-paste/core";
 
 import { actionCreators, AppState } from "../store";
+import { unexpectedErrorNotification } from "../helpers";
 import ConversationContainer from "./conversations/ConversationContainer";
 import ConversationsContainer from "./conversations/ConversationsContainer";
 import {
@@ -142,6 +143,18 @@ const AppContainer: React.FC = () => {
       console.error(
         "FCM initialization failed: no push notifications will be available"
       );
+    });
+
+    client.on("initialized", () => {
+      console.info("clientAPI.initialized");
+    });
+
+    client.on("initFailed", ({ error }) => {
+      console.error("clientAPI.initFailed", error);
+      if (error) {
+        const errorMsg = `clientAPI.initFailed: ${error.message}`;
+        unexpectedErrorNotification(errorMsg, addNotifications);
+      }
     });
 
     client.on("conversationJoined", (conversation) => {
