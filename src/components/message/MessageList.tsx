@@ -160,14 +160,12 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           : null;
 
         if (participant && participant.identity) {
-          useEffect(() => {
-            if (!users[participant.identity ?? ""]) {
-              const sdkParticipant = getSdkParticipantObject(participant);
-              sdkParticipant.getUser().then((sdkUser) => {
-                updateUser(sdkUser);
-              });
-            }
-          }, [participant.identity]);
+          if (!users[participant.identity ?? ""]) {
+            const sdkParticipant = getSdkParticipantObject(participant);
+            sdkParticipant.getUser().then((sdkUser) => {
+              updateUser(sdkUser);
+            });
+          }
         }
 
         const messageImages: ReduxMedia[] = [];
