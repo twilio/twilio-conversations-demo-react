@@ -107,6 +107,23 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
       });
   }, [messages, lastReadIndex]);
 
+  // Updates the user list based on message authors to be able to get friendly names
+  useEffect(() => {
+    messages.forEach((message) => {
+      const participant = message.participantSid
+        ? participantsBySid.get(message.participantSid)
+        : null;
+      if (participant && participant.identity) {
+        if (!users[participant.identity]) {
+          const sdkParticipant = getSdkParticipantObject(participant);
+          sdkParticipant.getUser().then((sdkUser) => {
+            updateUser(sdkUser);
+          });
+        }
+      }
+    });
+  }, [messages]);
+
   // function setTopPadding(index: number) {
   //   if (
   //     props.messages[index] !== undefined &&
@@ -155,21 +172,6 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   return (
     <ChatLog>
       {messages.map((message) => {
-        const participant = message.participantSid
-          ? participantsBySid.get(message.participantSid)
-          : null;
-
-        if (participant && participant.identity) {
-          useEffect(() => {
-            if (!users[participant.identity ?? ""]) {
-              const sdkParticipant = getSdkParticipantObject(participant);
-              sdkParticipant.getUser().then((sdkUser) => {
-                updateUser(sdkUser);
-              });
-            }
-          }, [participant.identity]);
-        }
-
         const messageImages: ReduxMedia[] = [];
         const messageFiles: ReduxMedia[] = [];
         (message.attachedMedia || []).forEach((file) => {
