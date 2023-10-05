@@ -128,7 +128,7 @@ And return HTTP 401 in case of invalid credentials.
 
 ## Setting up Push Notifications
 
-This demo app uses Firebase for processing notifications. This setup is optional. Note: Support may be limited for some browswers. 
+This demo app uses Firebase for processing notifications. This setup is optional. Note: Support may be limited for some browsers. 
 
 ### Set up Firebase
 
