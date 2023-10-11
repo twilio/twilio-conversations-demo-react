@@ -41,7 +41,7 @@ const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
           justifyContent: "space-between",
         }}
       >
-        <MediaObject verticalAlign="center" style={{ minWidth: "100%" }}>
+        <MediaObject verticalAlign="center">
           <MediaFigure spacing="space40">
             <Avatar size="sizeIcon80" name={author} />
           </MediaFigure>
@@ -71,12 +71,8 @@ const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
         </Button>
       </Box>
     </ModalHeader>
-    <ModalBody
-      style={{
-        maxWidth: "70vw",
-        maxHeight: "70vh",
-      }}
-    >
+
+    <ModalBody>
       <img
         style={{
           maxWidth: "100%",

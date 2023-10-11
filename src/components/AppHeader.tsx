@@ -1,4 +1,3 @@
-import { UserIcon } from "@twilio-paste/icons/esm/UserIcon";
 import { Avatar } from "./Avatar";
 import { Text } from "@twilio-paste/core";
 import { Menu, MenuButton, useMenuState, MenuItem } from "@twilio-paste/menu";
