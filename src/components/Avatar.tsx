@@ -1,6 +1,6 @@
 import { Avatar as PasteAvatar } from "@twilio-paste/avatar";
 import { UserIcon } from "@twilio-paste/icons/cjs/UserIcon";
-import { IconSize } from "@twilio-paste/style-props";
+import type { IconSize } from "@twilio-paste/style-props";
 import { Tooltip } from "@twilio-paste/core";
 
 type AvatarProps = {
