@@ -93,6 +93,7 @@ const MessageMedia: React.FC<MessageMediaProps> = ({
             )
           }
           key={`${file.filename ?? ""}.index`}
+          onClick={() => isMediaLoaded && onOpen(file.sid, undefined, file)}
         >
           <ChatAttachmentLink href="#">
             {file?.filename ?? ""}
