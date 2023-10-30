@@ -100,10 +100,6 @@ export default {
   } as CSSProperties,
   convoList: {
     overflowY: "auto",
-    position: "absolute",
-    top: "65px",
-    bottom: "60px",
-    width: "320px",
   } as CSSProperties,
   collapseButtonBox: {
     display: "flex",

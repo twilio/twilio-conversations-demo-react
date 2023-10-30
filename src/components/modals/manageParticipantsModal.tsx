@@ -98,7 +98,7 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = (
               <Table>
                 <THead hidden={true}>
                   <Tr>
-                    <Th width="size10" style={{ width: "50px" }} />
+                    <Th width="size10" />
                     <Th width="size40" textAlign="left" />
                     <Th textAlign="right" />
                   </Tr>
