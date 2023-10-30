@@ -16,14 +16,10 @@ import { NOTIFICATION_LEVEL } from "../../constants";
 import { SetSidType, SetUnreadMessagesType } from "../../types";
 import { getMessageStatus } from "../../api";
 
-import * as _ from "lodash";
+import { getLastMessageTime } from "./../../utils/timestampUtils";
 
-import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
-
-TimeAgo.addDefaultLocale(en);
 
 interface SingleConvoProps {
   convoId: string;
@@ -69,15 +65,6 @@ function truncateMiddle(text: string, countWidth: number) {
     return text.substr(0, endLeft) + "..." + text.substr(startRight);
   }
   return text;
-}
-
-function getLastMessageTime(messages: ReduxMessage[]) {
-  const lastMessageDate = _.last(messages)?.dateCreated;
-  if (!lastMessageDate) {
-    return "";
-  }
-
-  return new TimeAgo("en-US").format(lastMessageDate, "twitter-now");
 }
 
 const ConversationView: React.FC<SingleConvoProps> = (
