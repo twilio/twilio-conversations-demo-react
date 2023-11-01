@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { Client } from "@twilio/conversations";
 import { ChevronDoubleLeftIcon } from "@twilio-paste/icons/esm/ChevronDoubleLeftIcon";
-import { Box } from "@twilio-paste/core";
+import { Box, Input } from "@twilio-paste/core";
 import { ChevronDoubleRightIcon } from "@twilio-paste/icons/esm/ChevronDoubleRightIcon";
 
 import CreateConversationButton from "./CreateConversationButton";
 import ConversationsList from "./ConversationsList";
 import styles from "../../styles";
+
+import { useDispatch } from "react-redux";
+import { filterConversations } from "./../../store/action-creators";
 
 interface ConvosContainerProps {
   client?: Client;
@@ -16,6 +19,11 @@ const ConversationsContainer: React.FC<ConvosContainerProps> = (
   props: ConvosContainerProps
 ) => {
   const [listHidden, hideList] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleSearch = (searchString: string) => {
+    dispatch(filterConversations(searchString));
+  };
 
   return (
     <Box
@@ -30,6 +38,18 @@ const ConversationsContainer: React.FC<ConvosContainerProps> = (
           client={props.client}
           collapsed={listHidden}
         />
+        <Box marginTop="space60">
+          <Input
+            aria-describedby="convo_string_search"
+            id="convoString"
+            name="convoString"
+            type="text"
+            placeholder="Search"
+            onChange={(e) => handleSearch(e.target.value)}
+            required
+            autoFocus
+          />
+        </Box>
       </Box>
       <Box style={styles.convoList}>
         {!listHidden ? <ConversationsList /> : null}
