@@ -117,6 +117,11 @@ interface RemoveNotifications {
   payload: number;
 }
 
+interface UpdateTimeFormat {
+  type: ActionType.UPDATE_TIME_FORMAT;
+  payload: boolean;
+}
+
 export type Action =
   | LoginAction
   | LogOutAction
@@ -137,4 +142,5 @@ export type Action =
   | TypingStarted
   | TypingEnded
   | AddNotifications
-  | RemoveNotifications;
+  | RemoveNotifications
+  | UpdateTimeFormat;

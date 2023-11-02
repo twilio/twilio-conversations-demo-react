@@ -207,3 +207,13 @@ export const removeNotifications = (toIndex: number) => {
     });
   };
 };
+
+export const updateTimeFormat = (on: boolean) => {
+  console.log("action-creator!", on);
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.UPDATE_TIME_FORMAT,
+      payload: on,
+    });
+  };
+};

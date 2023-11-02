@@ -17,6 +17,7 @@ import lastReadIndexReducer from "./lastReadIndexReducer";
 import notificationsReducer, {
   NotificationsType,
 } from "./notificationsReducer";
+import timeReducer from "./timeReducer";
 
 export type AppState = {
   token: string;
@@ -31,6 +32,7 @@ export type AppState = {
   typingData: TypingDataState;
   lastReadIndex: number;
   notifications: NotificationsType;
+  dateFormat: boolean;
 };
 
 export const initialState = {
@@ -46,6 +48,7 @@ export const initialState = {
   typingData: {},
   lastReadIndex: -1,
   notifications: [],
+  dateFormat: false,
 };
 
 const reducers = (
@@ -74,6 +77,7 @@ const appReducer = combineReducers({
   attachments: attachmentsReducer,
   typingData: typingDataReducer,
   notifications: notificationsReducer,
+  dateFormat: timeReducer,
 });
 
 export default reducers;
