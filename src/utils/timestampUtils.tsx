@@ -20,20 +20,6 @@ function formatMessageTime(
     // If it's not the same day, show date.
     return date.toDateString();
   } else if (currentDate.getTime() - date.getTime() >= 3 * 60 * 60 * 1000) {
-    // If it's older than 3 hours, return time based on the 'on' variable
-    // const hours = date.getHours();
-    // const minutes = date.getMinutes();
-
-    // if (use24hTimeFormat) {
-    //   const formattedHours = hours.toString().padStart(2, "0");
-    //   const formattedMinutes = minutes.toString().padStart(2, "0");
-    //   return `${formattedHours}:${formattedMinutes}`;
-    // } else {
-    //   // 12-hour format
-    //   const ampm = hours >= 12 ? "PM" : "AM";
-    //   const formattedHours = (hours % 12 || 12).toString().padStart(2, "0");
-    //   const formattedMinutes = minutes.toString().padStart(2, "0");
-    //   return `${formattedHours}:${formattedMinutes} ${ampm}`;
     if (use24hTimeFormat) {
       return date.toLocaleTimeString([], {
         hour: "2-digit",
