@@ -34,6 +34,7 @@ interface SingleConvoProps {
   participants: ReduxParticipant[];
   messages: ReduxMessage[];
   typingInfo: string[];
+  timeFormat: boolean;
 }
 
 const measureWidth = (text: string): number => {
@@ -70,7 +71,14 @@ function truncateMiddle(text: string, countWidth: number) {
 const ConversationView: React.FC<SingleConvoProps> = (
   props: SingleConvoProps
 ) => {
-  const { convo, convoId, myMessage, lastMessage, unreadMessagesCount } = props;
+  const {
+    convo,
+    convoId,
+    myMessage,
+    lastMessage,
+    unreadMessagesCount,
+    timeFormat,
+  } = props;
   const [backgroundColor, setBackgroundColor] = useState();
   const title = truncateMiddle(
     convo.friendlyName ?? convo.sid,
@@ -84,7 +92,7 @@ const ConversationView: React.FC<SingleConvoProps> = (
   const muted = convo.notificationLevel === NOTIFICATION_LEVEL.MUTED;
 
   const [lastMsgStatus, setLastMsgStatus] = useState("");
-  const time = getLastMessageTime(props.messages);
+  const time = getLastMessageTime(props.messages, timeFormat);
 
   useEffect(() => {
     if (props.currentConvoSid === convo.sid) {

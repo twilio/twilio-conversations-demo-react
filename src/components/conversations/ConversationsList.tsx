@@ -69,6 +69,7 @@ const ConversationsList: React.FC = () => {
   const unreadMessages = useSelector((state: AppState) => state.unreadMessages);
   const participants = useSelector((state: AppState) => state.participants);
   const typingData = useSelector((state: AppState) => state.typingData);
+  const timeFormat = useSelector((state: AppState) => state.timeFormat);
 
   const dispatch = useDispatch();
   const {
@@ -87,6 +88,7 @@ const ConversationsList: React.FC = () => {
     <div id="conversation-list">
       {conversations.map((convo) => (
         <ConversationView
+          timeFormat={timeFormat}
           key={convo.sid}
           convoId={convo.sid}
           setSid={updateCurrentConversation}

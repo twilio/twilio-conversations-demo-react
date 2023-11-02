@@ -28,7 +28,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
   );
 
   const { updateTimeFormat } = bindActionCreators(actionCreators, dispatch);
-  const on = useSelector((state: AppState) => state.dateFormat);
+  const on = useSelector((state: AppState) => state.timeFormat);
 
   const handleTimeFormatUpdate = async () => {
     dispatch(updateTimeFormat(!on));

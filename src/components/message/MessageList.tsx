@@ -30,7 +30,6 @@ import {
   getSdkParticipantObject,
 } from "../../conversations-objects";
 import { getSdkConversationObject } from "../../conversations-objects";
-import TimeAgo from "javascript-time-ago";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import Reactions from "./Reactions";
 import { MessageStatus } from "./MessageStatus";
@@ -46,6 +45,7 @@ interface MessageListProps {
   conversation: ReduxConversation;
   participants: ReduxParticipant[];
   lastReadIndex: number;
+  timeFormat: boolean;
 }
 
 const MetaItemWithMargin: React.FC<{ children: ReactNode }> = (props) => (
@@ -55,7 +55,7 @@ const MetaItemWithMargin: React.FC<{ children: ReactNode }> = (props) => (
 );
 
 const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
-  const { messages, conversation, lastReadIndex } = props;
+  const { messages, conversation, lastReadIndex, timeFormat } = props;
   if (messages === undefined) {
     return <div className="empty" />;
   }
@@ -218,8 +218,14 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           </MetaItemWithMargin>,
           <MetaItemWithMargin key={2}>
             {isOutbound
-              ? `${getAuthorFriendlyName(message)}・${getMessageTime(message)}`
-              : `${getMessageTime(message)}・${getAuthorFriendlyName(message)}`}
+              ? `${getAuthorFriendlyName(message)}・${getMessageTime(
+                  message,
+                  timeFormat
+                )}`
+              : `${getMessageTime(
+                  message,
+                  timeFormat
+                )}・${getAuthorFriendlyName(message)}`}
           </MetaItemWithMargin>,
         ];
 
