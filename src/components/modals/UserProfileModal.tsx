@@ -28,8 +28,10 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
   );
 
   const { updateTimeFormat } = bindActionCreators(actionCreators, dispatch);
-  const timeFormat = useSelector((state: AppState) => state.timeFormat);
-  const [on, setOn] = useState(timeFormat);
+  const use24hTimeFormat = useSelector(
+    (state: AppState) => state.use24hTimeFormat
+  );
+  const [on, setOn] = useState(use24hTimeFormat);
 
   const handleTimeFormatUpdate = async () => {
     updateTimeFormat(on);

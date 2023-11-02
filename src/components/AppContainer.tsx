@@ -273,8 +273,8 @@ const AppContainer: React.FC = () => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    const timeFormat = localStorage.getItem("timeFormat");
-    if (timeFormat !== null) {
+    const use24hTimeFormat = localStorage.getItem("use24hTimeFormat");
+    if (use24hTimeFormat !== null) {
       updateTimeFormat(true);
     }
     return () => {

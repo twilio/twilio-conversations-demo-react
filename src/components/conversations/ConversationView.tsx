@@ -34,7 +34,7 @@ interface SingleConvoProps {
   participants: ReduxParticipant[];
   messages: ReduxMessage[];
   typingInfo: string[];
-  timeFormat: boolean;
+  use24hTimeFormat: boolean;
 }
 
 const measureWidth = (text: string): number => {
@@ -77,7 +77,7 @@ const ConversationView: React.FC<SingleConvoProps> = (
     myMessage,
     lastMessage,
     unreadMessagesCount,
-    timeFormat,
+    use24hTimeFormat,
   } = props;
   const [backgroundColor, setBackgroundColor] = useState();
   const title = truncateMiddle(
@@ -92,7 +92,7 @@ const ConversationView: React.FC<SingleConvoProps> = (
   const muted = convo.notificationLevel === NOTIFICATION_LEVEL.MUTED;
 
   const [lastMsgStatus, setLastMsgStatus] = useState("");
-  const time = getLastMessageTime(props.messages, timeFormat);
+  const time = getLastMessageTime(props.messages, use24hTimeFormat);
 
   useEffect(() => {
     if (props.currentConvoSid === convo.sid) {

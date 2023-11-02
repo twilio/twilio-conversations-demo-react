@@ -210,8 +210,8 @@ export const removeNotifications = (toIndex: number) => {
 
 export const updateTimeFormat = (on: boolean) => {
   on
-    ? localStorage.setItem("timeFormat", "true")
-    : localStorage.removeItem("timeFormat");
+    ? localStorage.setItem("use24hTimeFormat", "true")
+    : localStorage.removeItem("use24hTimeFormat");
   return (dispatch: Dispatch<Action>): void => {
     dispatch({
       type: ActionType.UPDATE_TIME_FORMAT,

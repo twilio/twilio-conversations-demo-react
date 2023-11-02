@@ -32,7 +32,7 @@ export type AppState = {
   typingData: TypingDataState;
   lastReadIndex: number;
   notifications: NotificationsType;
-  timeFormat: boolean;
+  use24hTimeFormat: boolean;
 };
 
 export const initialState = {
@@ -48,7 +48,7 @@ export const initialState = {
   typingData: {},
   lastReadIndex: -1,
   notifications: [],
-  timeFormat: false,
+  use24hTimeFormat: false,
 };
 
 const reducers = (
@@ -77,7 +77,7 @@ const appReducer = combineReducers({
   attachments: attachmentsReducer,
   typingData: typingDataReducer,
   notifications: notificationsReducer,
-  timeFormat: timeReducer,
+  use24hTimeFormat: timeReducer,
 });
 
 export default reducers;

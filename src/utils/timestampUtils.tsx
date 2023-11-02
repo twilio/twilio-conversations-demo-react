@@ -11,7 +11,7 @@ const timeAgo = new TimeAgo(userTimezone);
 function formatMessageTime(
   dateString: Date,
   lastMessage: boolean,
-  on: boolean
+  use24hTimeFormat: boolean
 ) {
   const date = new Date(dateString);
   const currentDate = new Date();
@@ -20,21 +20,32 @@ function formatMessageTime(
     // If it's not the same day, show date.
     return date.toDateString();
   } else if (currentDate.getTime() - date.getTime() >= 3 * 60 * 60 * 1000) {
-    // If it's older than 3 hours, return time based on the 'on' const
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
+    // If it's older than 3 hours, return time based on the 'on' variable
+    // const hours = date.getHours();
+    // const minutes = date.getMinutes();
 
-    if (on) {
-      // 24-hour format
-      const formattedHours = hours.toString().padStart(2, "0");
-      const formattedMinutes = minutes.toString().padStart(2, "0");
-      return `${formattedHours}:${formattedMinutes}`;
+    // if (use24hTimeFormat) {
+    //   const formattedHours = hours.toString().padStart(2, "0");
+    //   const formattedMinutes = minutes.toString().padStart(2, "0");
+    //   return `${formattedHours}:${formattedMinutes}`;
+    // } else {
+    //   // 12-hour format
+    //   const ampm = hours >= 12 ? "PM" : "AM";
+    //   const formattedHours = (hours % 12 || 12).toString().padStart(2, "0");
+    //   const formattedMinutes = minutes.toString().padStart(2, "0");
+    //   return `${formattedHours}:${formattedMinutes} ${ampm}`;
+    if (use24hTimeFormat) {
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
     } else {
-      // 12-hour format
-      const ampm = hours >= 12 ? "PM" : "AM";
-      const formattedHours = (hours % 12 || 12).toString().padStart(2, "0");
-      const formattedMinutes = minutes.toString().padStart(2, "0");
-      return `${formattedHours}:${formattedMinutes} ${ampm}`;
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
     }
   } else {
     // Otherwise, use the TimeAgo library to format the relative time

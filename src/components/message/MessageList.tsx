@@ -45,7 +45,7 @@ interface MessageListProps {
   conversation: ReduxConversation;
   participants: ReduxParticipant[];
   lastReadIndex: number;
-  timeFormat: boolean;
+  use24hTimeFormat: boolean;
 }
 
 const MetaItemWithMargin: React.FC<{ children: ReactNode }> = (props) => (
@@ -55,7 +55,7 @@ const MetaItemWithMargin: React.FC<{ children: ReactNode }> = (props) => (
 );
 
 const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
-  const { messages, conversation, lastReadIndex, timeFormat } = props;
+  const { messages, conversation, lastReadIndex, use24hTimeFormat } = props;
   if (messages === undefined) {
     return <div className="empty" />;
   }
@@ -220,11 +220,11 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
             {isOutbound
               ? `${getAuthorFriendlyName(message)}・${getMessageTime(
                   message,
-                  timeFormat
+                  use24hTimeFormat
                 )}`
               : `${getMessageTime(
                   message,
-                  timeFormat
+                  use24hTimeFormat
                 )}・${getAuthorFriendlyName(message)}`}
           </MetaItemWithMargin>,
         ];
