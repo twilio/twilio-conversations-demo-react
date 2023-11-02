@@ -9,7 +9,7 @@ import {
   Client,
   ConnectionState,
 } from "@twilio/conversations";
-import { Box } from "@twilio-paste/core";
+import { Box, Truncate } from "@twilio-paste/core";
 
 import { actionCreators, AppState } from "../store";
 import ConversationContainer from "./conversations/ConversationContainer";
@@ -103,6 +103,7 @@ const AppContainer: React.FC = () => {
     addNotifications,
     logout,
     clearAttachments,
+    updateTimeFormat,
   } = bindActionCreators(actionCreators, dispatch);
 
   const updateTypingIndicator = (
@@ -269,6 +270,17 @@ const AppContainer: React.FC = () => {
       client?.removeAllListeners();
     };
   }, [clientIteration]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    const timeFormat = localStorage.getItem("timeFormat");
+    if (timeFormat !== null) {
+      updateTimeFormat(true);
+    }
+    return () => {
+      abortController.abort();
+    };
+  }, []);
 
   async function upsertMessage(
     message: Message,

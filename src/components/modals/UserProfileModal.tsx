@@ -28,10 +28,11 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
   );
 
   const { updateTimeFormat } = bindActionCreators(actionCreators, dispatch);
-  const on = useSelector((state: AppState) => state.timeFormat);
+  const timeFormat = useSelector((state: AppState) => state.timeFormat);
+  const [on, setOn] = useState(timeFormat);
 
   const handleTimeFormatUpdate = async () => {
-    dispatch(updateTimeFormat(!on));
+    updateTimeFormat(on);
   };
 
   return (
@@ -69,7 +70,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
               <br></br>
               <Switch
                 checked={on}
-                onChange={handleTimeFormatUpdate}
+                onChange={() => setOn(!on)}
                 helpText="format for timestamps"
               >
                 24 hour clock
@@ -96,6 +97,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
                 variant="primary"
                 onClick={async () => {
                   await updateFriendlyName(friendlyName, props.user);
+                  handleTimeFormatUpdate();
                   props.handleClose();
                 }}
               >
