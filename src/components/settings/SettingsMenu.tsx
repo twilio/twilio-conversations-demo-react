@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Box } from "@twilio-paste/core";
 import {
   MenuButton,
@@ -14,13 +14,13 @@ import {
 } from "@twilio-paste/media-object";
 import { MoreIcon } from "@twilio-paste/icons/esm/MoreIcon";
 import { UserIcon } from "@twilio-paste/icons/esm/UserIcon";
-import { EditIcon } from "@twilio-paste/icons/esm/EditIcon";
+// import { EditIcon } from "@twilio-paste/icons/esm/EditIcon";
 import { ArrowBackIcon } from "@twilio-paste/icons/esm/ArrowBackIcon";
 import { Text } from "@twilio-paste/text";
 import { NotificationLevel } from "@twilio/conversations";
 
-import ConversationTitleModal from "../modals/ConversationTitleModal";
-import { unexpectedErrorNotification } from "../../helpers";
+// import ConversationTitleModal from "../modals/ConversationTitleModal";
+// import { unexpectedErrorNotification } from "../../helpers";
 import { NotificationsType } from "../../store/reducers/notificationsReducer";
 import { NOTIFICATION_LEVEL } from "../../constants";
 import Bell from "../icons/Bell";
@@ -31,7 +31,7 @@ import { getSdkConversationObject } from "../../conversations-objects";
 
 interface SettingsMenuProps {
   leaveConvo: () => void;
-  updateConvo: (val: string) => Promise<void>;
+  //updateConvo: (val: string) => Promise<void>;
   conversation: ReduxConversation;
   onParticipantListOpen: () => void;
   addNotifications: (messages: NotificationsType) => void;
@@ -41,8 +41,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
   props: SettingsMenuProps
 ) => {
   const menu = useMenuState();
-  const [isTitleModalOpen, setIsTitleModalOpen] = useState(false);
-  const { friendlyName, notificationLevel } = props.conversation;
+  // const [isTitleModalOpen, setIsTitleModalOpen] = useState(false);
+  const { notificationLevel } = props.conversation;
   const muted = notificationLevel === NOTIFICATION_LEVEL.MUTED;
   const sdkConvo = useMemo(
     () => getSdkConversationObject(props.conversation),
@@ -63,7 +63,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
         <MoreIcon decorative={false} title="Settings" />
       </MenuButton>
       <Menu {...menu} aria-label="Preferences">
-        <Box style={styles.optionWrapper}>
+        {/* <Box style={styles.optionWrapper}>
           <MenuItem {...menu}>
             <MediaObject verticalAlign="center">
               <MediaFigure spacing="space20">
@@ -72,11 +72,11 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
                   title="edit"
                   color="colorTextIcon"
                 />
-              </MediaFigure>
-              <MediaBody onClick={() => setIsTitleModalOpen(true)}>
+              </MediaFigure> */}
+        {/* <MediaBody onClick={() => setIsTitleModalOpen(true)}>
                 Edit Conversation name
-              </MediaBody>
-              <ConversationTitleModal
+              </MediaBody> */}
+        {/* <ConversationTitleModal
                 title={friendlyName ?? ""}
                 type="edit"
                 isModalOpen={isTitleModalOpen}
@@ -94,10 +94,10 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
                   }
                   setIsTitleModalOpen(false);
                 }}
-              />
-            </MediaObject>
+              /> */}
+        {/* </MediaObject>
           </MenuItem>
-        </Box>
+        </Box> */}
         <MenuItem {...menu}>
           <MediaObject verticalAlign="center" onClick={toggleMuteConversation}>
             <MediaFigure spacing="space20">

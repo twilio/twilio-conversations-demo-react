@@ -85,8 +85,10 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
   const nameInputRef = createRef<HTMLInputElement>();
 
   const dispatch = useDispatch();
-  const { updateCurrentConversation, updateConversation, addNotifications } =
-    bindActionCreators(actionCreators, dispatch);
+  const { updateCurrentConversation, addNotifications } = bindActionCreators(
+    actionCreators,
+    dispatch
+  );
 
   const sdkConvo = useMemo(
     () => getSdkConversationObject(props.convo),
@@ -121,21 +123,21 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
             unexpectedErrorNotification(e.message, addNotifications);
           }
         }}
-        updateConvo={(val: string) =>
-          sdkConvo
-            .updateFriendlyName(val)
-            .then((convo) => {
-              updateConversation(convo.sid, convo);
-              successNotification({
-                message: CONVERSATION_MESSAGES.NAME_CHANGED,
-                addNotifications,
-              });
-            })
-            .catch((e) => {
-              setErrorData(e);
-              setErrorToShow(ERROR_MODAL_MESSAGES.CHANGE_CONVERSATION_NAME);
-            })
-        }
+        // updateConvo={(val: string) =>
+        //   sdkConvo
+        //     .updateFriendlyName(val)
+        //     .then((convo) => {
+        //       updateConversation(convo.sid, convo);
+        //       successNotification({
+        //         message: CONVERSATION_MESSAGES.NAME_CHANGED,
+        //         addNotifications,
+        //       });
+        //     })
+        //     .catch((e) => {
+        //       setErrorData(e);
+        //       setErrorToShow(ERROR_MODAL_MESSAGES.CHANGE_CONVERSATION_NAME);
+        //     })
+        // }
         conversation={props.convo}
         addNotifications={addNotifications}
       />

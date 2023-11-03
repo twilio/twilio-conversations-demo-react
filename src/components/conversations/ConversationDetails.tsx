@@ -1,9 +1,9 @@
-import { Box } from "@twilio-paste/core";
+import { Box, Input } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 
 import ParticipantsView from "./ParticipantsView";
 import Settings from "../settings/Settings";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 
@@ -11,6 +11,7 @@ interface ConversationDetailsProps {
   convoSid: string;
   participants: ReduxParticipant[];
   convo: ReduxConversation;
+  updateConvoName: (title: string) => void;
 }
 
 const ConversationDetails: React.FC<ConversationDetailsProps> = (
@@ -18,6 +19,51 @@ const ConversationDetails: React.FC<ConversationDetailsProps> = (
 ) => {
   const theme = useTheme();
   const [isManageParticipantOpen, setIsManageParticipantOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedText, setEditedText] = useState(
+    props.convo.friendlyName ?? props.convo.sid
+  );
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleEditClick = () => {
+    setEditedText(props.convo.friendlyName ?? props.convo.sid);
+    setIsEditing(true);
+  };
+
+  const handleInputChange = (convoName: string) => {
+    setEditedText(convoName);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setIsEditing(false);
+        if (editedText !== props.convo.friendlyName) {
+          props.updateConvoName(editedText);
+        }
+      }
+    };
+
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        setIsEditing(false);
+        if (editedText !== props.convo.friendlyName) {
+          props.updateConvoName(editedText);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [editedText]);
 
   return (
     <Box
@@ -51,8 +97,18 @@ const ConversationDetails: React.FC<ConversationDetailsProps> = (
           lineHeight="lineHeight80"
           fontWeight="fontWeightBold"
           maxHeight="100%"
+          onClick={handleEditClick}
         >
-          {props.convo.friendlyName ?? props.convo.sid}
+          {isEditing ? (
+            <Input
+              type="text"
+              value={editedText}
+              onChange={(e) => handleInputChange(e.target.value)}
+              ref={inputRef}
+            />
+          ) : (
+            <>{props.convo.friendlyName ?? props.convo.sid}</>
+          )}
         </Box>
         <Box
           style={{
