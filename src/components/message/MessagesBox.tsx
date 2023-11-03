@@ -45,10 +45,18 @@ interface MessageProps {
   loadingState: boolean;
   participants: ReduxParticipant[];
   lastReadIndex: number;
+  use24hTimeFormat: boolean;
 }
 
 const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
-  const { messages, convo, loadingState, lastReadIndex, upsertMessage } = props;
+  const {
+    messages,
+    convo,
+    loadingState,
+    lastReadIndex,
+    upsertMessage,
+    use24hTimeFormat,
+  } = props;
   const [hasMore, setHasMore] = useState(
     messages?.length === CONVERSATION_PAGE_SIZE
   );
@@ -153,6 +161,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
             conversation={convo}
             participants={props.participants}
             lastReadIndex={lastConversationReadIndex}
+            use24hTimeFormat={use24hTimeFormat}
           />
         </div>
       </InfiniteScroll>

@@ -16,14 +16,10 @@ import { NOTIFICATION_LEVEL } from "../../constants";
 import { SetSidType, SetUnreadMessagesType } from "../../types";
 import { getMessageStatus } from "../../api";
 
-import * as _ from "lodash";
+import { getLastMessageTime } from "./../../utils/timestampUtils";
 
-import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
-
-TimeAgo.addDefaultLocale(en);
 
 interface SingleConvoProps {
   convoId: string;
@@ -38,6 +34,7 @@ interface SingleConvoProps {
   participants: ReduxParticipant[];
   messages: ReduxMessage[];
   typingInfo: string[];
+  use24hTimeFormat: boolean;
 }
 
 const measureWidth = (text: string): number => {
@@ -71,19 +68,17 @@ function truncateMiddle(text: string, countWidth: number) {
   return text;
 }
 
-function getLastMessageTime(messages: ReduxMessage[]) {
-  const lastMessageDate = _.last(messages)?.dateCreated;
-  if (!lastMessageDate) {
-    return "";
-  }
-
-  return new TimeAgo("en-US").format(lastMessageDate, "twitter-now");
-}
-
 const ConversationView: React.FC<SingleConvoProps> = (
   props: SingleConvoProps
 ) => {
-  const { convo, convoId, myMessage, lastMessage, unreadMessagesCount } = props;
+  const {
+    convo,
+    convoId,
+    myMessage,
+    lastMessage,
+    unreadMessagesCount,
+    use24hTimeFormat,
+  } = props;
   const [backgroundColor, setBackgroundColor] = useState();
   const title = truncateMiddle(
     convo.friendlyName ?? convo.sid,
@@ -97,7 +92,7 @@ const ConversationView: React.FC<SingleConvoProps> = (
   const muted = convo.notificationLevel === NOTIFICATION_LEVEL.MUTED;
 
   const [lastMsgStatus, setLastMsgStatus] = useState("");
-  const time = getLastMessageTime(props.messages);
+  const time = getLastMessageTime(props.messages, use24hTimeFormat);
 
   useEffect(() => {
     if (props.currentConvoSid === convo.sid) {

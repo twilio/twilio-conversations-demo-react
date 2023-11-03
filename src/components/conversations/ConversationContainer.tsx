@@ -30,6 +30,9 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
   const typingData =
     useSelector((state: AppState) => state.typingData)[sid] ?? [];
   const lastReadIndex = useSelector((state: AppState) => state.lastReadIndex);
+  const use24hTimeFormat = useSelector(
+    (state: AppState) => state.use24hTimeFormat
+  );
 
   const dispatch = useDispatch();
   const { pushMessages } = bindActionCreators(actionCreators, dispatch);
@@ -54,6 +57,7 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
             loadingState={loadingStatus}
             participants={participants}
             lastReadIndex={lastReadIndex}
+            use24hTimeFormat={use24hTimeFormat}
           />
 
           <MessageInputField

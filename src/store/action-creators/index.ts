@@ -207,3 +207,15 @@ export const removeNotifications = (toIndex: number) => {
     });
   };
 };
+
+export const updateTimeFormat = (on: boolean) => {
+  on
+    ? localStorage.setItem("use24hTimeFormat", "true")
+    : localStorage.removeItem("use24hTimeFormat");
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.UPDATE_TIME_FORMAT,
+      payload: on,
+    });
+  };
+};
