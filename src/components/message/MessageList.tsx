@@ -244,7 +244,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                   justifyContent="center"
                   alignItems="center"
                 >
-                  <Badge as="span" variant="new">
+                  <Badge as="span" variant="neutral">
                     {currentDateCreated.toDateString() === today
                       ? "Today"
                       : currentDateCreated.toDateString()}
