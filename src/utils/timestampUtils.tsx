@@ -20,19 +20,11 @@ function formatMessageTime(
     // If it's not the same day, show date.
     return date.toDateString();
   } else if (currentDate.getTime() - date.getTime() >= 3 * 60 * 60 * 1000) {
-    if (use24hTimeFormat) {
-      return date.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
-    } else {
-      return date.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      });
-    }
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: !use24hTimeFormat,
+    });
   } else {
     // Otherwise, use the TimeAgo library to format the relative time
     return timeAgo.format(date);
