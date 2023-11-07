@@ -13,8 +13,8 @@ const AvatarGroup: React.FC<AvatarGroupProps> = ({ names, size }) => {
     <PasteAvatarGroup
       size={size ?? "sizeIcon70"}
       variant="user"
-      children={names.map((name) => (
-        <Avatar name={name} size={size} />
+      children={names.map((name, index) => (
+        <Avatar name={name} size={size} key={index} />
       ))}
     />
   );
