@@ -117,6 +117,11 @@ interface RemoveNotifications {
   payload: number;
 }
 
+interface FilterConversations {
+  type: ActionType.FILTER_CONVERSATIONS;
+  payload: string;
+}
+
 interface UpdateTimeFormat {
   type: ActionType.UPDATE_TIME_FORMAT;
   payload: boolean;
@@ -143,4 +148,5 @@ export type Action =
   | TypingEnded
   | AddNotifications
   | RemoveNotifications
+  | FilterConversations
   | UpdateTimeFormat;

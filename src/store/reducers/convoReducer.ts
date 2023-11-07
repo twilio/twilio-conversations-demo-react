@@ -16,6 +16,8 @@ export type ReduxConversation = {
 
 const initialState: ReduxConversation[] = [];
 
+let originalConversations: ReduxConversation[] = [];
+
 const convoSorter = (a: ReduxConversation, b: ReduxConversation) =>
   (b.lastMessage?.dateCreated?.getTime() ?? b.dateUpdated?.getTime() ?? 0) -
   (a.lastMessage?.dateCreated?.getTime() ?? a.dateUpdated?.getTime() ?? 0);
@@ -25,7 +27,7 @@ const reducer = (
   action: Action
 ): ReduxConversation[] => {
   switch (action.type) {
-    case ActionType.UPSERT_CONVERSATION:
+    case ActionType.UPSERT_CONVERSATION: {
       const {
         sid,
         friendlyName,
@@ -40,7 +42,7 @@ const reducer = (
 
       conversationsMap.set(action.payload.sid, action.payload);
 
-      return [
+      originalConversations = [
         ...filteredClone,
         {
           sid,
@@ -53,6 +55,10 @@ const reducer = (
           },
         },
       ].sort(convoSorter);
+
+      return originalConversations;
+    }
+
     case ActionType.UPDATE_CONVERSATION: {
       const stateCopy = [...state];
       const target = stateCopy.find(
@@ -72,9 +78,27 @@ const reducer = (
 
       conversationsMap.delete(action.payload);
 
-      return stateCopy.filter(
+      originalConversations = stateCopy.filter(
         (convo: ReduxConversation) => convo.sid !== action.payload
       );
+
+      return originalConversations;
+    }
+    case ActionType.FILTER_CONVERSATIONS: {
+      const searchString = action.payload;
+
+      // Filter the conversations based on searchString
+      const filteredConversations = originalConversations.filter(
+        (convo: ReduxConversation) => {
+          return convo.friendlyName
+            ? convo.friendlyName
+                .toLowerCase()
+                .includes(searchString.toLowerCase())
+            : false;
+        }
+      );
+
+      return filteredConversations;
     }
     default:
       return state;

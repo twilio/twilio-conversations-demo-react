@@ -208,6 +208,15 @@ export const removeNotifications = (toIndex: number) => {
   };
 };
 
+export const filterConversations = (searchString: string) => {
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.FILTER_CONVERSATIONS,
+      payload: searchString,
+    });
+  };
+};
+
 export const updateTimeFormat = (on: boolean) => {
   on
     ? localStorage.setItem("use24hTimeFormat", "true")
