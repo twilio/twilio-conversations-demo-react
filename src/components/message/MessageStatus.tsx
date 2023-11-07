@@ -44,7 +44,10 @@ const MessageStatus: React.FC<MessageStatusProps> = (props) => {
     <>
       {status[MessageStatusType.Delivered] ? (
         <>
-          <DeliveredIcon style={{ ...statusStyle, ...statusIconStyle }} />
+          <DeliveredIcon
+            style={{ ...statusStyle, ...statusIconStyle }}
+            color="green"
+          />
           {/*{props.channelParticipants.length > 2 && (*/}
           {/*  <span style={statusStyle}>*/}
           {/*    {status[MessageStatusType.Delivered]}*/}
@@ -60,7 +63,10 @@ const MessageStatus: React.FC<MessageStatusProps> = (props) => {
 
       {status[MessageStatusType.Failed] ? (
         <>
-          <FailedIcon style={{ ...statusStyle, ...statusIconStyle }} />
+          <FailedIcon
+            style={{ ...statusStyle, ...statusIconStyle }}
+            color="red"
+          />
           {/*{props.channelParticipants.length > 2 && (*/}
           {/*  <span style={statusStyle}>{status[MessageStatusType.Failed]}</span>*/}
           {/*)}*/}
@@ -69,7 +75,10 @@ const MessageStatus: React.FC<MessageStatusProps> = (props) => {
 
       {status[MessageStatusType.Read] ? (
         <>
-          <ReadIcon style={{ ...statusStyle, ...statusIconStyle }} />
+          <ReadIcon
+            style={{ ...statusStyle, ...statusIconStyle }}
+            color="green"
+          />
           {/*{props.channelParticipants.length > 2 && (*/}
           {/*  <span style={statusStyle}>{status[MessageStatusType.Read]}</span>*/}
           {/*)}*/}

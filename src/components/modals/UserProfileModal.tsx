@@ -1,11 +1,14 @@
 import ModalInputField from "./ModalInputField";
 import ConvoModal from "./ConvoModal";
 import { ModalFooter, ModalFooterActions } from "@twilio-paste/modal";
-import { Box, ModalBody } from "@twilio-paste/core";
+import { Box, ModalBody, Switch } from "@twilio-paste/core";
 import { Button } from "@twilio-paste/button";
 import React, { useState } from "react";
 import { User } from "@twilio/conversations";
 import { updateFriendlyName } from "../../api";
+import { useDispatch, useSelector } from "react-redux";
+import { bindActionCreators } from "redux";
+import { actionCreators, AppState } from "../../store";
 
 interface UserProfileModalProps {
   isModalOpen: boolean;
@@ -18,9 +21,21 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
 ) => {
   const identity = props.user?.identity ?? "";
 
+  const dispatch = useDispatch();
+
   const [friendlyName, setFriendlyName] = useState(
     props.user?.friendlyName ?? ""
   );
+
+  const { updateTimeFormat } = bindActionCreators(actionCreators, dispatch);
+  const use24hTimeFormat = useSelector(
+    (state: AppState) => state.use24hTimeFormat
+  );
+  const [on, setOn] = useState(use24hTimeFormat);
+
+  const handleTimeFormatUpdate = async () => {
+    updateTimeFormat(on);
+  };
 
   return (
     <>
@@ -55,6 +70,14 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
                 maxLength={255}
               />
               <br></br>
+              <Switch
+                checked={on}
+                onChange={() => setOn(!on)}
+                helpText="format for timestamps"
+              >
+                24 hour clock
+              </Switch>
+              <br></br>
             </Box>
           </ModalBody>
         }
@@ -76,6 +99,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
                 variant="primary"
                 onClick={async () => {
                   await updateFriendlyName(friendlyName, props.user);
+                  handleTimeFormatUpdate();
                   props.handleClose();
                 }}
               >

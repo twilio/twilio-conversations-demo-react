@@ -122,6 +122,11 @@ interface filterConversations {
   payload: string;
 }
 
+interface UpdateTimeFormat {
+  type: ActionType.UPDATE_TIME_FORMAT;
+  payload: boolean;
+}
+
 export type Action =
   | LoginAction
   | LogOutAction
@@ -143,4 +148,5 @@ export type Action =
   | TypingEnded
   | AddNotifications
   | RemoveNotifications
-  | filterConversations;
+  | filterConversations
+  | UpdateTimeFormat;

@@ -9,6 +9,9 @@ import {
   ChatMessageMeta,
   ChatMessageMetaItem,
   ChatBubble,
+  Separator,
+  Badge,
+  Box,
 } from "@twilio-paste/core";
 
 import { getBlobFile } from "../../api";
@@ -27,26 +30,22 @@ import {
   getSdkParticipantObject,
 } from "../../conversations-objects";
 import { getSdkConversationObject } from "../../conversations-objects";
-import TimeAgo from "javascript-time-ago";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import Reactions from "./Reactions";
 import { MessageStatus } from "./MessageStatus";
 import { MAX_MESSAGE_LINE_WIDTH } from "../../constants";
 import wrap from "word-wrap";
+import {
+  getMessageTime,
+  getFirstMessagePerDate,
+} from "./../../utils/timestampUtils";
 
 interface MessageListProps {
   messages: ReduxMessage[];
   conversation: ReduxConversation;
   participants: ReduxParticipant[];
   lastReadIndex: number;
-}
-
-function getMessageTime(message: ReduxMessage) {
-  const dateCreated = message.dateCreated;
-
-  return dateCreated
-    ? new TimeAgo("en-US").format(dateCreated, "twitter-now")
-    : "";
+  use24hTimeFormat: boolean;
 }
 
 const MetaItemWithMargin: React.FC<{ children: ReactNode }> = (props) => (
@@ -56,7 +55,7 @@ const MetaItemWithMargin: React.FC<{ children: ReactNode }> = (props) => (
 );
 
 const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
-  const { messages, conversation, lastReadIndex } = props;
+  const { messages, conversation, lastReadIndex, use24hTimeFormat } = props;
   if (messages === undefined) {
     return <div className="empty" />;
   }
@@ -83,6 +82,9 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   const [horizonMessageCount, setHorizonMessageCount] = useState<number>(0);
   // const [showHorizonIndex, setShowHorizonIndex] = useState<number>(0);
   const [scrolledToHorizon, setScrollToHorizon] = useState(false);
+  const [firstMessagePerDay, setFirstMessagePerDay] = useState<string[]>([]);
+
+  const today = new Date().toDateString();
 
   useEffect(() => {
     if (scrolledToHorizon || !myRef.current) {
@@ -121,6 +123,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           });
         }
       }
+      setFirstMessagePerDay(getFirstMessagePerDate(messages));
     });
   }, [messages]);
 
@@ -174,6 +177,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
       {messages.map((message) => {
         const messageImages: ReduxMedia[] = [];
         const messageFiles: ReduxMedia[] = [];
+        const currentDateCreated = message.dateCreated ?? null;
         (message.attachedMedia || []).forEach((file) => {
           const { contentType } = file;
           if (contentType.includes("image")) {
@@ -214,8 +218,14 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           </MetaItemWithMargin>,
           <MetaItemWithMargin key={2}>
             {isOutbound
-              ? `${getAuthorFriendlyName(message)}・${getMessageTime(message)}`
-              : `${getMessageTime(message)}・${getAuthorFriendlyName(message)}`}
+              ? `${getAuthorFriendlyName(message)}・${getMessageTime(
+                  message,
+                  use24hTimeFormat
+                )}`
+              : `${getMessageTime(
+                  message,
+                  use24hTimeFormat
+                )}・${getAuthorFriendlyName(message)}`}
           </MetaItemWithMargin>,
         ];
 
@@ -224,48 +234,66 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
         }
 
         return (
-          <ChatMessage
-            variant={isOutbound ? "outbound" : "inbound"}
-            key={`${message.sid}.message`}
-          >
-            <ChatBubble>
-              {wrappedBody}
-              <MessageMedia
-                key={message.sid}
-                attachments={conversationAttachments?.[message.sid]}
-                onDownload={async () => await onDownloadAttachments(message)}
-                images={messageImages}
-                files={messageFiles}
-                sending={message.index === -1}
-                onOpen={(
-                  mediaSid: string,
-                  image?: ReduxMedia,
-                  file?: ReduxMedia
-                ) => {
-                  if (file) {
-                    onFileOpen(
-                      conversationAttachments?.[message.sid][mediaSid],
-                      file
-                    );
-                    return;
-                  }
-                  if (image) {
-                    setImagePreview({
-                      message,
-                      file: conversationAttachments?.[message.sid][mediaSid],
-                      sid: mediaSid,
-                    });
-                  }
-                }}
-              />
-            </ChatBubble>
-            <ChatMessageMeta
-              aria-label={`said by ${getAuthorFriendlyName(message)}`}
+          <>
+            {currentDateCreated && firstMessagePerDay.includes(message.sid) && (
+              <>
+                <Separator orientation="horizontal" verticalSpacing="space50" />
+                <Box
+                  display="flex"
+                  flexWrap="wrap"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <Badge as="span" variant="neutral">
+                    {currentDateCreated.toDateString() === today
+                      ? "Today"
+                      : currentDateCreated.toDateString()}
+                  </Badge>
+                </Box>
+              </>
+            )}
+            <ChatMessage
+              variant={isOutbound ? "outbound" : "inbound"}
+              key={`${message.sid}.message`}
             >
-              {metaItems}
-            </ChatMessageMeta>
-          </ChatMessage>
-
+              <ChatBubble>
+                {wrappedBody}
+                <MessageMedia
+                  key={message.sid}
+                  attachments={conversationAttachments?.[message.sid]}
+                  onDownload={async () => await onDownloadAttachments(message)}
+                  images={messageImages}
+                  files={messageFiles}
+                  sending={message.index === -1}
+                  onOpen={(
+                    mediaSid: string,
+                    image?: ReduxMedia,
+                    file?: ReduxMedia
+                  ) => {
+                    if (file) {
+                      onFileOpen(
+                        conversationAttachments?.[message.sid][mediaSid],
+                        file
+                      );
+                      return;
+                    }
+                    if (image) {
+                      setImagePreview({
+                        message,
+                        file: conversationAttachments?.[message.sid][mediaSid],
+                        sid: mediaSid,
+                      });
+                    }
+                  }}
+                />
+              </ChatBubble>
+              <ChatMessageMeta
+                aria-label={`said by ${getAuthorFriendlyName(message)}`}
+              >
+                {metaItems}
+              </ChatMessageMeta>
+            </ChatMessage>
+          </>
           // todo: delete only when full functionality is transferred over
           // <div key={message.sid + "message"}>
           //   {lastReadIndex !== -1 &&

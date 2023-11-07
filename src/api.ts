@@ -227,7 +227,7 @@ export async function getMessageStatus(
     ) {
       statuses[MessageStatus.Read] += 1;
     } else if (participant.lastReadMessageIndex !== -1) {
-      // statuses[MessageStatus.Delivered] += 1; FIXME don't need Delivered status for chat particpants?
+      statuses[MessageStatus.Delivered] += 1;
     }
   });
 
