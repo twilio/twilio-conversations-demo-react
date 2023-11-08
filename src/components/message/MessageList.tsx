@@ -1,4 +1,10 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, {
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { saveAs } from "file-saver";
@@ -39,6 +45,7 @@ import {
   getMessageTime,
   getFirstMessagePerDate,
 } from "./../../utils/timestampUtils";
+import { useDropzone } from "react-dropzone";
 
 interface MessageListProps {
   messages: ReduxMessage[];
@@ -85,6 +92,15 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   const [firstMessagePerDay, setFirstMessagePerDay] = useState<string[]>([]);
 
   const today = new Date().toDateString();
+
+  const onDrop = useCallback((acceptedFiles) => {
+    console.log("acceptedFiles", acceptedFiles);
+  }, []);
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    noClick: true,
+    noKeyboard: true,
+  });
 
   useEffect(() => {
     if (scrolledToHorizon || !myRef.current) {
@@ -173,7 +189,8 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   };
 
   return (
-    <ChatLog>
+    <ChatLog {...getRootProps()}>
+      <input {...getInputProps()} />
       {messages.map((message) => {
         const messageImages: ReduxMedia[] = [];
         const messageFiles: ReduxMedia[] = [];
