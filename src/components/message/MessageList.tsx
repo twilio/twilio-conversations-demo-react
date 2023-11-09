@@ -19,6 +19,7 @@ import {
   Badge,
   Box,
 } from "@twilio-paste/core";
+import { CustomizationProvider } from "@twilio-paste/core/customization";
 
 import { getBlobFile } from "../../api";
 import { actionCreators, AppState } from "../../store";
@@ -46,6 +47,7 @@ import {
   getFirstMessagePerDate,
 } from "./../../utils/timestampUtils";
 import { useDropzone } from "react-dropzone";
+import { MAX_FILE_SIZE } from "../../constants";
 
 interface MessageListProps {
   messages: ReduxMessage[];
@@ -53,6 +55,7 @@ interface MessageListProps {
   participants: ReduxParticipant[];
   lastReadIndex: number;
   use24hTimeFormat: boolean;
+  handleDropedFiles: (droppedFiles: File[]) => void;
 }
 
 const MetaItemWithMargin: React.FC<{ children: ReactNode }> = (props) => (
@@ -62,7 +65,13 @@ const MetaItemWithMargin: React.FC<{ children: ReactNode }> = (props) => (
 );
 
 const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
-  const { messages, conversation, lastReadIndex, use24hTimeFormat } = props;
+  const {
+    messages,
+    conversation,
+    lastReadIndex,
+    use24hTimeFormat,
+    handleDropedFiles,
+  } = props;
   if (messages === undefined) {
     return <div className="empty" />;
   }
@@ -90,16 +99,21 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   // const [showHorizonIndex, setShowHorizonIndex] = useState<number>(0);
   const [scrolledToHorizon, setScrollToHorizon] = useState(false);
   const [firstMessagePerDay, setFirstMessagePerDay] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
 
   const today = new Date().toDateString();
 
   const onDrop = useCallback((acceptedFiles) => {
-    console.log("acceptedFiles", acceptedFiles);
+    setFiles(acceptedFiles);
   }, []);
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     noClick: true,
     noKeyboard: true,
+    maxSize: MAX_FILE_SIZE,
+    accept: {
+      "image/*": [".png", ".jpeg", ".jpg", ".gif"],
+    },
   });
 
   useEffect(() => {
@@ -142,6 +156,14 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
       setFirstMessagePerDay(getFirstMessagePerDate(messages));
     });
   }, [messages]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    handleDropedFiles(files);
+    return () => {
+      abortController.abort();
+    };
+  }, [files]);
 
   // function setTopPadding(index: number) {
   //   if (
@@ -189,238 +211,256 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   };
 
   return (
-    <ChatLog {...getRootProps()}>
-      <input {...getInputProps()} />
-      {messages.map((message) => {
-        const messageImages: ReduxMedia[] = [];
-        const messageFiles: ReduxMedia[] = [];
-        const currentDateCreated = message.dateCreated ?? null;
-        (message.attachedMedia || []).forEach((file) => {
-          const { contentType } = file;
-          if (contentType.includes("image")) {
-            messageImages.push(file);
-            return;
-          }
-          messageFiles.push(file);
-        });
-        const attributes = message.attributes as Record<
-          string,
-          ReactionsType | undefined
-        >;
+    <CustomizationProvider
+      elements={{
+        MY_CUSTOM_CHATLOG: {
+          backgroundColor: isDragActive
+            ? "colorBackgroundPrimaryWeakest"
+            : null,
+        },
+      }}
+    >
+      <ChatLog {...getRootProps()} element="MY_CUSTOM_CHATLOG">
+        <input {...getInputProps()} />
+        {messages.map((message) => {
+          const messageImages: ReduxMedia[] = [];
+          const messageFiles: ReduxMedia[] = [];
+          const currentDateCreated = message.dateCreated ?? null;
+          (message.attachedMedia || []).forEach((file) => {
+            const { contentType } = file;
+            if (contentType.includes("image")) {
+              messageImages.push(file);
+              return;
+            }
+            messageFiles.push(file);
+          });
+          const attributes = message.attributes as Record<
+            string,
+            ReactionsType | undefined
+          >;
 
-        const wrappedBody = wrap(message.body ?? "", {
-          width: MAX_MESSAGE_LINE_WIDTH,
-          indent: "",
-          cut: true,
-        });
+          const wrappedBody = wrap(message.body ?? "", {
+            width: MAX_MESSAGE_LINE_WIDTH,
+            indent: "",
+            cut: true,
+          });
 
-        const isOutbound = message.author === localStorage.getItem("username");
-        let metaItems = [
-          <ChatMessageMetaItem key={0}>
-            <Reactions
-              reactions={attributes.reactions}
-              onReactionsChanged={(reactions) => {
-                getSdkMessageObject(message).updateAttributes({
-                  ...attributes,
-                  reactions,
-                });
-              }}
-            />
-          </ChatMessageMetaItem>,
-          <MetaItemWithMargin key={1}>
-            <MessageStatus
-              message={message}
-              channelParticipants={props.participants}
-            />
-          </MetaItemWithMargin>,
-          <MetaItemWithMargin key={2}>
-            {isOutbound
-              ? `${getAuthorFriendlyName(message)}・${getMessageTime(
-                  message,
-                  use24hTimeFormat
-                )}`
-              : `${getMessageTime(
-                  message,
-                  use24hTimeFormat
-                )}・${getAuthorFriendlyName(message)}`}
-          </MetaItemWithMargin>,
-        ];
-
-        if (isOutbound) {
-          metaItems = metaItems.reverse();
-        }
-
-        return (
-          <div key={message.sid}>
-            {currentDateCreated && firstMessagePerDay.includes(message.sid) && (
-              <>
-                <Separator orientation="horizontal" verticalSpacing="space50" />
-                <Box
-                  display="flex"
-                  flexWrap="wrap"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <Badge as="span" variant="neutral">
-                    {currentDateCreated.toDateString() === today
-                      ? "Today"
-                      : currentDateCreated.toDateString()}
-                  </Badge>
-                </Box>
-              </>
-            )}
-            <ChatMessage
-              variant={isOutbound ? "outbound" : "inbound"}
-              key={`${message.sid}.message`}
-            >
-              <ChatBubble>
-                {wrappedBody}
-                <MessageMedia
-                  key={message.sid}
-                  attachments={conversationAttachments?.[message.sid]}
-                  onDownload={async () => await onDownloadAttachments(message)}
-                  images={messageImages}
-                  files={messageFiles}
-                  sending={message.index === -1}
-                  onOpen={(
-                    mediaSid: string,
-                    image?: ReduxMedia,
-                    file?: ReduxMedia
-                  ) => {
-                    if (file) {
-                      onFileOpen(
-                        conversationAttachments?.[message.sid][mediaSid],
-                        file
-                      );
-                      return;
-                    }
-                    if (image) {
-                      setImagePreview({
-                        message,
-                        file: conversationAttachments?.[message.sid][mediaSid],
-                        sid: mediaSid,
-                      });
-                    }
-                  }}
-                />
-              </ChatBubble>
-              <ChatMessageMeta
-                aria-label={`said by ${getAuthorFriendlyName(message)}`}
-              >
-                {metaItems}
-              </ChatMessageMeta>
-            </ChatMessage>
-          </div>
-          // todo: delete only when full functionality is transferred over
-          // <div key={message.sid + "message"}>
-          //   {lastReadIndex !== -1 &&
-          //   horizonMessageCount &&
-          //   showHorizonIndex === message.index ? (
-          //     <Horizon ref={myRef} messageCount={horizonMessageCount} />
-          //   ) : null}
-          //   <MessageView
-          //     reactions={attributes["reactions"]}
-          //     text={wrappedBody}
-          //     media={
-          //       message.attachedMedia?.length ? (
-          //         <MessageMedia
-          //           key={message.sid}
-          //           attachments={conversationAttachments?.[message.sid]}
-          //           onDownload={async () =>
-          //             await onDownloadAttachments(message)
-          //           }
-          //           images={messageImages}
-          //           files={messageFiles}
-          //           sending={message.index === -1}
-          //           onOpen={(
-          //             mediaSid: string,
-          //             image?: ReduxMedia,
-          //             file?: ReduxMedia
-          //           ) => {
-          //             if (file) {
-          //               onFileOpen(
-          //                 conversationAttachments?.[message.sid][mediaSid],
-          //                 file
-          //               );
-          //               return;
-          //             }
-          //             if (image) {
-          //               setImagePreview({
-          //                 message,
-          //                 file: conversationAttachments?.[message.sid][
-          //                   mediaSid
-          //                 ],
-          //                 sid: mediaSid,
-          //               });
-          //             }
-          //           }}
-          //         />
-          //       ) : null
-          //     }
-          //     author={message.author ?? ""}
-          //     getStatus={getMessageStatus(message, props.participants)}
-          //     onDeleteMessage={async () => {
-          //       try {
-          //         await getSdkMessageObject(message).remove();
-          //         successNotification({
-          //           message: "Message deleted.",
-          //           addNotifications,
-          //         });
-          //       } catch (e) {
-          //         unexpectedErrorNotification(e.message, addNotifications);
-          //       }
-          //     }}
-          //     topPadding={setTopPadding(index)}
-          //     lastMessageBottomPadding={index === messagesLength - 1 ? 16 : 0}
-          //     sameAuthorAsPrev={setTopPadding(index) !== theme.space.space20}
-          //     messageTime={getMessageTime(message)}
-          //     updateAttributes={(attribute) =>
-          //       getSdkMessageObject(message).updateAttributes({
-          //         ...attributes,
-          //         ...attribute,
-          //       })
-          //     }
-          //   />
-          // </div>
-        );
-      })}
-      {imagePreview
-        ? (function () {
-            const dateString = imagePreview?.message.dateCreated;
-            const date = dateString ? new Date(dateString) : "";
-            return (
-              <ImagePreviewModal
-                image={imagePreview.file}
-                isOpen={!!imagePreview}
-                author={
-                  imagePreview
-                    ? getAuthorFriendlyName(imagePreview.message)
-                    : ""
-                }
-                date={
-                  date
-                    ? date.toDateString() +
-                      ", " +
-                      date.getHours() +
-                      ":" +
-                      (date.getMinutes() < 10 ? "0" : "") +
-                      date.getMinutes()
-                    : ""
-                }
-                handleClose={() => setImagePreview(null)}
-                onDownload={() => {
-                  saveAs(
-                    imagePreview.file,
-                    imagePreview.message.attachedMedia?.find(
-                      ({ sid }) => sid === imagePreview.sid
-                    )?.filename ?? ""
-                  );
+          const isOutbound =
+            message.author === localStorage.getItem("username");
+          let metaItems = [
+            <ChatMessageMetaItem key={0}>
+              <Reactions
+                reactions={attributes.reactions}
+                onReactionsChanged={(reactions) => {
+                  getSdkMessageObject(message).updateAttributes({
+                    ...attributes,
+                    reactions,
+                  });
                 }}
               />
-            );
-          })()
-        : null}
-    </ChatLog>
+            </ChatMessageMetaItem>,
+            <MetaItemWithMargin key={1}>
+              <MessageStatus
+                message={message}
+                channelParticipants={props.participants}
+              />
+            </MetaItemWithMargin>,
+            <MetaItemWithMargin key={2}>
+              {isOutbound
+                ? `${getAuthorFriendlyName(message)}・${getMessageTime(
+                    message,
+                    use24hTimeFormat
+                  )}`
+                : `${getMessageTime(
+                    message,
+                    use24hTimeFormat
+                  )}・${getAuthorFriendlyName(message)}`}
+            </MetaItemWithMargin>,
+          ];
+
+          if (isOutbound) {
+            metaItems = metaItems.reverse();
+          }
+
+          return (
+            <>
+              {currentDateCreated && firstMessagePerDay.includes(message.sid) && (
+                <>
+                  <Separator
+                    orientation="horizontal"
+                    verticalSpacing="space50"
+                  />
+                  <Box
+                    display="flex"
+                    flexWrap="wrap"
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <Badge as="span" variant="neutral">
+                      {currentDateCreated.toDateString() === today
+                        ? "Today"
+                        : currentDateCreated.toDateString()}
+                    </Badge>
+                  </Box>
+                </>
+              )}
+              <ChatMessage
+                variant={isOutbound ? "outbound" : "inbound"}
+                key={`${message.sid}.message`}
+              >
+                <ChatBubble>
+                  {wrappedBody}
+                  <MessageMedia
+                    key={message.sid}
+                    attachments={conversationAttachments?.[message.sid]}
+                    onDownload={async () =>
+                      await onDownloadAttachments(message)
+                    }
+                    images={messageImages}
+                    files={messageFiles}
+                    sending={message.index === -1}
+                    onOpen={(
+                      mediaSid: string,
+                      image?: ReduxMedia,
+                      file?: ReduxMedia
+                    ) => {
+                      if (file) {
+                        onFileOpen(
+                          conversationAttachments?.[message.sid][mediaSid],
+                          file
+                        );
+                        return;
+                      }
+                      if (image) {
+                        setImagePreview({
+                          message,
+                          file: conversationAttachments?.[message.sid][
+                            mediaSid
+                          ],
+                          sid: mediaSid,
+                        });
+                      }
+                    }}
+                  />
+                </ChatBubble>
+                <ChatMessageMeta
+                  aria-label={`said by ${getAuthorFriendlyName(message)}`}
+                >
+                  {metaItems}
+                </ChatMessageMeta>
+              </ChatMessage>
+            </>
+            // todo: delete only when full functionality is transferred over
+            // <div key={message.sid + "message"}>
+            //   {lastReadIndex !== -1 &&
+            //   horizonMessageCount &&
+            //   showHorizonIndex === message.index ? (
+            //     <Horizon ref={myRef} messageCount={horizonMessageCount} />
+            //   ) : null}
+            //   <MessageView
+            //     reactions={attributes["reactions"]}
+            //     text={wrappedBody}
+            //     media={
+            //       message.attachedMedia?.length ? (
+            //         <MessageMedia
+            //           key={message.sid}
+            //           attachments={conversationAttachments?.[message.sid]}
+            //           onDownload={async () =>
+            //             await onDownloadAttachments(message)
+            //           }
+            //           images={messageImages}
+            //           files={messageFiles}
+            //           sending={message.index === -1}
+            //           onOpen={(
+            //             mediaSid: string,
+            //             image?: ReduxMedia,
+            //             file?: ReduxMedia
+            //           ) => {
+            //             if (file) {
+            //               onFileOpen(
+            //                 conversationAttachments?.[message.sid][mediaSid],
+            //                 file
+            //               );
+            //               return;
+            //             }
+            //             if (image) {
+            //               setImagePreview({
+            //                 message,
+            //                 file: conversationAttachments?.[message.sid][
+            //                   mediaSid
+            //                 ],
+            //                 sid: mediaSid,
+            //               });
+            //             }
+            //           }}
+            //         />
+            //       ) : null
+            //     }
+            //     author={message.author ?? ""}
+            //     getStatus={getMessageStatus(message, props.participants)}
+            //     onDeleteMessage={async () => {
+            //       try {
+            //         await getSdkMessageObject(message).remove();
+            //         successNotification({
+            //           message: "Message deleted.",
+            //           addNotifications,
+            //         });
+            //       } catch (e) {
+            //         unexpectedErrorNotification(e.message, addNotifications);
+            //       }
+            //     }}
+            //     topPadding={setTopPadding(index)}
+            //     lastMessageBottomPadding={index === messagesLength - 1 ? 16 : 0}
+            //     sameAuthorAsPrev={setTopPadding(index) !== theme.space.space20}
+            //     messageTime={getMessageTime(message)}
+            //     updateAttributes={(attribute) =>
+            //       getSdkMessageObject(message).updateAttributes({
+            //         ...attributes,
+            //         ...attribute,
+            //       })
+            //     }
+            //   />
+            // </div>
+          );
+        })}
+        {imagePreview
+          ? (function () {
+              const dateString = imagePreview?.message.dateCreated;
+              const date = dateString ? new Date(dateString) : "";
+              return (
+                <ImagePreviewModal
+                  image={imagePreview.file}
+                  isOpen={!!imagePreview}
+                  author={
+                    imagePreview
+                      ? getAuthorFriendlyName(imagePreview.message)
+                      : ""
+                  }
+                  date={
+                    date
+                      ? date.toDateString() +
+                        ", " +
+                        date.getHours() +
+                        ":" +
+                        (date.getMinutes() < 10 ? "0" : "") +
+                        date.getMinutes()
+                      : ""
+                  }
+                  handleClose={() => setImagePreview(null)}
+                  onDownload={() => {
+                    saveAs(
+                      imagePreview.file,
+                      imagePreview.message.attachedMedia?.find(
+                        ({ sid }) => sid === imagePreview.sid
+                      )?.filename ?? ""
+                    );
+                  }}
+                />
+              );
+            })()
+          : null}
+      </ChatLog>
+    </CustomizationProvider>
   );
 };
 
