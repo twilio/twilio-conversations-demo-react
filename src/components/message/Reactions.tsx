@@ -115,25 +115,37 @@ const ReactionsBox: React.FC<ReactionsProps> = ({
     count: number
   ): React.ReactNode => {
     const emoji = emojiMapping[reactionId];
+    const reactionUsers = reactions?.[reactionId] || [];
+    const userIncluded = reactionUsers.includes(user);
 
     if (emoji) {
       return (
-        <Box
-          key={reactionId}
-          style={{
-            border: "1px solid " + reactionsBorderColor,
-            borderRadius: 4,
-            margin: "4px 4px 0 0",
-            backgroundColor: reactionsBackgroundColor,
-          }}
+        <Tooltip
+          text={
+            userIncluded
+              ? `You${reactionUsers.length > 1 ? " and" : ""} ${reactionUsers
+                  .filter((name) => name !== user)
+                  .join(", ")} reacted with ${reactionId}`
+              : `${reactionUsers.join(", ")} reacted with ${reactionId}`
+          }
         >
-          <ReactionItem
-            emoji={emoji}
-            reactionId={reactionId}
-            count={count}
+          <Box
             key={reactionId}
-          />
-        </Box>
+            style={{
+              border: `1px solid ${reactionsBorderColor}`,
+              borderRadius: 4,
+              margin: "4px 4px 0 0",
+              backgroundColor: reactionsBackgroundColor,
+            }}
+          >
+            <ReactionItem
+              emoji={emoji}
+              reactionId={reactionId}
+              count={count}
+              key={reactionId}
+            />
+          </Box>
+        </Tooltip>
       );
     }
     return null;
