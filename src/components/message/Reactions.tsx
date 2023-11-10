@@ -14,6 +14,15 @@ enum Reactions {
   THUMBS_DOWN = "thumbs_down",
 }
 
+const emojiMapping: Record<Reactions, string> = {
+  [Reactions.HEART]: "❤️",
+  [Reactions.THUMBS_UP]: "👍",
+  [Reactions.LAUGH]: "😄",
+  [Reactions.SAD]: "😢",
+  [Reactions.POUTING]: "😡",
+  [Reactions.THUMBS_DOWN]: "👎",
+};
+
 export type ReactionsType = {
   [Reactions.HEART]?: string[];
   [Reactions.THUMBS_DOWN]?: string[];
@@ -28,16 +37,7 @@ type ReactionsProps = {
   onReactionsChanged: (reactions: ReactionsType) => void;
 };
 
-const reactionsExist = (reactions: ReactionsType) =>
-  reactions &&
-  (reactions[Reactions.HEART]?.length ||
-    reactions[Reactions.THUMBS_DOWN]?.length ||
-    reactions[Reactions.THUMBS_UP]?.length ||
-    reactions[Reactions.POUTING]?.length ||
-    reactions[Reactions.SAD]?.length ||
-    reactions[Reactions.LAUGH]?.length);
-
-export const ReactionsBox: React.FC<ReactionsProps> = ({
+const ReactionsBox: React.FC<ReactionsProps> = ({
   reactions = {},
   onReactionsChanged,
 }: ReactionsProps) => {
@@ -53,7 +53,7 @@ export const ReactionsBox: React.FC<ReactionsProps> = ({
     onReactionsChanged({
       ...reactions,
       [reaction]: reactions?.[reaction]?.includes(user)
-        ? reactionUsers.filter((participant) => participant != user)
+        ? reactionUsers.filter((participant) => participant !== user)
         : [...reactionUsers, user],
     });
   };
@@ -63,15 +63,11 @@ export const ReactionsBox: React.FC<ReactionsProps> = ({
       .filter((reaction) => reactions[reaction as Reactions]?.length)
       .every((reaction) => reactions[reaction as Reactions]?.includes(user));
 
-  const ReactionItem = ({
-    emoji,
-    reactionId,
-    count,
-  }: {
+  const ReactionItem: React.FC<{
     emoji: string;
     reactionId: Reactions;
     count?: number;
-  }) => (
+  }> = ({ emoji, reactionId, count }) => (
     <button
       type="button"
       onClick={() => {
@@ -114,16 +110,16 @@ export const ReactionsBox: React.FC<ReactionsProps> = ({
     ? "#e8f4f8"
     : theme.backgroundColors.colorBackgroundBody;
 
-  console.log("reactions", reactions);
+  const getReactionEmoji = (
+    reactionId: Reactions,
+    count: number
+  ): React.ReactNode => {
+    const emoji = emojiMapping[reactionId];
 
-  return (
-    <Box
-      style={{
-        display: "flex",
-      }}
-    >
-      {reactionsExist(reactions) ? (
+    if (emoji) {
+      return (
         <Box
+          key={reactionId}
           style={{
             border: "1px solid " + reactionsBorderColor,
             borderRadius: 4,
@@ -131,50 +127,26 @@ export const ReactionsBox: React.FC<ReactionsProps> = ({
             backgroundColor: reactionsBackgroundColor,
           }}
         >
-          {reactions?.[Reactions.HEART]?.length ? (
-            <ReactionItem
-              emoji="&#x2764;&#xFE0F;"
-              reactionId={Reactions.HEART}
-              count={reactions?.[Reactions.HEART]?.length}
-            />
-          ) : null}
-          {reactions?.[Reactions.THUMBS_UP]?.length ? (
-            <ReactionItem
-              emoji="&#128077;"
-              reactionId={Reactions.THUMBS_UP}
-              count={reactions?.[Reactions.THUMBS_UP]?.length}
-            />
-          ) : null}
-          {reactions?.[Reactions.LAUGH]?.length ? (
-            <ReactionItem
-              emoji="&#128514;"
-              reactionId={Reactions.LAUGH}
-              count={reactions?.[Reactions.LAUGH]?.length}
-            />
-          ) : null}
-          {reactions?.[Reactions.SAD]?.length ? (
-            <ReactionItem
-              emoji="&#128542;"
-              reactionId={Reactions.SAD}
-              count={reactions?.[Reactions.SAD]?.length}
-            />
-          ) : null}
-          {reactions?.[Reactions.POUTING]?.length ? (
-            <ReactionItem
-              emoji="&#128545;"
-              reactionId={Reactions.POUTING}
-              count={reactions?.[Reactions.POUTING]?.length}
-            />
-          ) : null}
-          {reactions?.[Reactions.THUMBS_DOWN]?.length ? (
-            <ReactionItem
-              emoji="&#128078;"
-              reactionId={Reactions.THUMBS_DOWN}
-              count={reactions?.[Reactions.THUMBS_DOWN]?.length}
-            />
-          ) : null}
+          <ReactionItem
+            emoji={emoji}
+            reactionId={reactionId}
+            count={count}
+            key={reactionId}
+          />
         </Box>
-      ) : null}
+      );
+    }
+    return null;
+  };
+
+  const renderReactionBox = (reactionId: Reactions, count?: number) =>
+    count ? getReactionEmoji(reactionId, count) : null;
+
+  return (
+    <Box style={{ display: "flex" }}>
+      {Object.entries(reactions).map(([reactionId, users]) =>
+        renderReactionBox(reactionId as Reactions, users.length)
+      )}
       <Tooltip text="Add reaction">
         <Box
           style={{
@@ -209,21 +181,13 @@ export const ReactionsBox: React.FC<ReactionsProps> = ({
             }}
           >
             <div style={{ display: "flex" }}>
-              <ReactionItem
-                emoji="&#x2764;&#xFE0F;"
-                reactionId={Reactions.HEART}
-              />
-              <ReactionItem
-                emoji="&#128077;"
-                reactionId={Reactions.THUMBS_UP}
-              />
-              <ReactionItem emoji="&#128514;" reactionId={Reactions.LAUGH} />
-              <ReactionItem emoji="&#128542;" reactionId={Reactions.SAD} />
-              <ReactionItem emoji="&#128545;" reactionId={Reactions.POUTING} />
-              <ReactionItem
-                emoji="&#128078;"
-                reactionId={Reactions.THUMBS_DOWN}
-              />
+              {Object.values(Reactions).map((reactionId) => (
+                <ReactionItem
+                  key={reactionId}
+                  emoji={emojiMapping[reactionId]}
+                  reactionId={reactionId}
+                />
+              ))}
             </div>
           </Menu>
         </Box>
