@@ -58,11 +58,6 @@ const ReactionsBox: React.FC<ReactionsProps> = ({
     });
   };
 
-  const allReactionsByCurrentUser = () =>
-    Object.keys(reactions)
-      .filter((reaction) => reactions[reaction as Reactions]?.length)
-      .every((reaction) => reactions[reaction as Reactions]?.includes(user));
-
   const ReactionItem: React.FC<{
     emoji: string;
     reactionId: Reactions;
@@ -100,16 +95,6 @@ const ReactionsBox: React.FC<ReactionsProps> = ({
     </button>
   );
 
-  const isReactionsByCurrentUser = allReactionsByCurrentUser();
-
-  const reactionsBorderColor = isReactionsByCurrentUser
-    ? theme.textColors.colorTextLink
-    : theme.textColors.colorTextIconInverse;
-
-  const reactionsBackgroundColor = isReactionsByCurrentUser
-    ? "#e8f4f8"
-    : theme.backgroundColors.colorBackgroundBody;
-
   const getReactionEmoji = (
     reactionId: Reactions,
     count: number
@@ -125,17 +110,23 @@ const ReactionsBox: React.FC<ReactionsProps> = ({
             userIncluded
               ? `You${reactionUsers.length > 1 ? " and" : ""} ${reactionUsers
                   .filter((name) => name !== user)
-                  .join(", ")} reacted with ${reactionId}`
-              : `${reactionUsers.join(", ")} reacted with ${reactionId}`
+                  .join(", ")} reacted with :${reactionId}`
+              : `${reactionUsers.join(", ")} reacted with :${reactionId}`
           }
         >
           <Box
             key={reactionId}
             style={{
-              border: `1px solid ${reactionsBorderColor}`,
+              border: `1px solid ${
+                userIncluded
+                  ? theme.textColors.colorTextLink
+                  : theme.textColors.colorTextIconInverse
+              }`,
               borderRadius: 4,
               margin: "4px 4px 0 0",
-              backgroundColor: reactionsBackgroundColor,
+              backgroundColor: userIncluded
+                ? "#e8f4f8"
+                : theme.backgroundColors.colorBackgroundBody,
             }}
           >
             <ReactionItem
