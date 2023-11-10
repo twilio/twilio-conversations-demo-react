@@ -3,6 +3,7 @@ import { Box, Text } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
 import { Menu, MenuButton, useMenuState } from "@twilio-paste/menu";
 import AddReaction from "../icons/AddReaction";
+import { Tooltip } from "@twilio-paste/core/tooltip";
 
 enum Reactions {
   HEART = "heart",
@@ -79,16 +80,13 @@ export const ReactionsBox: React.FC<ReactionsProps> = ({
       }}
       style={{
         border: 0,
-        padding: "2px 10px",
+        padding: "2px 2px",
         margin: "0 2px",
-        fontSize: 20,
-        lineHeight: "28px",
+        fontSize: 14,
+        lineHeight: "22px",
         cursor: "pointer",
         borderRadius: 8,
-        backgroundColor:
-          reactions?.[reactionId]?.includes(user) && !count
-            ? "blue"
-            : "transparent",
+        backgroundColor: "transparent",
       }}
     >
       {emoji}{" "}
@@ -113,8 +111,10 @@ export const ReactionsBox: React.FC<ReactionsProps> = ({
     : theme.textColors.colorTextIconInverse;
 
   const reactionsBackgroundColor = isReactionsByCurrentUser
-    ? theme.backgroundColors.colorBackgroundPrimaryWeaker
+    ? "#e8f4f8"
     : theme.backgroundColors.colorBackgroundBody;
+
+  console.log("reactions", reactions);
 
   return (
     <Box
@@ -133,7 +133,7 @@ export const ReactionsBox: React.FC<ReactionsProps> = ({
         >
           {reactions?.[Reactions.HEART]?.length ? (
             <ReactionItem
-              emoji="&#129505;"
+              emoji="&#x2764;&#xFE0F;"
               reactionId={Reactions.HEART}
               count={reactions?.[Reactions.HEART]?.length}
             />
@@ -175,51 +175,59 @@ export const ReactionsBox: React.FC<ReactionsProps> = ({
           ) : null}
         </Box>
       ) : null}
-      <Box
-        style={{
-          padding: "6px 10px",
-          border: "1px solid #8891AA",
-          borderRadius: 4,
-          maxWidth: 42,
-          maxHeight: 42,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: "4px",
-        }}
-      >
-        <MenuButton
-          {...menu}
-          variant="link"
-          size="reset"
+      <Tooltip text="Add reaction">
+        <Box
           style={{
-            padding: 4,
+            padding: "6px 10px",
+            border: "1px solid #8891AA",
+            borderRadius: 4,
+            maxWidth: 28,
+            maxHeight: 28,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: "4px",
           }}
         >
-          <AddReaction />
-        </MenuButton>
-        <Menu
-          {...menu}
-          placement="top-start"
-          aria-label="MessageReactions"
-          style={{
-            padding: "8px 4px",
-            zIndex: 99,
-          }}
-        >
-          <div style={{ display: "flex" }}>
-            <ReactionItem emoji="&#129505;" reactionId={Reactions.HEART} />
-            <ReactionItem emoji="&#128077;" reactionId={Reactions.THUMBS_UP} />
-            <ReactionItem emoji="&#128514;" reactionId={Reactions.LAUGH} />
-            <ReactionItem emoji="&#128542;" reactionId={Reactions.SAD} />
-            <ReactionItem emoji="&#128545;" reactionId={Reactions.POUTING} />
-            <ReactionItem
-              emoji="&#128078;"
-              reactionId={Reactions.THUMBS_DOWN}
-            />
-          </div>
-        </Menu>
-      </Box>
+          <MenuButton
+            {...menu}
+            variant="link"
+            size="reset"
+            style={{
+              padding: 4,
+            }}
+          >
+            <AddReaction />
+          </MenuButton>
+          <Menu
+            {...menu}
+            placement="top-start"
+            aria-label="MessageReactions"
+            style={{
+              padding: "8px 8px",
+              zIndex: 99,
+            }}
+          >
+            <div style={{ display: "flex" }}>
+              <ReactionItem
+                emoji="&#x2764;&#xFE0F;"
+                reactionId={Reactions.HEART}
+              />
+              <ReactionItem
+                emoji="&#128077;"
+                reactionId={Reactions.THUMBS_UP}
+              />
+              <ReactionItem emoji="&#128514;" reactionId={Reactions.LAUGH} />
+              <ReactionItem emoji="&#128542;" reactionId={Reactions.SAD} />
+              <ReactionItem emoji="&#128545;" reactionId={Reactions.POUTING} />
+              <ReactionItem
+                emoji="&#128078;"
+                reactionId={Reactions.THUMBS_DOWN}
+              />
+            </div>
+          </Menu>
+        </Box>
+      </Tooltip>
     </Box>
   );
 };
