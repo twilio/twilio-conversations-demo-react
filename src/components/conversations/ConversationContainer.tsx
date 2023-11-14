@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
+import { useMemo, useState } from "react";
 
 import { Client } from "@twilio/conversations";
 import { Box } from "@twilio-paste/core";
@@ -11,6 +12,11 @@ import MessagesBox from "../message/MessagesBox";
 import MessageInputField from "../message/MessageInputField";
 import styles from "../../styles";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
+
+import { getSdkConversationObject } from "../../conversations-objects";
+import { successNotification } from "../../helpers";
+import { CONVERSATION_MESSAGES, ERROR_MODAL_MESSAGES } from "../../constants";
+import ActionErrorModal from "../modals/ActionErrorModal";
 
 interface ConvoContainerProps {
   conversation?: ReduxConversation;
@@ -35,16 +41,66 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
   );
 
   const dispatch = useDispatch();
-  const { pushMessages } = bindActionCreators(actionCreators, dispatch);
+  const { pushMessages, updateConversation, addNotifications } =
+    bindActionCreators(actionCreators, dispatch);
+
+  const [showError, setErrorToShow] = useState<
+    | {
+        title: string;
+        description: string;
+      }
+    | false
+  >();
+  const [errorData, setErrorData] = useState<
+    | {
+        message: string;
+        code: number;
+      }
+    | undefined
+  >();
+
+  const sdkConvo = useMemo(() => {
+    if (props.conversation) {
+      const conversation = getSdkConversationObject(props.conversation);
+      if (conversation) {
+        return conversation;
+      }
+    }
+    return;
+  }, [props.conversation?.sid]);
 
   return (
     <Box style={styles.convosWrapperBox}>
+      <ActionErrorModal
+        errorText={showError || ERROR_MODAL_MESSAGES.CHANGE_CONVERSATION_NAME}
+        isOpened={!!showError}
+        onClose={() => {
+          setErrorToShow(false);
+          setErrorData(undefined);
+        }}
+        error={errorData}
+      />
       {sid && props.conversation && props.client ? (
         <>
           <ConversationDetails
             convoSid={sid}
             convo={props.conversation}
             participants={participants}
+            updateConvoName={(val: string) => {
+              sdkConvo
+                ?.updateFriendlyName(val)
+                .then((convo) => {
+                  updateConversation(convo.sid, convo);
+                  successNotification({
+                    message: CONVERSATION_MESSAGES.NAME_CHANGED,
+                    addNotifications,
+                  });
+                })
+                .catch((e) => {
+                  setErrorData(e);
+                  setErrorToShow(ERROR_MODAL_MESSAGES.CHANGE_CONVERSATION_NAME);
+                });
+            }}
           />
 
           <MessagesBox
