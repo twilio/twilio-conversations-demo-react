@@ -31,6 +31,14 @@ const MessageMedia: React.FC<MessageMediaProps> = ({
       setMediaLoaded(true);
     });
   }, []);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    return () => {
+      abortController.abort();
+    };
+  }, []);
+
   return (
     <>
       <div>
