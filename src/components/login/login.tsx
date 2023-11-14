@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@twilio-paste/button";
 import { Box } from "@twilio-paste/core";
 import { ProductConversationsIcon } from "@twilio-paste/icons/esm/ProductConversationsIcon";
@@ -51,6 +51,29 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [, AlertsView] = useAppAlert();
+
+  const handleLogin = async () => {
+    const error = await login(username, password, props.setToken);
+    if (error) {
+      setFormError(error);
+    }
+  };
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        handleLogin();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+
+    return function cleanup() {
+      document.removeEventListener("keydown", handleKeyPress);
+      abortController.abort();
+    };
+  }, [password, username]);
 
   return (
     <Box style={styles.loginContainer}>
@@ -116,12 +139,7 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
               fullWidth
               disabled={!username || !password}
               variant="primary"
-              onClick={async () => {
-                const error = await login(username, password, props.setToken);
-                if (error) {
-                  setFormError(error);
-                }
-              }}
+              onClick={handleLogin}
               id="login"
             >
               Sign in
