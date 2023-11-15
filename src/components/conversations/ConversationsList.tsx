@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { bindActionCreators } from "redux";
 import { useDispatch, useSelector } from "react-redux";
 import ConversationView from "./ConversationView";
@@ -85,6 +86,17 @@ const ConversationsList: React.FC = () => {
   if (conversations === undefined || conversations === null) {
     return <div className="empty" />;
   }
+
+  useEffect(() => {
+    const sum = Object.values(unreadMessages).reduce(
+      (acc, value) => acc + value,
+      0
+    );
+    document.title =
+      sum >= 1 ? `(${sum}) Conversations Demo` : "Conversations Demo";
+
+    return () => new AbortController().abort();
+  }, [unreadMessages]);
 
   return (
     <div id="conversation-list">
