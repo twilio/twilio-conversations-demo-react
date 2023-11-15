@@ -283,7 +283,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           }
 
           return (
-            <>
+            <div key={message.sid}>
               {currentDateCreated && firstMessagePerDay.includes(message.sid) && (
                 <>
                   <Separator
@@ -349,7 +349,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
                   {metaItems}
                 </ChatMessageMeta>
               </ChatMessage>
-            </>
+            </div>
             // todo: delete only when full functionality is transferred over
             // <div key={message.sid + "message"}>
             //   {lastReadIndex !== -1 &&

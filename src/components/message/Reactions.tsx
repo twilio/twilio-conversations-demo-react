@@ -106,6 +106,7 @@ const ReactionsBox: React.FC<ReactionsProps> = ({
     if (emoji) {
       return (
         <Tooltip
+          key={reactionId}
           text={
             userIncluded
               ? `You${reactionUsers.length > 1 ? " and" : ""} ${reactionUsers
