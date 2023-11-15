@@ -46,7 +46,7 @@ interface MessageProps {
   participants: ReduxParticipant[];
   lastReadIndex: number;
   use24hTimeFormat: boolean;
-  handleDropedFiles: (droppedFiles: File[]) => void;
+  handleDroppedFiles: (droppedFiles: File[]) => void;
 }
 
 const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
@@ -57,7 +57,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
     lastReadIndex,
     upsertMessage,
     use24hTimeFormat,
-    handleDropedFiles,
+    handleDroppedFiles,
   } = props;
   const [hasMore, setHasMore] = useState(
     messages?.length === CONVERSATION_PAGE_SIZE
@@ -164,7 +164,7 @@ const MessagesBox: React.FC<MessageProps> = (props: MessageProps) => {
             participants={props.participants}
             lastReadIndex={lastConversationReadIndex}
             use24hTimeFormat={use24hTimeFormat}
-            handleDropedFiles={handleDropedFiles}
+            handleDroppedFiles={handleDroppedFiles}
           />
         </div>
       </InfiniteScroll>

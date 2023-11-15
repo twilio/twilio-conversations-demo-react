@@ -55,7 +55,7 @@ interface MessageListProps {
   participants: ReduxParticipant[];
   lastReadIndex: number;
   use24hTimeFormat: boolean;
-  handleDropedFiles: (droppedFiles: File[]) => void;
+  handleDroppedFiles: (droppedFiles: File[]) => void;
 }
 
 const MetaItemWithMargin: React.FC<{ children: ReactNode }> = (props) => (
@@ -70,7 +70,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     conversation,
     lastReadIndex,
     use24hTimeFormat,
-    handleDropedFiles,
+    handleDroppedFiles,
   } = props;
   if (messages === undefined) {
     return <div className="empty" />;
@@ -159,7 +159,7 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    handleDropedFiles(files);
+    handleDroppedFiles(files);
     return () => {
       abortController.abort();
     };

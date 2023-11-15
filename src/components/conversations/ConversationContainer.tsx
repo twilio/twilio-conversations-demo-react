@@ -71,7 +71,7 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
     return;
   }, [props.conversation?.sid]);
 
-  const handleDropedFiles = (droppedFiles: File[]) => {
+  const handleDroppedFiles = (droppedFiles: File[]) => {
     setDroppedFiles(droppedFiles);
   };
 
@@ -120,7 +120,7 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
             participants={participants}
             lastReadIndex={lastReadIndex}
             use24hTimeFormat={use24hTimeFormat}
-            handleDropedFiles={handleDropedFiles}
+            handleDroppedFiles={handleDroppedFiles}
           />
 
           <MessageInputField
