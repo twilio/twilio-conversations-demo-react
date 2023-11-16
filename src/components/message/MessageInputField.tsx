@@ -23,6 +23,7 @@ interface SendMessageProps {
   messages: ReduxMessage[];
   convo: ReduxConversation;
   typingData: string[];
+  droppedFiles: File[];
 }
 
 const MessageInputField: React.FC<SendMessageProps> = (
@@ -50,6 +51,14 @@ const MessageInputField: React.FC<SendMessageProps> = (
       setFilesInputKey(Date.now().toString());
     }
   }, [files]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    setFiles(props.droppedFiles);
+    return () => {
+      abortController.abort();
+    };
+  }, [props.droppedFiles]);
 
   const sdkConvo = useMemo(
     () => getSdkConversationObject(props.convo),

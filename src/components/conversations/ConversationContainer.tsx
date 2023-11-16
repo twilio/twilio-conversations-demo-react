@@ -40,6 +40,8 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
     (state: AppState) => state.use24hTimeFormat
   );
 
+  const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
+
   const dispatch = useDispatch();
   const { pushMessages, updateConversation, addNotifications } =
     bindActionCreators(actionCreators, dispatch);
@@ -68,6 +70,10 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
     }
     return;
   }, [props.conversation?.sid]);
+
+  const handleDroppedFiles = (droppedFiles: File[]) => {
+    setDroppedFiles(droppedFiles);
+  };
 
   return (
     <Box style={styles.convosWrapperBox}>
@@ -114,6 +120,7 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
             participants={participants}
             lastReadIndex={lastReadIndex}
             use24hTimeFormat={use24hTimeFormat}
+            handleDroppedFiles={handleDroppedFiles}
           />
 
           <MessageInputField
@@ -122,6 +129,7 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
             messages={messages[sid]}
             convo={props.conversation}
             typingData={typingData}
+            droppedFiles={droppedFiles}
           />
         </>
       ) : (
