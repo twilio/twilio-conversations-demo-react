@@ -12,7 +12,9 @@ const useAppAlert = (): [boolean, React.FC] => {
   const AlertComponent = () => (
     <Box hidden={!alertVisible}>
       <Alert variant="error">
-        <Text as="span">{CONNECTION_ERROR_MESSAGE}</Text>
+        <Text as="span" id="connection-error-message">
+          {CONNECTION_ERROR_MESSAGE}
+        </Text>
       </Alert>
     </Box>
   );

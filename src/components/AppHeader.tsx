@@ -69,10 +69,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             padding: "0 10px",
           }}
         >
-          <Text as="span" style={styles.userName}>
+          <Text as="span" style={styles.userName} id="user-id">
             {user}
           </Text>
           <Text
+            id="user-online-status"
             as="span"
             color={
               label === "online"
@@ -98,7 +99,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           />
         </MenuButton>
         <Menu {...menu} aria-label="Preferences">
-          <MenuItem {...menu} onClick={onSignOut}>
+          <MenuItem {...menu} onClick={onSignOut} id="sign-out-button">
             Sign Out
           </MenuItem>
           <MenuItem {...menu} onClick={handleUserProfileModalOpen}>
