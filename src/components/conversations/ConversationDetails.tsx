@@ -1,5 +1,6 @@
 import { Box, Input } from "@twilio-paste/core";
 import { useTheme } from "@twilio-paste/theme";
+import { EditIcon } from "@twilio-paste/icons/esm/EditIcon";
 
 import ParticipantsView from "./ParticipantsView";
 import Settings from "../settings/Settings";
@@ -109,6 +110,7 @@ const ConversationDetails: React.FC<ConversationDetailsProps> = (
           ) : (
             <>{props.convo.friendlyName ?? props.convo.sid}</>
           )}
+          <EditIcon decorative={false} title="Edit conversation name" />
         </Box>
         <Box
           style={{
