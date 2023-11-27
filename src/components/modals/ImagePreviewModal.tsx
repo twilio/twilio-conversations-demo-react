@@ -60,7 +60,7 @@ const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
           </MediaBody>
         </MediaObject>
 
-        <Button variant="secondary" onClick={onDownload}>
+        <Button variant="secondary" onClick={onDownload} autoFocus={true}>
           <DownloadIcon
             decorative={false}
             title="Download File"
