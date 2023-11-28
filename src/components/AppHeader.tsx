@@ -5,9 +5,9 @@ import { ChevronDownIcon } from "@twilio-paste/icons/esm/ChevronDownIcon";
 import React, { useMemo, useState } from "react";
 import styles from "../styles";
 import { Client, ConnectionState, User } from "@twilio/conversations";
-import { LogoTwilioIcon } from "@twilio-paste/icons/esm/LogoTwilioIcon";
 import UserProfileModal from "./modals/UserProfileModal";
 import { readUserProfile } from "../api";
+import { AppLogo, LOGO_SUB_TITLE, LOGO_TITLE } from "../branding";
 
 type AppHeaderProps = {
   user: string;
@@ -50,16 +50,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({
     <div style={styles.appHeader}>
       <div style={styles.flex}>
         <div style={styles.appLogoWrapper}>
-          <LogoTwilioIcon
-            decorative={false}
-            color={"colorTextBrandHighlight"}
-            size={"sizeIcon40"}
-            title="app logo"
-          />
+          <AppLogo />
         </div>
         <div style={styles.appLogoTitle}>
-          Twilio Conversations
-          <div style={styles.appLogoSubTitle}>Demo application</div>
+          {LOGO_TITLE}
+          <div style={styles.appLogoSubTitle}>{LOGO_SUB_TITLE}</div>
         </div>
       </div>
       <div style={styles.userTile}>

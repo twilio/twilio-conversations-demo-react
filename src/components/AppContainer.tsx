@@ -9,7 +9,7 @@ import {
   Client,
   ConnectionState,
 } from "@twilio/conversations";
-import { Box, Truncate } from "@twilio-paste/core";
+import { Box } from "@twilio-paste/core";
 
 import { actionCreators, AppState } from "../store";
 import ConversationContainer from "./conversations/ConversationContainer";
@@ -55,20 +55,6 @@ async function handleParticipantsUpdate(
 ) {
   const result = await participant.conversation.getParticipants();
   updateParticipants(result, participant.conversation.sid);
-}
-
-async function getSubscribedConversations(
-  client: Client
-): Promise<Conversation[]> {
-  let subscribedConversations = await client.getSubscribedConversations();
-  let conversations = subscribedConversations.items;
-
-  while (subscribedConversations.hasNextPage) {
-    subscribedConversations = await subscribedConversations.nextPage();
-    conversations = [...conversations, ...subscribedConversations.items];
-  }
-
-  return conversations;
 }
 
 const AppContainer: React.FC = () => {
