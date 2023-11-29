@@ -12,6 +12,7 @@ import { getTypingMessage, unexpectedErrorNotification } from "../../helpers";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
 import { getSdkConversationObject } from "../../conversations-objects";
 import { ReduxMessage } from "../../store/reducers/messageListReducer";
+import { APP_TITLE } from "../../branding";
 
 function getLastMessage(messages: ReduxMessage[], typingData: string[]) {
   if (messages === undefined || messages === null) {
@@ -87,13 +88,16 @@ const ConversationsList: React.FC = () => {
     return <div className="empty" />;
   }
 
+  const setDocumentTitle = (sum: number) => {
+    document.title = sum >= 1 ? `(${sum}) ${APP_TITLE}` : APP_TITLE;
+  };
+
   useEffect(() => {
     const sum = Object.values(unreadMessages).reduce(
       (acc, value) => acc + value,
       0
     );
-    document.title =
-      sum >= 1 ? `(${sum}) Conversations Demo` : "Conversations Demo";
+    setDocumentTitle(sum);
 
     return () => new AbortController().abort();
   }, [unreadMessages]);
