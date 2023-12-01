@@ -25,6 +25,9 @@ import BellMuted from "../icons/BellMuted";
 import styles from "../../styles";
 import { ReduxConversation } from "../../store/reducers/convoReducer";
 import { getSdkConversationObject } from "../../conversations-objects";
+import { AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
+import { useSelector } from "react-redux";
 
 interface SettingsMenuProps {
   leaveConvo: () => void;
@@ -38,6 +41,11 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
 ) => {
   const menu = useMenuState();
   const { notificationLevel } = props.conversation;
+  const local = useSelector((state: AppState) => state.local);
+  const manageParticipants = getTranslation(local, "manageParticipants");
+  const leaveConvo = getTranslation(local, "leaveConvo");
+  const muteConvo = getTranslation(local, "muteConvo");
+  const unmuteConvo = getTranslation(local, "unmuteConvo");
   const muted = notificationLevel === NOTIFICATION_LEVEL.MUTED;
   const sdkConvo = useMemo(
     () => getSdkConversationObject(props.conversation),
@@ -63,7 +71,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
             <MediaFigure spacing="space20">
               {muted ? <Bell /> : <BellMuted />}
             </MediaFigure>
-            <MediaBody>{muted ? "Unmute" : "Mute"} Conversation</MediaBody>
+            <MediaBody>{muted ? unmuteConvo : muteConvo}</MediaBody>
           </MediaObject>
         </MenuItem>
         <MenuItem {...menu} onClick={props.onParticipantListOpen}>
@@ -75,7 +83,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
                 color="colorTextIcon"
               />
             </MediaFigure>
-            <MediaBody>Manage Participants</MediaBody>
+            <MediaBody>{manageParticipants}</MediaBody>
           </MediaObject>
         </MenuItem>
         <MenuSeparator {...menu} />
@@ -94,7 +102,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = (
                 color="colorTextError"
                 _hover={{ color: "colorTextError", cursor: "pointer" }}
               >
-                Leave Conversation
+                {leaveConvo}
               </Text>
             </MediaBody>
           </MediaObject>

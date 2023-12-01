@@ -7,6 +7,10 @@ import { Button } from "@twilio-paste/button";
 import { ActionName } from "../../types";
 import ConvoModal from "./ConvoModal";
 
+import { useSelector } from "react-redux";
+import { AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
+
 interface ConversationTitleModalProps {
   title: string;
   isModalOpen: boolean;
@@ -23,6 +27,7 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
   const [isFormDirty, setFormDirty] = useState(false);
   const [isLoading, setLoading] = useState(false);
 
+  const local = useSelector((state: AppState) => state.local);
   useEffect(() => {
     if (props.title !== title) {
       setTitle(props.title);
@@ -79,7 +84,11 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
   return (
     <>
       <ConvoModal
-        title={props.type == "new" ? "New Conversation" : "Edit Conversation"}
+        title={
+          props.type == "new"
+            ? getTranslation(local, "newConvo")
+            : getTranslation(local, "editConvo")
+        }
         isModalOpen={props.isModalOpen}
         handleClose={onCancel}
         modalBody={
@@ -87,9 +96,9 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
             <Box as="form" onSubmit={onSubmit} onKeyDown={onKeyDown}>
               <ModalInputField
                 isFocused={true}
-                label="Conversation name"
+                label={getTranslation(local, "convoName")}
                 input={title}
-                placeholder="Enter conversation name"
+                placeholder={getTranslation(local, "convoDescription")}
                 onChange={(s) => {
                   setTitle(s);
                   setFormDirty(s.length === 0);
@@ -98,7 +107,7 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
                   error
                     ? error
                     : isFormDirty && !title
-                    ? "Add a conversation title to create a conversation."
+                    ? getTranslation(local, "convoError")
                     : ""
                 }
               />
@@ -113,14 +122,14 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
                 variant="secondary"
                 onClick={onCancel}
               >
-                Cancel
+                {getTranslation(local, "cancel")}
               </Button>
               <Button
                 disabled={isBadTitle || isLoading}
                 variant="primary"
                 onClick={onSave}
               >
-                {ActionName.Save}
+                {getTranslation(local, ActionName.Save)}
               </Button>
             </ModalFooterActions>
           </ModalFooter>

@@ -8,6 +8,9 @@ import { Client, ConnectionState, User } from "@twilio/conversations";
 import UserProfileModal from "./modals/UserProfileModal";
 import { readUserProfile } from "../api";
 import { AppLogo, LOGO_SUB_TITLE, LOGO_TITLE } from "../branding";
+import { useSelector } from "react-redux";
+import { AppState } from "../store";
+import { getTranslation } from "./../utils/localUtils";
 
 type AppHeaderProps = {
   user: string;
@@ -28,6 +31,13 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
   const handleUserProfileModalClose = () => setUserProfileModal(false);
+
+  const local = useSelector((state: AppState) => state.local);
+  const online = getTranslation(local, "online");
+  const connecting = getTranslation(local, "connecting");
+  const offline = getTranslation(local, "offline");
+  const signout = getTranslation(local, "signout");
+  const userProfileTxt = getTranslation(local, "userProfileTxt");
 
   const label: "online" | "connecting" | "offline" = useMemo(() => {
     switch (connectionState) {
@@ -79,10 +89,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             style={styles.userStatus}
           >
             {label === "online"
-              ? "Online"
+              ? online
               : label === "connecting"
-              ? "Connecting…"
-              : "Offline"}
+              ? `${connecting}...`
+              : offline}
           </Text>
         </div>
         <MenuButton {...menu} variant="link" size="reset">
@@ -94,10 +104,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         </MenuButton>
         <Menu {...menu} aria-label="Preferences">
           <MenuItem {...menu} onClick={onSignOut}>
-            Sign Out
+            {signout}
           </MenuItem>
           <MenuItem {...menu} onClick={handleUserProfileModalOpen}>
-            User Profile
+            {userProfileTxt}
           </MenuItem>
         </Menu>
       </div>
