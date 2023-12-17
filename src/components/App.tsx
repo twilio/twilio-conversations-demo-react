@@ -8,7 +8,9 @@ import { Box, Spinner } from "@twilio-paste/core";
 import Login from "./login/login";
 import AppContainer from "./AppContainer";
 import { actionCreators, AppState } from "../store";
-import { getToken } from "../api";
+import { addConversation, getToken } from "../api";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import IndividualConversationContainer from "./conversations/IndividualConversationContainer";
 
 function App(): ReactElement {
   const [loading, setLoading] = useState(true);
@@ -59,7 +61,24 @@ function App(): ReactElement {
     );
   }
 
-  return <AppContainer />;
+  return (
+    <Router>
+      <Switch>
+        <Route
+          path="/:uniqueName"
+          render={(props) => (
+            // <IndividualConversationContainer
+            //   {...props}
+            //   username={username}
+            //   password={password}
+            // />
+            <IndividualConversationContainer />
+          )}
+        />
+        <Route path="/" component={AppContainer} />
+      </Switch>
+    </Router>
+  );
 }
 
 export default App;
