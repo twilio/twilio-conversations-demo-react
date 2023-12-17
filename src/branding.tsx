@@ -3,8 +3,8 @@ import React from "react";
 import { IconSize, TextColor } from "@twilio-paste/style-props";
 
 export const LOGO_TITLE = "Twilio Conversations";
-export const LOGO_SUB_TITLE = "Demo application";
-export const APP_TITLE = "Conversations Demo";
+export const LOGO_SUB_TITLE = "Chefs & Home";
+export const APP_TITLE = "Conversations";
 
 interface LogoTwilioIconProps {
   decorative?: boolean;
