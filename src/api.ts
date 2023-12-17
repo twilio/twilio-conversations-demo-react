@@ -26,6 +26,39 @@ import { ReduxParticipant } from "./store/reducers/participantsReducer";
 
 type ParticipantResponse = ReturnType<typeof Conversation.prototype.add>;
 
+export async function getConversationByName(
+  name: string,
+  nameType: "uniqueName" | "friendlyName",
+  client?: Client,
+  addNotifications?: (notifications: NotificationsType) => void
+): Promise<Conversation | undefined> {
+  console.log("getConversationByName client" + client);
+  if (client === undefined) {
+    console.log("getConversationByName error" + client);
+    throw new Error(
+      "Client is suddenly undefined, are you sure everything is ok?"
+    );
+  }
+
+  if (name.length === 0) {
+    throw new Error("Conversation name is empty");
+  }
+
+  try {
+    if (nameType === "uniqueName") {
+      // If the name is a unique name
+      return await client.getConversationByUniqueName(name);
+    } else {
+      // If the name is a friendly name
+      const conversations = await client.getSubscribedConversations();
+      return conversations.items.find((convo) => convo.friendlyName === name);
+    }
+  } catch (e) {
+    unexpectedErrorNotification(e.message, addNotifications);
+    return undefined;
+  }
+}
+
 export async function addConversation(
   name: string,
   updateParticipants: (participants: Participant[], sid: string) => void,
