@@ -22,7 +22,6 @@ replit.nix
 .env.development.local
 .env.test.local
 .env.production.local
-.env.example
 react-app-env.d.ts
 public/firebase-config.js
 public/firebase-messaging-sw.js
