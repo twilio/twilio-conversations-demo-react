@@ -26,7 +26,6 @@ interface ConvoContainerProps {
 const ConversationContainer: React.FC<ConvoContainerProps> = (
   props: ConvoContainerProps
 ) => {
-  // console.log("In  ConversationContainer convo " + props.conversation?.sid);
   const theme = useTheme();
 
   const sid = useSelector((state: AppState) => state.sid);

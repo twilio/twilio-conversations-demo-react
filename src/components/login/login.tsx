@@ -88,7 +88,7 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
           />
         </Box>
         <div style={styles.loginTitle}>Twilio Conversations</div>
-        <div style={styles.subTitle}>Chefs & Home</div>
+        <div style={styles.subTitle}>Demo experience</div>
         <Box style={styles.loginForm}>
           <Box style={styles.userInput}>
             <ModalInputField
