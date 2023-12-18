@@ -33,3 +33,7 @@ yarn-error.log*
 AutomationTests/environments/env_data
 
 dynamicConfig.yml
+
+.firebaserc
+firebase.json
+.firebase

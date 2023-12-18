@@ -102,6 +102,23 @@ const ConversationTitleModal: React.FC<ConversationTitleModalProps> = (
                     : ""
                 }
               />
+              <ModalInputField
+                isFocused={true}
+                label="Participant Number - Customer Number"
+                input={title}
+                placeholder="Enter customer number"
+                onChange={(s) => {
+                  setTitle(s);
+                  setFormDirty(s.length === 0);
+                }}
+                error={
+                  error
+                    ? error
+                    : isFormDirty && !title
+                    ? "Add a conversation title to create a conversation."
+                    : ""
+                }
+              />
             </Box>
           </ModalBody>
         }
