@@ -2,6 +2,9 @@ import React from "react";
 import { ModalFooter, ModalFooterActions } from "@twilio-paste/modal";
 import { Button } from "@twilio-paste/button";
 import { ArrowBackIcon } from "@twilio-paste/icons/esm/ArrowBackIcon";
+import { AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
+import { useSelector } from "react-redux";
 
 interface AddParticipantFooterProps {
   actionName: string;
@@ -13,6 +16,10 @@ interface AddParticipantFooterProps {
 const AddParticipantFooter: React.FC<AddParticipantFooterProps> = (
   props: AddParticipantFooterProps
 ) => {
+  const local = useSelector((state: AppState) => state.local);
+  const back = getTranslation(local, "back");
+  const actionNameTxt = getTranslation(local, props.actionName);
+
   return (
     <>
       <ModalFooter>
@@ -28,7 +35,7 @@ const AddParticipantFooter: React.FC<AddParticipantFooterProps> = (
               title="Back to manage participants"
               size="sizeIcon10"
             />
-            Back
+            {back}
           </Button>
         </ModalFooterActions>
         <ModalFooterActions>
@@ -39,7 +46,7 @@ const AddParticipantFooter: React.FC<AddParticipantFooterProps> = (
               props.action();
             }}
           >
-            {props.actionName}
+            {actionNameTxt}
           </Button>
         </ModalFooterActions>
       </ModalFooter>

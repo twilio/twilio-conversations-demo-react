@@ -4,6 +4,9 @@ import ModalInputField from "./ModalInputField";
 import AddParticipantFooter from "./addParticipantFooter";
 import { ActionName } from "../../types";
 import ConvoModal from "./ConvoModal";
+import { AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
+import { useSelector } from "react-redux";
 
 interface AddChatParticipantModalProps {
   name: string;
@@ -20,6 +23,11 @@ interface AddChatParticipantModalProps {
 const AddChatParticipantModal: React.FC<AddChatParticipantModalProps> = (
   props: AddChatParticipantModalProps
 ) => {
+  const local = useSelector((state: AppState) => state.local);
+  const addChatParticipant = getTranslation(local, "addChatParticipant");
+  const userIdentity = getTranslation(local, "userIdentity");
+  const userIdentityHelperTxt = getTranslation(local, "userIdentityHelperTxt");
+
   return (
     <>
       <ConvoModal
@@ -28,7 +36,7 @@ const AddChatParticipantModal: React.FC<AddChatParticipantModalProps> = (
         title={props.title}
         modalBody={
           <ModalBody>
-            <h3>Add Chat participant</h3>
+            <h3>{addChatParticipant}</h3>
             <Box
               as="form"
               onKeyPress={async (e) => {
@@ -41,14 +49,14 @@ const AddChatParticipantModal: React.FC<AddChatParticipantModalProps> = (
               }}
             >
               <ModalInputField
-                label="User identity"
+                label={userIdentity}
                 isFocused={true}
                 input={props.name}
                 placeholder="exampleusername"
                 onChange={props.setName}
                 error={props.error}
                 // error_text="Enter a valid user identity."
-                help_text="The identity used by the participant in Conversations."
+                help_text={userIdentityHelperTxt}
               />
             </Box>
           </ModalBody>

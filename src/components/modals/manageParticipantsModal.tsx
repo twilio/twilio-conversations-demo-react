@@ -18,6 +18,9 @@ import { UserIcon } from "@twilio-paste/icons/cjs/UserIcon";
 import ConvoModal from "./ConvoModal";
 import { Content } from "../../types";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
+import { AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
+import { useSelector } from "react-redux";
 
 interface ManageParticipantsModalProps {
   participantsCount: number;
@@ -33,6 +36,14 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = (
   props: ManageParticipantsModalProps
 ) => {
   const menu = useMenuState({ placement: "bottom-start" });
+
+  const local = useSelector((state: AppState) => state.local);
+  const participants = getTranslation(local, "participants");
+  const addParticipant = getTranslation(local, "addParticipant");
+  const smsParticipant = getTranslation(local, "smsParticipant");
+  const whatsAppParticipant = getTranslation(local, "whatsAppParticipant");
+  const chatParticipant = getTranslation(local, "chatParticipant");
+  const remove = getTranslation(local, "remove");
 
   return (
     <>
@@ -57,17 +68,18 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = (
                 fontSize="fontSize30"
                 lineHeight="lineHeight60"
               >
-                Participants ({props.participantsCount})
+                {participants} ({props.participantsCount})
               </Box>
               <MenuButton {...menu} variant="secondary">
-                Add Participant <ChevronDownIcon decorative size="sizeIcon10" />
+                {addParticipant}{" "}
+                <ChevronDownIcon decorative size="sizeIcon10" />
               </MenuButton>
               <Menu {...menu} aria-label="Preferences">
                 <MenuItem
                   {...menu}
                   onClick={() => props.onClick(Content.AddSMS)}
                 >
-                  SMS Participant
+                  {smsParticipant}
                 </MenuItem>
                 <MenuItem
                   {...menu}
@@ -75,7 +87,7 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = (
                     props.onClick(Content.AddWhatsApp);
                   }}
                 >
-                  WhatsApp Participant
+                  {whatsAppParticipant}
                 </MenuItem>
                 <MenuItem
                   {...menu}
@@ -83,7 +95,7 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = (
                     props.onClick(Content.AddChat);
                   }}
                 >
-                  Chat Participant
+                  {chatParticipant}
                 </MenuItem>
               </Menu>
             </Box>
@@ -136,7 +148,7 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = (
                               href="#"
                               onClick={() => props.onParticipantRemove(user)}
                             >
-                              Remove
+                              {remove}
                             </Anchor>
                           ) : null}
                         </Td>

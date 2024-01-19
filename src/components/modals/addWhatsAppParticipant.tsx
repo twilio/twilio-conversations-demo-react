@@ -4,6 +4,9 @@ import ModalInputField from "./ModalInputField";
 import AddParticipantFooter from "./addParticipantFooter";
 import { ActionName } from "../../types";
 import ConvoModal from "./ConvoModal";
+import { AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
+import { useSelector } from "react-redux";
 
 interface AddWhatsAppParticipantModalProps {
   name: string;
@@ -22,6 +25,16 @@ interface AddWhatsAppParticipantModalProps {
 
 const AddWhatsAppParticipantModal: React.FC<AddWhatsAppParticipantModalProps> =
   (props: AddWhatsAppParticipantModalProps) => {
+    const local = useSelector((state: AppState) => state.local);
+    const addWhatsAppParticipant = getTranslation(
+      local,
+      "addWhatsAppParticipant"
+    );
+    const whatsAppNum = getTranslation(local, "whatsAppNum");
+    const whatsAppHelpTxt = getTranslation(local, "whatsAppHelpTxt");
+    const proxyNum = getTranslation(local, "proxyNum");
+    const proxyNumHelpTxt = getTranslation(local, "proxyNumHelpTxt");
+
     return (
       <>
         <ConvoModal
@@ -30,7 +43,7 @@ const AddWhatsAppParticipantModal: React.FC<AddWhatsAppParticipantModalProps> =
           title={props.title}
           modalBody={
             <ModalBody>
-              <h3>Add WhatsApp participant</h3>
+              <h3>{addWhatsAppParticipant}</h3>
               <Box
                 as="form"
                 onKeyPress={async (e) => {
@@ -44,21 +57,21 @@ const AddWhatsAppParticipantModal: React.FC<AddWhatsAppParticipantModalProps> =
               >
                 <ModalInputField
                   isFocused={true}
-                  label="WhatsApp number"
+                  label={whatsAppNum}
                   input={props.name}
                   placeholder="123456789012"
                   onChange={props.setName}
                   error={props.error}
-                  help_text="The WhatsApp phone number of the participant."
+                  help_text={whatsAppHelpTxt}
                   prefixType="WhatsApp"
                 />
                 <ModalInputField
-                  label="Proxy phone number"
+                  label={proxyNum}
                   input={props.proxyName}
                   placeholder="123456789012"
                   onChange={props.setProxyName}
                   error={props.errorProxy}
-                  help_text="The Twilio phone number used by the participant in Conversations."
+                  help_text={proxyNumHelpTxt}
                   prefixType="WhatsApp"
                 />
               </Box>

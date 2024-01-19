@@ -90,6 +90,7 @@ const AppContainer: React.FC = () => {
     logout,
     clearAttachments,
     updateTimeFormat,
+    updateLocal,
   } = bindActionCreators(actionCreators, dispatch);
 
   const updateTypingIndicator = (
@@ -263,6 +264,9 @@ const AppContainer: React.FC = () => {
     if (use24hTimeFormat !== null) {
       updateTimeFormat(true);
     }
+    const local = localStorage.getItem("local") || "en-US";
+    updateLocal(local);
+
     return () => {
       abortController.abort();
     };

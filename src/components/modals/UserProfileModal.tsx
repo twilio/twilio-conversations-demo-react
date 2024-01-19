@@ -1,7 +1,14 @@
 import ModalInputField from "./ModalInputField";
 import ConvoModal from "./ConvoModal";
 import { ModalFooter, ModalFooterActions } from "@twilio-paste/modal";
-import { Box, ModalBody, Switch } from "@twilio-paste/core";
+import {
+  Box,
+  ModalBody,
+  Switch,
+  Select,
+  Option,
+  Label,
+} from "@twilio-paste/core";
 import { Button } from "@twilio-paste/button";
 import React, { useState } from "react";
 import { User } from "@twilio/conversations";
@@ -9,6 +16,7 @@ import { updateFriendlyName } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreators, AppState } from "../../store";
+import { getTranslation, languageOptions } from "./../../utils/localUtils";
 
 interface UserProfileModalProps {
   isModalOpen: boolean;
@@ -27,14 +35,31 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
     props.user?.friendlyName ?? ""
   );
 
-  const { updateTimeFormat } = bindActionCreators(actionCreators, dispatch);
+  const { updateTimeFormat, updateLocal } = bindActionCreators(
+    actionCreators,
+    dispatch
+  );
   const use24hTimeFormat = useSelector(
     (state: AppState) => state.use24hTimeFormat
   );
+  const local = useSelector((state: AppState) => state.local);
   const [on, setOn] = useState(use24hTimeFormat);
+  const [selectedLocal, setSelectedLocal] = useState(local);
+  const userProfileTxt = getTranslation(local, "userProfileTxt");
+  const identityTxt = getTranslation(local, "identityTxt");
+  const friendlyNameTxt = getTranslation(local, "friendlyNameTxt");
+  const selectLocal = getTranslation(local, "selectLocal");
+  const clockFormat = getTranslation(local, "clockFormat");
+  const clockHelper = getTranslation(local, "clockHelper");
+  const save = getTranslation(local, "save");
+  const cancel = getTranslation(local, "cancel");
 
   const handleTimeFormatUpdate = async () => {
     updateTimeFormat(on);
+  };
+
+  const handleLocalUpdate = async () => {
+    updateLocal(selectedLocal);
   };
 
   return (
@@ -42,7 +67,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
       <ConvoModal
         handleClose={() => props.handleClose()}
         isModalOpen={props.isModalOpen}
-        title="User profile"
+        title={userProfileTxt}
         modalBody={
           <ModalBody>
             <Box
@@ -56,7 +81,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
               }}
             >
               <ModalInputField
-                label="Identity"
+                label={identityTxt}
                 input={identity}
                 onChange={() => null}
                 readonly={true}
@@ -64,18 +89,31 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
               <br></br>
               <ModalInputField
                 isFocused={true}
-                label="Name(friendly_name)"
+                label={friendlyNameTxt}
                 input={friendlyName}
                 onChange={setFriendlyName}
                 maxLength={255}
               />
               <br></br>
+              <Label htmlFor="local">{selectLocal}</Label>
+              <Select
+                id="local"
+                value={selectedLocal}
+                onChange={(event) => setSelectedLocal(event.target.value)}
+              >
+                {languageOptions.languages.map((language) => (
+                  <Option key={language.code} value={language.code}>
+                    {language.flag}
+                  </Option>
+                ))}
+              </Select>
+              <br></br>
               <Switch
                 checked={on}
                 onChange={() => setOn(!on)}
-                helpText="format for timestamps"
+                helpText={clockHelper}
               >
-                24 hour clock
+                {clockFormat}
               </Switch>
               <br></br>
             </Box>
@@ -90,7 +128,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
                   props.handleClose();
                 }}
               >
-                Close
+                {cancel}
               </Button>
             </ModalFooterActions>
             <ModalFooterActions>
@@ -100,10 +138,11 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (
                 onClick={async () => {
                   await updateFriendlyName(friendlyName, props.user);
                   handleTimeFormatUpdate();
+                  handleLocalUpdate();
                   props.handleClose();
                 }}
               >
-                Save
+                {save}
               </Button>
             </ModalFooterActions>
           </ModalFooter>

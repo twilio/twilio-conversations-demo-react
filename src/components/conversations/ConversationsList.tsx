@@ -13,16 +13,22 @@ import { ReduxConversation } from "../../store/reducers/convoReducer";
 import { getSdkConversationObject } from "../../conversations-objects";
 import { ReduxMessage } from "../../store/reducers/messageListReducer";
 import { APP_TITLE } from "../../branding";
+import { getTranslation } from "./../../utils/localUtils";
 
-function getLastMessage(messages: ReduxMessage[], typingData: string[]) {
+function getLastMessage(
+  messages: ReduxMessage[],
+  convoLoading: string,
+  convoEmpty: string,
+  typingData: string[]
+) {
   if (messages === undefined || messages === null) {
-    return "Loading...";
+    return convoLoading;
   }
   if (typingData.length) {
     return getTypingMessage(typingData);
   }
   if (messages.length === 0) {
-    return "No messages";
+    return convoEmpty;
   }
   return messages[messages.length - 1].body || "Media message";
 }
@@ -74,6 +80,9 @@ const ConversationsList: React.FC = () => {
   const use24hTimeFormat = useSelector(
     (state: AppState) => state.use24hTimeFormat
   );
+  const local = useSelector((state: AppState) => state.local);
+  const convoEmpty = getTranslation(local, "convoEmpty");
+  const convoLoading = getTranslation(local, "convoLoading");
 
   const dispatch = useDispatch();
   const {
@@ -112,8 +121,12 @@ const ConversationsList: React.FC = () => {
           setSid={updateCurrentConversation}
           currentConvoSid={sid}
           lastMessage={
-            getLastMessage(messages[convo.sid], typingData[convo.sid] ?? []) ??
-            ""
+            getLastMessage(
+              messages[convo.sid],
+              convoLoading,
+              convoEmpty,
+              typingData[convo.sid] ?? []
+            ) ?? ""
           }
           messages={messages[convo.sid]}
           typingInfo={typingData[convo.sid] ?? []}

@@ -6,6 +6,9 @@ import { useTheme } from "@twilio-paste/theme";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import styles from "../../styles";
 import AvatarGroup from "../AvatarGroup";
+import { AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
+import { useSelector } from "react-redux";
 
 const DEFAULT_MAX_DISPLAYED_PARTICIPANTS = 5;
 const MAX_HIDDEN_PARTICIPANTS = 50;
@@ -33,6 +36,11 @@ function fetchName(participant: ReduxParticipant): string {
 const ParticipantsView: React.FC<ParticipantsViewProps> = (
   props: ParticipantsViewProps
 ) => {
+  const local = useSelector((state: AppState) => state.local);
+  const addParticipants = getTranslation(local, "addParticipants");
+  const otherParticipants = getTranslation(local, "otherParticipants");
+  const singularParticipant = getTranslation(local, "singularParticipant");
+
   if (props.participants.length == 1) {
     return (
       <>
@@ -43,7 +51,7 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = (
             onClick={props.onParticipantListOpen}
           >
             <PlusIcon decorative={false} title="Add participants" />
-            {"Add participants"}
+            {addParticipants}
           </Button>
         </Box>
       </>
@@ -75,6 +83,14 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = (
     }
   }
 
+  const count = props.participants.length - displayedParticipants.length;
+  let participantCount = "";
+  if (count === 1) {
+    participantCount = singularParticipant;
+  } else {
+    participantCount = otherParticipants.replace("{count}", count.toString());
+  }
+
   return (
     <>
       <Stack
@@ -97,8 +113,7 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = (
                 fontWeight: theme.fontWeights.fontWeightSemibold,
               }}
             >
-              and {props.participants.length - displayedParticipants.length}{" "}
-              other Participants
+              {participantCount}
             </span>
           </Tooltip>
         ) : null}

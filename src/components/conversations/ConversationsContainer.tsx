@@ -8,8 +8,10 @@ import CreateConversationButton from "./CreateConversationButton";
 import ConversationsList from "./ConversationsList";
 import styles from "../../styles";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { filterConversations } from "./../../store/action-creators";
+import { AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
 
 interface ConvosContainerProps {
   client?: Client;
@@ -20,6 +22,9 @@ const ConversationsContainer: React.FC<ConvosContainerProps> = (
 ) => {
   const [listHidden, hideList] = useState(false);
   const dispatch = useDispatch();
+
+  const local = useSelector((state: AppState) => state.local);
+  const search = getTranslation(local, "convoSearch");
 
   const handleSearch = (searchString: string) => {
     dispatch(filterConversations(searchString));
@@ -44,7 +49,7 @@ const ConversationsContainer: React.FC<ConvosContainerProps> = (
             id="convoString"
             name="convoString"
             type="text"
-            placeholder="Search"
+            placeholder={search}
             onChange={(e) => handleSearch(e.target.value)}
             required
             autoFocus
