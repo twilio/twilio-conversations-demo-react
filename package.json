@@ -21,7 +21,7 @@
     "@twilio-paste/types": "^6.0.0",
     "@twilio-paste/uid-library": "^2.0.0",
     "@twilio/conversations": "2.4.0-rc.0",
-    "axios": "1.6.0",
+    "axios": "1.6.3",
     "dotenv": "10.0.0",
     "file-saver": "2.0.5",
     "firebase": "9.15.0",
