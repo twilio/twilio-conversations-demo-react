@@ -202,4 +202,13 @@ export default {
   collapsedList: {
     width: "70px",
   } as CSSProperties,
+  rotateIcon: {
+    transform: "rotate(90deg)",
+  } as CSSProperties,
+  messageEditInput: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+  } as CSSProperties,
 };

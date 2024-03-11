@@ -29,3 +29,11 @@ export enum Content {
   AddSMS = "Add SMS participant",
   AddWhatsApp = "Add WhatsApp participant",
 }
+
+export type MenuElement = {
+  id: string;
+  label: string;
+  onClick?: () => void;
+  customComponent?: React.ReactNode;
+  enabled?: boolean;
+};

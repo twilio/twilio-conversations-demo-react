@@ -35,11 +35,13 @@ export type ReactionsType = {
 type ReactionsProps = {
   reactions?: ReactionsType;
   onReactionsChanged: (reactions: ReactionsType) => void;
+  showAddReaction?: boolean;
 };
 
 const ReactionsBox: React.FC<ReactionsProps> = ({
   reactions = {},
   onReactionsChanged,
+  showAddReaction = true,
 }: ReactionsProps) => {
   const menu = useMenuState({
     placement: "top-start",
@@ -151,51 +153,53 @@ const ReactionsBox: React.FC<ReactionsProps> = ({
       {Object.entries(reactions).map(([reactionId, users]) =>
         renderReactionBox(reactionId as Reactions, users.length)
       )}
-      <Tooltip text="Add reaction">
-        <Box
-          style={{
-            padding: "6px 10px",
-            border: "1px solid #8891AA",
-            borderRadius: 4,
-            maxWidth: 28,
-            maxHeight: 28,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: "4px",
-          }}
-        >
-          <MenuButton
-            {...menu}
-            variant="link"
-            size="reset"
+      {showAddReaction && (
+        <Tooltip text="Add reaction">
+          <Box
             style={{
-              padding: 4,
+              padding: "6px 10px",
+              border: "1px solid #8891AA",
+              borderRadius: 4,
+              maxWidth: 28,
+              maxHeight: 28,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "4px",
             }}
           >
-            <AddReaction />
-          </MenuButton>
-          <Menu
-            {...menu}
-            placement="top-start"
-            aria-label="MessageReactions"
-            style={{
-              padding: "8px 8px",
-              zIndex: 99,
-            }}
-          >
-            <div style={{ display: "flex" }}>
-              {Object.values(Reactions).map((reactionId) => (
-                <ReactionItem
-                  key={reactionId}
-                  emoji={emojiMapping[reactionId]}
-                  reactionId={reactionId}
-                />
-              ))}
-            </div>
-          </Menu>
-        </Box>
-      </Tooltip>
+            <MenuButton
+              {...menu}
+              variant="link"
+              size="reset"
+              style={{
+                padding: 4,
+              }}
+            >
+              <AddReaction />
+            </MenuButton>
+            <Menu
+              {...menu}
+              placement="top-start"
+              aria-label="MessageReactions"
+              style={{
+                padding: "8px 8px",
+                zIndex: 99,
+              }}
+            >
+              <div style={{ display: "flex" }}>
+                {Object.values(Reactions).map((reactionId) => (
+                  <ReactionItem
+                    key={reactionId}
+                    emoji={emojiMapping[reactionId]}
+                    reactionId={reactionId}
+                  />
+                ))}
+              </div>
+            </Menu>
+          </Box>
+        </Tooltip>
+      )}
     </Box>
   );
 };
