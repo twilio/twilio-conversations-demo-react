@@ -52,7 +52,7 @@ For testing purposes, you can quickly set up a Twilio Serverless Functions to ge
 // generate a username and password pair different from what is presented below.
 
 //The 1st value [user00] acts as your Username for the Demo app Login. The 2nd value within double qoutes will act as your Password for the login.
-//This method is not advised to be used in production. This is ONLY for testing. In production, please utilize our server side helper libraries to handle your users. 
+//This method is not advised to be used in production. This is ONLY for testing. In production, please utilize your own server side application to handle your users. 
 
 let users = {
     user00: "", !!! SET NON-EMPTY PASSWORD AND REMOVE THIS NOTE, THIS GENERATOR WILL NOT WORK WITH EMPTY PASSWORD !!!
