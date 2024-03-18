@@ -14,7 +14,6 @@ import {
 import React, { ReactNode, useState } from "react";
 import MessageEditMode from "./MessageEditMode";
 import MessageMedia from "./MessageMedia";
-import { ReactionsType } from "./Reactions";
 import { CONVERSATION_MESSAGES, MAX_MESSAGE_LINE_WIDTH } from "../../constants";
 import wrap from "word-wrap";
 import { getSdkMessageObject } from "../../conversations-objects";
@@ -28,6 +27,7 @@ import {
   unexpectedErrorNotification,
 } from "../../helpers";
 import { NotificationsType } from "../../store/reducers/notificationsReducer";
+import { ReactionsType } from "../../types";
 
 const today = new Date().toDateString();
 
@@ -130,7 +130,7 @@ const MessageItem: React.FC<MessageItemProps> = (props: MessageItemProps) => {
   let metaItems = [
     <ChatMessageMetaItem key={0}>
       <Reactions
-        showAddReaction={!isOutbound}
+        showAddReactionButton={!isOutbound}
         reactions={attributes.reactions}
         onReactionsChanged={(reactions) => {
           getSdkMessageObject(message).updateAttributes({
@@ -142,16 +142,26 @@ const MessageItem: React.FC<MessageItemProps> = (props: MessageItemProps) => {
       {isOutbound && (
         <MenuMessageButton
           menuElements={[
-            // {
-            //   id: "reactions",
-            //   label: "Add Reaction",
-            //   customComponent: (
-            //     <ReactionsMenuButton popover={popover} />
-            //   ),
-            //   onClick: () => {
-            //     popover.show();
-            //   },
-            // },
+            {
+              id: "reactions",
+              label: "",
+              enabled: true,
+              hideOnClick: false,
+              customComponent: (handleCloseMenu) => (
+                <Reactions
+                  callback={handleCloseMenu}
+                  showAsLabel
+                  showReactionsCount={false}
+                  reactions={attributes.reactions}
+                  onReactionsChanged={(reactions) => {
+                    getSdkMessageObject(message).updateAttributes({
+                      ...attributes,
+                      reactions,
+                    });
+                  }}
+                />
+              ),
+            },
             {
               id: "edit",
               label: "Edit",
@@ -178,13 +188,13 @@ const MessageItem: React.FC<MessageItemProps> = (props: MessageItemProps) => {
     <MetaItemWithMargin key={2}>
       {isOutbound
         ? `${getAuthorFriendlyName(message)}・${getMessageTime(
-            message,
-            use24hTimeFormat
-          )}`
+          message,
+          use24hTimeFormat
+        )}`
         : `${getMessageTime(
-            message,
-            use24hTimeFormat
-          )}・${getAuthorFriendlyName(message)}`}
+          message,
+          use24hTimeFormat
+        )}・${getAuthorFriendlyName(message)}`}
     </MetaItemWithMargin>,
   ];
 
