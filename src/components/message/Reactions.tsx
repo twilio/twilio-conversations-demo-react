@@ -18,13 +18,13 @@ type ReactionsProps = {
 };
 
 const ReactionsBox: React.FC<ReactionsProps> = ({
-                                                  reactions = {},
-                                                  onReactionsChanged,
-                                                  showAddReactionButton = true,
-                                                  showAsLabel = false,
-                                                  showReactionsCount = true,
-                                                  callback,
-                                                }: ReactionsProps) => {
+  reactions = {},
+  onReactionsChanged,
+  showAddReactionButton = true,
+  showAsLabel = false,
+  showReactionsCount = true,
+  callback,
+}: ReactionsProps) => {
   const menu = useMenuState({
     placement: "top-start",
   });
@@ -59,8 +59,8 @@ const ReactionsBox: React.FC<ReactionsProps> = ({
           text={
             userIncluded
               ? `You${reactionUsers.length > 1 ? " and" : ""} ${reactionUsers
-                .filter((name) => name !== user)
-                .join(", ")} reacted with :${reactionId}`
+                  .filter((name) => name !== user)
+                  .join(", ")} reacted with :${reactionId}`
               : `${reactionUsers.join(", ")} reacted with :${reactionId}`
           }
         >
@@ -139,19 +139,19 @@ const ReactionsBox: React.FC<ReactionsProps> = ({
 
   const reactionButtonStyle = showAsLabel
     ? {
-      textDecoration: "none",
-    }
+        textDecoration: "none",
+      }
     : {
-      padding: "6px 10px",
-      border: "1px solid #8891AA",
-      borderRadius: 4,
-      maxWidth: 28,
-      maxHeight: 28,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      marginTop: "4px",
-    };
+        padding: "6px 10px",
+        border: "1px solid #8891AA",
+        borderRadius: 4,
+        maxWidth: 28,
+        maxHeight: 28,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: "4px",
+      };
 
   return (
     <Box style={{ display: "flex" }}>

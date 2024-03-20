@@ -149,7 +149,7 @@ const MessageItem: React.FC<MessageItemProps> = (props: MessageItemProps) => {
               hideOnClick: false,
               customComponent: (handleCloseMenu) => (
                 <Reactions
-                  callback={handleCloseMenu}
+                  callback={handleCloseMenu as () => void}
                   showAsLabel
                   showReactionsCount={false}
                   reactions={attributes.reactions}
@@ -188,13 +188,13 @@ const MessageItem: React.FC<MessageItemProps> = (props: MessageItemProps) => {
     <MetaItemWithMargin key={2}>
       {isOutbound
         ? `${getAuthorFriendlyName(message)}・${getMessageTime(
-          message,
-          use24hTimeFormat
-        )}`
+            message,
+            use24hTimeFormat
+          )}`
         : `${getMessageTime(
-          message,
-          use24hTimeFormat
-        )}・${getAuthorFriendlyName(message)}`}
+            message,
+            use24hTimeFormat
+          )}・${getAuthorFriendlyName(message)}`}
     </MetaItemWithMargin>,
   ];
 

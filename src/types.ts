@@ -34,7 +34,7 @@ export type MenuElement = {
   id: string;
   label: string;
   onClick?: () => void;
-  customComponent?: React.ReactNode | ((props: any) => React.ReactNode);
+  customComponent?: React.ReactNode | ((props: unknown) => React.ReactNode);
   enabled?: boolean;
   hideOnClick?: boolean;
 };
