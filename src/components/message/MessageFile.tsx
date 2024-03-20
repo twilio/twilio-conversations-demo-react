@@ -35,6 +35,7 @@ const MessageFile: React.FC<MessageFileProps> = ({
         style={{
           marginRight: "16px",
           alignItems: "start",
+          fontWeight: "bold",
         }}
       >
         <ProductAssetsIcon
@@ -42,9 +43,6 @@ const MessageFile: React.FC<MessageFileProps> = ({
           title="Open File"
           size="sizeIcon60"
           color="colorTextLink"
-          style={{
-            fontWeight: "bold",
-          }}
         />
       </Box>
 
