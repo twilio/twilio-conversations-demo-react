@@ -83,7 +83,6 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
           <ProductConversationsIcon
             decorative={true}
             size="sizeIcon90"
-            style={styles.logo}
             color="colorTextInverse"
           />
         </Box>

@@ -180,9 +180,7 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = (
                             decorative={false}
                             title="No participants"
                             size="sizeIcon40"
-                            style={{
-                              color: "#606B85",
-                            }}
+                            color="colorTextDecorative10"
                           />
                         </Box>
                         <Text
