@@ -11,6 +11,9 @@ import {
 } from "@twilio-paste/lexical-library";
 import { useEffect } from "react";
 import MessageFile from "./MessageFile";
+import { useSelector } from "react-redux";
+import { AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
 
 interface MessageInputProps {
   message: string;
@@ -68,6 +71,9 @@ const MessageInput: React.FC<MessageInputProps> = (
 ) => {
   const { onEnterKeyPress, message } = props;
 
+  const local = useSelector((state: AppState) => state.local);
+  const convoPlaceholder = getTranslation(local, "convoPlaceholder");
+
   return (
     <Box>
       <Box marginLeft={"space40"}>
@@ -79,7 +85,7 @@ const MessageInput: React.FC<MessageInputProps> = (
             },
           }}
           ariaLabel="A basic chat composer"
-          placeholder="Add your message"
+          placeholder={convoPlaceholder}
           onChange={(editorState: EditorState): void => {
             editorState.read(() => {
               const text = $getRoot().getTextContent();

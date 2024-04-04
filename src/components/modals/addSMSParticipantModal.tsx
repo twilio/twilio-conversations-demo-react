@@ -4,6 +4,9 @@ import ModalInputField from "./ModalInputField";
 import AddParticipantFooter from "./addParticipantFooter";
 import { ActionName } from "../../types";
 import ConvoModal from "./ConvoModal";
+import { AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
+import { useSelector } from "react-redux";
 
 interface AddSMSParticipantModalProps {
   name: string;
@@ -23,6 +26,13 @@ interface AddSMSParticipantModalProps {
 const AddSMSParticipantModal: React.FC<AddSMSParticipantModalProps> = (
   props: AddSMSParticipantModalProps
 ) => {
+  const local = useSelector((state: AppState) => state.local);
+  const proxyNum = getTranslation(local, "proxyNum");
+  const proxyNumHelpTxt = getTranslation(local, "proxyNumHelpTxt");
+  const smsNum = getTranslation(local, "smsNum");
+  const smsHelpTxt = getTranslation(local, "smsHelpTxt");
+  const addSMSParticipant = getTranslation(local, "addSMSParticipant");
+
   return (
     <>
       <ConvoModal
@@ -31,7 +41,7 @@ const AddSMSParticipantModal: React.FC<AddSMSParticipantModalProps> = (
         title={props.title}
         modalBody={
           <ModalBody>
-            <h3>Add SMS participant</h3>
+            <h3>{addSMSParticipant}</h3>
             <Box
               as="form"
               onKeyPress={async (e) => {
@@ -45,23 +55,23 @@ const AddSMSParticipantModal: React.FC<AddSMSParticipantModalProps> = (
             >
               <ModalInputField
                 isFocused={true}
-                label="Phone number"
+                label={smsNum}
                 input={props.name}
                 placeholder="123456789012"
                 onChange={props.setName}
                 error={props.error}
                 // error_text="Enter a valid phone number."
-                help_text="The phone number of the participant."
+                help_text={smsHelpTxt}
                 prefixType="SMS"
               />
               <ModalInputField
-                label="Proxy phone number"
+                label={proxyNum}
                 input={props.proxyName}
                 placeholder="123456789012"
                 onChange={props.setProxyName}
                 error={props.errorProxy}
                 // error_text="Enter a valid Twilio phone number."
-                help_text="The Twilio phone number used by the participant in Conversations."
+                help_text={proxyNumHelpTxt}
                 prefixType="SMS"
               />
             </Box>

@@ -127,6 +127,11 @@ interface UpdateTimeFormat {
   payload: boolean;
 }
 
+interface UpdateLocal {
+  type: ActionType.UPDATE_LOCAL;
+  payload: string;
+}
+
 export type Action =
   | LoginAction
   | LogOutAction
@@ -149,4 +154,5 @@ export type Action =
   | AddNotifications
   | RemoveNotifications
   | FilterConversations
-  | UpdateTimeFormat;
+  | UpdateTimeFormat
+  | UpdateLocal;

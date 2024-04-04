@@ -17,6 +17,7 @@ import { getSdkConversationObject } from "../../conversations-objects";
 import { successNotification } from "../../helpers";
 import { CONVERSATION_MESSAGES, ERROR_MODAL_MESSAGES } from "../../constants";
 import ActionErrorModal from "../modals/ActionErrorModal";
+import { getTranslation } from "./../../utils/localUtils";
 
 interface ConvoContainerProps {
   conversation?: ReduxConversation;
@@ -39,6 +40,8 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
   const use24hTimeFormat = useSelector(
     (state: AppState) => state.use24hTimeFormat
   );
+  const local = useSelector((state: AppState) => state.local);
+  const greeting = getTranslation(local, "greeting");
 
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
 
@@ -147,7 +150,7 @@ const ConversationContainer: React.FC<ConvoContainerProps> = (
               color: theme.textColors.colorTextIcon,
             }}
           >
-            Select a conversation on the left to get started.
+            {greeting}
           </Box>
         </>
       )}

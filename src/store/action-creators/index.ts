@@ -228,3 +228,13 @@ export const updateTimeFormat = (on: boolean) => {
     });
   };
 };
+
+export const updateLocal = (local: string) => {
+  localStorage.setItem("local", local);
+  return (dispatch: Dispatch<Action>): void => {
+    dispatch({
+      type: ActionType.UPDATE_LOCAL,
+      payload: local,
+    });
+  };
+};

@@ -14,9 +14,9 @@ export type SetUnreadMessagesType = (
 ) => void;
 
 export enum ActionName {
-  Save = "Save",
-  Create = "Create",
-  Manage = "Manage",
+  Save = "save",
+  Create = "create",
+  Manage = "manage",
 }
 
 export enum InputType {

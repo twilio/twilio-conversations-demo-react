@@ -5,9 +5,10 @@ import ConversationTitleModal from "../modals/ConversationTitleModal";
 import { addConversation } from "../../api";
 import { Button } from "@twilio-paste/button";
 import { PlusIcon } from "@twilio-paste/icons/esm/PlusIcon";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
-import { actionCreators } from "../../store";
+import { actionCreators, AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
 
 interface NewConvoProps {
   client?: Client;
@@ -21,6 +22,8 @@ const CreateConversationButton: React.FC<NewConvoProps> = (
   const { updateCurrentConversation, addNotifications, updateParticipants } =
     bindActionCreators(actionCreators, dispatch);
 
+  const local = useSelector((state: AppState) => state.local);
+  const createNewConvo = getTranslation(local, "createNewConvo");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpen = () => setIsModalOpen(true);
 
@@ -28,7 +31,7 @@ const CreateConversationButton: React.FC<NewConvoProps> = (
     <>
       <Button fullWidth variant="secondary" onClick={handleOpen}>
         <PlusIcon decorative={false} title="Add convo" />
-        {!props.collapsed ? "Create New Conversation" : null}
+        {!props.collapsed ? createNewConvo : null}
       </Button>
       <ConversationTitleModal
         title=""

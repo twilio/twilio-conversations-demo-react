@@ -1,5 +1,5 @@
 import React, { useState, createRef, useMemo } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { Client } from "@twilio/conversations";
@@ -34,6 +34,8 @@ import {
 } from "../../conversations-objects";
 import { ReduxParticipant } from "../../store/reducers/participantsReducer";
 import { isValidPhoneNumber } from "libphonenumber-js";
+import { AppState } from "../../store";
+import { getTranslation } from "./../../utils/localUtils";
 
 interface SettingsProps {
   participants: ReduxParticipant[];
@@ -60,6 +62,9 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
   const [isAddWhatsAppOpen, setIsAddWhatsAppOpen] = useState(false);
   const handleWhatsAppOpen = () => setIsAddWhatsAppOpen(true);
   const handleWhatsAppClose = () => setIsAddWhatsAppOpen(false);
+
+  const local = useSelector((state: AppState) => state.local);
+  const manageParticipants = getTranslation(local, "manageParticipants");
 
   const [name, setName] = useState("");
   const [error, setError] = useState("");
@@ -139,7 +144,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
         <ManageParticipantsModal
           handleClose={handleParticipantClose}
           isModalOpen={props.isManageParticipantOpen}
-          title="Manage Participants"
+          title={manageParticipants}
           participantsCount={props.participants.length}
           participantsList={props.participants}
           onClick={(content: Content) => {
@@ -172,7 +177,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           name={name}
           proxyName={nameProxy}
           isModalOpen={isAddSMSOpen}
-          title="Manage Participants"
+          title={manageParticipants}
           setName={(name: string) => {
             setName(name);
             setError(
@@ -223,7 +228,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           name={name}
           proxyName={nameProxy}
           isModalOpen={isAddWhatsAppOpen}
-          title="Manage Participants"
+          title={manageParticipants}
           setName={(name: string) => {
             setName(name);
             setError(
@@ -273,7 +278,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
         <AddChatParticipantModal
           name={name}
           isModalOpen={isAddChatOpen}
-          title="Manage Participants"
+          title={manageParticipants}
           setName={(name: string) => {
             setName(name);
             setErrors("");
