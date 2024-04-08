@@ -1,6 +1,6 @@
 import { Reactions } from "../types";
 
-export const emojiMapping: Record<Reactions, string> = {
+export const reactionsMapping: Record<Reactions, string> = {
   [Reactions.HEART]: "❤️",
   [Reactions.THUMBS_UP]: "👍",
   [Reactions.LAUGH]: "😄",

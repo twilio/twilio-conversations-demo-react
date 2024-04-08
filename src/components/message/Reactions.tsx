@@ -6,7 +6,7 @@ import AddReaction from "../icons/AddReaction";
 import { Tooltip } from "@twilio-paste/core/tooltip";
 import { Reactions, ReactionsType } from "../../types";
 import ReactionItem from "./ReactionItem";
-import { emojiMapping } from "../../utils/emojiMapping";
+import { reactionsMapping } from "../../utils/reactionsMapping";
 
 type ReactionsProps = {
   reactions?: ReactionsType;
@@ -48,7 +48,7 @@ const ReactionsBox: React.FC<ReactionsProps> = ({
     reactionId: Reactions,
     count: number
   ): React.ReactNode => {
-    const emoji = emojiMapping[reactionId];
+    const emoji = reactionsMapping[reactionId];
     const reactionUsers = reactions?.[reactionId] || [];
     const userIncluded = reactionUsers.includes(user);
 
@@ -126,7 +126,7 @@ const ReactionsBox: React.FC<ReactionsProps> = ({
           {Object.values(Reactions).map((reactionId) => (
             <ReactionItem
               key={reactionId}
-              emoji={emojiMapping[reactionId]}
+              emoji={reactionsMapping[reactionId]}
               reactionId={reactionId}
               onAction={onUpdateReaction}
               user={user}
