@@ -24,7 +24,7 @@
     "axios": "1.6.4",
     "dotenv": "10.0.0",
     "file-saver": "2.0.5",
-    "firebase": "9.15.0",
+    "firebase": "10.1.0",
     "highcharts": "^9.3.3",
     "javascript-time-ago": "^2.5.7",
     "libphonenumber-js": "1.10.24",
