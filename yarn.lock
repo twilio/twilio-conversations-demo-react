@@ -4984,18 +4984,18 @@
   resolved "https://registry.yarnpkg.com/@twilio-paste/visual-picker/-/visual-picker-2.0.3.tgz#66f429fbd410c0872e83541e6303cf57c7a6d059"
   integrity sha512-56hf6iMjiR0O9RPrzJLMycu84sM8wsZtO4ixelqmVFQl4VfbTR02CxRl2O2NUbDNvajoqBxOTxBiToQM8iP54w==
 
-"@twilio/conversations@2.4.0-rc.0":
-  version "2.4.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@twilio/conversations/-/conversations-2.4.0-rc.0.tgz#4bdf0f63cb68d297664c3001afc3d858e485b54f"
-  integrity sha512-zvFkk7HSIUBsHMih4em2qAMtghGZyGAWaKVgSlXX73sQxd8piqXI8cUINmhXD1gPd55W56hpjdMx0XvH6d0YIQ==
+"@twilio/conversations@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@twilio/conversations/-/conversations-2.4.0.tgz#b92c73f3e5fd6d00c5c384952c2f013fa67686bb"
+  integrity sha512-YYrkN+c1gRUor+sWC87B3OktlY7qPPrZLikIEBBI0R4rdowksLJgGPbDg57FrIhgLZTPrCHJGqUApvQKF0aMhQ==
   dependencies:
     "@babel/runtime" "^7.17.0"
-    "@twilio/declarative-type-validator" "^0.2.5-rc.0"
-    "@twilio/deprecation-decorator" "^0.2.3-rc.0"
-    "@twilio/mcs-client" "^0.6.5-rc.0"
-    "@twilio/notifications" "^2.0.4-rc.0"
-    "@twilio/operation-retrier" "^4.0.13-rc.0"
-    "@twilio/replay-event-emitter" "^0.3.5-rc.0"
+    "@twilio/declarative-type-validator" "^0.2.5"
+    "@twilio/deprecation-decorator" "^0.2.3"
+    "@twilio/mcs-client" "^0.6.5"
+    "@twilio/notifications" "^2.0.4"
+    "@twilio/operation-retrier" "^4.0.13"
+    "@twilio/replay-event-emitter" "^0.3.5"
     core-js "^3.17.3"
     iso8601-duration "=1.2.0"
     isomorphic-form-data "^2.0.0"
@@ -5016,52 +5016,52 @@
     "@babel/runtime" "^7.14.5"
     core-js "^3.17.3"
 
-"@twilio/declarative-type-validator@^0.2.5-rc.0":
-  version "0.2.5-rc.0"
-  resolved "https://registry.yarnpkg.com/@twilio/declarative-type-validator/-/declarative-type-validator-0.2.5-rc.0.tgz#007dab000bbe036529ebe4ec0f46380225d2b5fc"
-  integrity sha512-7kvrxN5V1E726w3uPtNKBbOYv3UimO3SS9Zp/DIr2C9r0iTC90ceb5f8+qPWAZBafpEvudEUzYa072qMHliREQ==
+"@twilio/declarative-type-validator@^0.2.5", "@twilio/declarative-type-validator@^0.2.7":
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/@twilio/declarative-type-validator/-/declarative-type-validator-0.2.7.tgz#48a782c72f8af7e825bd6792b3be9cf9ee74e2c3"
+  integrity sha512-RCmODr1PIVU0Zz+Tp0WW1O4UOsfy+TI7qfILPtDMHbRSH7UrbyGUdqLgWCuAYCJMkgpa7dC/DK6xqPZ2NnsKNg==
   dependencies:
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
 
-"@twilio/deprecation-decorator@^0.2.3-rc.0":
-  version "0.2.3-rc.0"
-  resolved "https://registry.yarnpkg.com/@twilio/deprecation-decorator/-/deprecation-decorator-0.2.3-rc.0.tgz#b8b0e97b296c02c333d76e7e2d1816b00a32eb7c"
-  integrity sha512-arG0VeifFDKIvVgtcwCRgPasucVFsaWjBU7fergbogGPewIPzcm1UGyiAiu9bJladROU/uonYUebC0G47G6Pzw==
+"@twilio/deprecation-decorator@^0.2.3":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@twilio/deprecation-decorator/-/deprecation-decorator-0.2.5.tgz#2691c0f2d5eee2627a400cd56428022cf9f3eab6"
+  integrity sha512-3ZSFRls5K5qRc9dl8wp18F5UJ0JhPsiyvUDQJjSOkLBykbWe3kT/HjyFGm+HlYbZx6aOQY4B/rW9v3Hxe0DQPA==
   dependencies:
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
     loglevel "1.8.0"
 
-"@twilio/mcs-client@^0.6.5-rc.0":
-  version "0.6.5-rc.0"
-  resolved "https://registry.yarnpkg.com/@twilio/mcs-client/-/mcs-client-0.6.5-rc.0.tgz#4b953e92726db6430ab20635efcbb835ef511727"
-  integrity sha512-bm3RA2zbW+iWzD2t0k6MeYe04TKPIgcZm77lrZ7oWN6m9LClhgzp4wlEfUOBPG1r+v8AV2NCAP4205C+deEFFQ==
+"@twilio/mcs-client@^0.6.5":
+  version "0.6.7"
+  resolved "https://registry.yarnpkg.com/@twilio/mcs-client/-/mcs-client-0.6.7.tgz#5ffd51e38e8d67aa719e9416f2e0e70472d2917c"
+  integrity sha512-jA2PcvKXJjH6f2PosRfQZGCaycMubZtkNNl8/rft6UYxBy+tU/xz7qwqs/b+yM7Q4Cf+13i4TOoOm06oMvYosw==
   dependencies:
     "@babel/runtime" "^7.17.0"
-    "@twilio/declarative-type-validator" "^0.2.5-rc.0"
-    "@twilio/operation-retrier" "^4.0.13-rc.0"
+    "@twilio/declarative-type-validator" "^0.2.7"
+    "@twilio/operation-retrier" "^4.0.15"
     core-js "^3.17.3"
     loglevel "^1.8.0"
     xmlhttprequest "^1.8.0"
 
-"@twilio/notifications@^2.0.4-rc.0":
-  version "2.0.4-rc.0"
-  resolved "https://registry.yarnpkg.com/@twilio/notifications/-/notifications-2.0.4-rc.0.tgz#c24fc0ac31460d3fa49251fa2200968ba2aa9a1b"
-  integrity sha512-m9o+j7oePxBqm3qFlhtxAe0twjIt49B46gxP4s2BvPG/5OjBDWNwFKAn8GkAPDDoAf/rS5vB1pULIHV5NDkF8A==
+"@twilio/notifications@^2.0.4":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@twilio/notifications/-/notifications-2.0.6.tgz#3a08e3229d4cae15c357013db16ca485c422866d"
+  integrity sha512-KfWQf2OuZ7/XDBy13ZMTPX8d+T2QoNw0wh+Ri+gOnppvZ00eeZZumwyF1rD1bEJq576LUzpWKCQbjaEzdVorGg==
   dependencies:
     "@babel/runtime" "^7.17.0"
-    "@twilio/declarative-type-validator" "^0.2.5-rc.0"
-    "@twilio/operation-retrier" "^4.0.13-rc.0"
+    "@twilio/declarative-type-validator" "^0.2.7"
+    "@twilio/operation-retrier" "^4.0.15"
     core-js "^3.17.3"
     loglevel "^1.8.0"
     twilsock "~0.12.2"
     uuid "^3.4.0"
 
-"@twilio/operation-retrier@^4.0.13-rc.0":
-  version "4.0.13-rc.0"
-  resolved "https://registry.yarnpkg.com/@twilio/operation-retrier/-/operation-retrier-4.0.13-rc.0.tgz#49cbf2fda08681f512046738f9c19dd9bc7e172d"
-  integrity sha512-JdP7T9yLS6U2og78QrKMPOuYhCy230ANdtcF0OjyquXL0YjxlCXRZByBeiwPoyyklbucLWMC9ccMqNxitljLRg==
+"@twilio/operation-retrier@^4.0.13", "@twilio/operation-retrier@^4.0.15":
+  version "4.0.15"
+  resolved "https://registry.yarnpkg.com/@twilio/operation-retrier/-/operation-retrier-4.0.15.tgz#386fb18d06836850a10037c61f0f58516cb2c5d7"
+  integrity sha512-XrrCry50r9vidvkkvLBhCrHkLLPggcTxW+qc8HFM2MtxKLnpjVipfETUucOPgbcLKqLm4RQp9oFvgB1kcHqUig==
   dependencies:
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
@@ -5074,10 +5074,10 @@
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
 
-"@twilio/replay-event-emitter@^0.3.5-rc.0":
-  version "0.3.5-rc.0"
-  resolved "https://registry.yarnpkg.com/@twilio/replay-event-emitter/-/replay-event-emitter-0.3.5-rc.0.tgz#4837be110260fc5605d34195bad68db0eb413e5d"
-  integrity sha512-GVa5WiHtRMas8EKDYBwixjzoXuVneqbTc3wYtgFzF5Sb1V+uVNXe3PXBLg29kbqhNjOuSTGaWz7iRTmprod9dg==
+"@twilio/replay-event-emitter@^0.3.5":
+  version "0.3.7"
+  resolved "https://registry.yarnpkg.com/@twilio/replay-event-emitter/-/replay-event-emitter-0.3.7.tgz#a28bad76c836deec16e75c56405bb29e306c8465"
+  integrity sha512-0pK7xKTtYYBxn819RNDjHMtyauvgv+vTPppbRgfT9iXnktcJi8ZxTPX1TzsDHc26ex6bcjwyfpAxExQa3eEJNg==
   dependencies:
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
