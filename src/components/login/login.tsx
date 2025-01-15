@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@twilio-paste/button";
-import { Box } from "@twilio-paste/core";
+import { Box, Select, Option, Text } from "@twilio-paste/core";
 import { ProductConversationsIcon } from "@twilio-paste/icons/esm/ProductConversationsIcon";
 
 import { getToken } from "../../api";
@@ -10,6 +10,7 @@ import styles from "../../styles";
 import TwilioLogo from "../icons/TwilioLogo";
 import useAppAlert from "../../hooks/useAppAlerts";
 import React from "react";
+import Register from "./Register";
 
 type SetTokenType = (token: string) => void;
 
@@ -51,6 +52,7 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [, AlertsView] = useAppAlert();
+  const [mode, setMode] = useState<"login" | "register">("login");
 
   const handleLogin = async () => {
     const error = await login(username, password, props.setToken);
@@ -88,63 +90,86 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
         </Box>
         <div style={styles.loginTitle}>Twilio Conversations</div>
         <div style={styles.subTitle}>Demo experience</div>
-        <Box style={styles.loginForm}>
-          <Box style={styles.userInput}>
-            <ModalInputField
-              label="Username"
-              placeholder=""
-              isFocused={true}
-              error={
-                isFormDirty && !username.trim()
-                  ? "Enter a username to sign in."
-                  : ""
-              }
-              input={username}
-              onChange={(username: string) => {
-                setUsername(username);
-                setFormError("");
-              }}
-              onBlur={() => {
-                if (password) {
-                  setFormDirty(true);
-                }
-              }}
-              id="username"
-            />
-          </Box>
-          <Box style={styles.passwordInput}>
-            <ModalInputField
-              label="Password"
-              placeholder=""
-              error={
-                isFormDirty && !password
-                  ? "Enter a password to sign in."
-                  : formError ?? ""
-              }
-              input={password}
-              onChange={(password: string) => {
-                setPassword(password);
-                setFormError("");
-              }}
-              onBlur={() => setFormDirty(true)}
-              inputType={showPassword ? InputType.Text : InputType.Password}
-              showPassword={showPassword}
-              setShowPassword={setShowPassword}
-              id="password"
-            />
-          </Box>
-          <Box style={styles.loginButton}>
-            <Button
-              fullWidth
-              disabled={!username || !password}
-              variant="primary"
-              onClick={handleLogin}
-              id="login"
-            >
-              Sign in
-            </Button>
-          </Box>
-        </Box>
+
+        {mode === "login" ? (
+          <>
+            <Box style={styles.loginForm}>
+              <Box style={styles.userInput}>
+                <ModalInputField
+                  label="Username"
+                  placeholder=""
+                  isFocused={true}
+                  error={
+                    isFormDirty && !username.trim()
+                      ? "Enter a username to sign in."
+                      : ""
+                  }
+                  input={username}
+                  onChange={(username: string) => {
+                    setUsername(username);
+                    setFormError("");
+                  }}
+                  onBlur={() => {
+                    if (password) {
+                      setFormDirty(true);
+                    }
+                  }}
+                  id="username"
+                />
+              </Box>
+              <Box style={styles.passwordInput}>
+                <ModalInputField
+                  label="Password"
+                  placeholder=""
+                  error={
+                    isFormDirty && !password
+                      ? "Enter a password to sign in."
+                      : formError ?? ""
+                  }
+                  input={password}
+                  onChange={(password: string) => {
+                    setPassword(password);
+                    setFormError("");
+                  }}
+                  onBlur={() => setFormDirty(true)}
+                  inputType={showPassword ? InputType.Text : InputType.Password}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                  id="password"
+                />
+              </Box>
+              <Box style={styles.loginButton}>
+                <Button
+                  fullWidth
+                  disabled={!username || !password}
+                  variant="primary"
+                  onClick={handleLogin}
+                  id="login"
+                >
+                  Sign in
+                </Button>
+              </Box>
+              <Box marginTop="space40" textAlign="center">
+                <Text as="span" color="colorTextInverse">
+                  Don't have an account?{" "}
+                  <Button variant="link" onClick={() => setMode("register")}>
+                    Register here
+                  </Button>
+                </Text>
+              </Box>
+            </Box>
+          </>
+        ) : (
+          <Register
+            onRegisterSuccess={() => {
+              setMode("login");
+              setFormError(
+                "Account created successfully! Please check your email for verification and then sign in."
+              );
+            }}
+          />
+        )}
+
         <Box style={{ paddingTop: 40 }}>
           <TwilioLogo />
         </Box>
