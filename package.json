@@ -3,6 +3,7 @@
   "version": "1.2.0",
   "private": true,
   "dependencies": {
+    "@supabase/supabase-js": "^2.47.14",
     "@twilio-paste/animation-library": "^2.0.0",
     "@twilio-paste/avatar": "^9.1.0",
     "@twilio-paste/box": "^10.3.0",
@@ -79,21 +80,21 @@
     "@commitlint/config-conventional": "^12.1.4",
     "@types/file-saver": "2.0.3",
     "@types/lodash": "4.14.182",
+    "@types/node": "^20.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-redux": "7.1.25",
     "@types/redux-thunk": "2.1.0",
     "@typescript-eslint/eslint-plugin": "5.44.0",
     "@typescript-eslint/parser": "5.44.0",
+    "@vitejs/plugin-react": "^4.2.0",
     "conventional-changelog-conventionalcommits": "^4.6.0",
     "eslint": "^7.11.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "4.0.0",
     "husky": "^7.0.1",
     "prettier": "2.4.1",
-    "@vitejs/plugin-react": "^4.2.0",
     "vite": "^5.0.0",
-    "vitest": "^1.0.0",
-    "@types/node": "^20.0.0"
+    "vitest": "^1.0.0"
   }
 }
