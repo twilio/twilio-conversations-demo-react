@@ -2,9 +2,9 @@
 
 !.eslintrc.json
 !tsconfig.json
-!webpack.config.js
-!.env
+!vite.config.ts
+!.env*
 !public/
-!yarn.lock
+!package-lock.json
 !package.json
 !src/

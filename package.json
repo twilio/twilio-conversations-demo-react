@@ -44,16 +44,17 @@
     "yjs": "13.5.22"
   },
   "scripts": {
-    "build": "react-scripts build",
-    "build:wdio": "cd AutomationTests; npm install",
+    "start": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "build:wdio": "cd AutomationTests && npm install",
     "eject": "react-scripts eject",
     "generateCircleConfig": "npx ts-node --project tsconfig.tools.json ./tools/circle-config-generator/generate-circle-config.ts",
-    "start": "react-scripts start",
-    "test": "react-scripts test",
-    "test:wdio": "cd AutomationTests; npm run wdio",
+    "test": "vitest",
+    "test:wdio": "cd AutomationTests && npm run wdio",
     "lint": "npx eslint src --ext .ts --ext .tsx",
     "lint:fix": "npx eslint src --ext .ts --ext .tsx --fix",
-    "prepare": "npx husky install"
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
@@ -73,9 +74,6 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0-0",
-    "@babel/plugin-syntax-flow": "^7.14.5",
-    "@babel/plugin-transform-react-jsx": "^7.14.9",
     "@circleci/circleci-config-sdk": "^0.12.0",
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
@@ -88,12 +86,14 @@
     "@typescript-eslint/eslint-plugin": "5.44.0",
     "@typescript-eslint/parser": "5.44.0",
     "conventional-changelog-conventionalcommits": "^4.6.0",
-    "dotenv-webpack": "^8.0.1",
     "eslint": "^7.11.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "4.0.0",
     "husky": "^7.0.1",
     "prettier": "2.4.1",
-    "webpack": "5"
+    "@vitejs/plugin-react": "^4.2.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0",
+    "@types/node": "^20.0.0"
   }
 }

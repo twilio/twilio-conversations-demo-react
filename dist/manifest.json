@@ -1,0 +1,15 @@
+{
+  "short_name": "Conversations Demo",
+  "name": "Conversations Demo",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "40x40",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

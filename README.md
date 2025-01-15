@@ -22,9 +22,9 @@ Note: This deployment requires a [token service url](#generating-access-tokens).
 
 Automatically clone this repo and deploy it through Vercel. 
 
-Note: This deployment requires a [token service url](#generating-access-tokens). Vercel will ask for the `REACT_APP_ACCESS_TOKEN_SERVICE_URL` env variable. 
+Note: This deployment requires a [token service url](#generating-access-tokens). Vercel will ask for the `VITE_REACT_APP_ACCESS_TOKEN_SERVICE_URL` env variable. 
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F&env=REACT_APP_ACCESS_TOKEN_SERVICE_URL&envDescription=A%20link%20to%20your%20access%20token%20server.%20Use%20the%20Twilio%20Functions%20example%20from%20the%20readme%20for%20quick%20testing.&envLink=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F%23generating-access-tokens&project-name=twilio-conversations&repository-name=twilio-conversations)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F&env=VITE_REACT_APP_ACCESS_TOKEN_SERVICE_URL&envDescription=A%20link%20to%20your%20access%20token%20server.%20Use%20the%20Twilio%20Functions%20example%20from%20the%20readme%20for%20quick%20testing.&envLink=https%3A%2F%2Fgithub.com%2Ftwilio%2Ftwilio-conversations-demo-react%2F%23generating-access-tokens&project-name=twilio-conversations&repository-name=twilio-conversations)
 
 ## Next Steps
 
@@ -110,15 +110,15 @@ exports.handler = function(context, event, callback) {
         - Copy the `SID` for `Default Conversations Service`, or the service you want to set up.
     - Add `TWILIO_API_KEY_SID` and `TWILIO_API_KEY_SECRET`. Create API Keys [in the console](https://www.twilio.com/console/project/api-keys).
     - Optionally add `PUSH_CREDENTIAL_SID`, for more info see [Setting up Push Notifications](#setting-up-push-notifications)
-7. **Copy URL** from the "kebab" three dot menu next to it and and use it as `REACT_APP_ACCESS_TOKEN_SERVICE_URL` .env variable below.
+7. **Copy URL** from the "kebab" three dot menu next to it and and use it as `VITE_REACT_APP_ACCESS_TOKEN_SERVICE_URL` .env variable below.
 8. Click **Deploy All**.
 
 ### Set the Token Service URL
 
-If you don't have your own `.env`, rename this repo's `.env.example` file to `.env`. Set the value of `REACT_APP_ACCESS_TOKEN_SERVICE_URL` to point to a valid Access Token server. If you used Twilio Functions for generating tokens, get the value from **Copy URL** in step 7 above.  
+If you don't have your own `.env`, rename this repo's `.env.example` file to `.env`. Set the value of `VITE_REACT_APP_ACCESS_TOKEN_SERVICE_URL` to point to a valid Access Token server. If you used Twilio Functions for generating tokens, get the value from **Copy URL** in step 7 above.  
 
 ```
-REACT_APP_ACCESS_TOKEN_SERVICE_URL=http://example.com/token-service/
+VITE_REACT_APP_ACCESS_TOKEN_SERVICE_URL=http://example.com/token-service/
 ```
 
 NOTE: No need for quotes around the URL, they will be added automatically.
@@ -126,7 +126,7 @@ NOTE: No need for quotes around the URL, they will be added automatically.
 This demo app expects your access token server to provide a valid token for valid credentials by URL:
 
  ```
-$REACT_APP_ACCESS_TOKEN_SERVICE_URL?identity=<USER_PROVIDED_USERNAME>&password=<USER_PROVIDED_PASSWORD>
+$VITE_REACT_APP_ACCESS_TOKEN_SERVICE_URL?identity=<USER_PROVIDED_USERNAME>&password=<USER_PROVIDED_PASSWORD>
  ```
 And return HTTP 401 in case of invalid credentials.
 

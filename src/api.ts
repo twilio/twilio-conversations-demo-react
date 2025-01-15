@@ -159,10 +159,10 @@ export async function getToken(
   password: string
 ): Promise<string> {
   const requestAddress = process.env
-    .REACT_APP_ACCESS_TOKEN_SERVICE_URL as string;
+    .VITE_REACT_APP_ACCESS_TOKEN_SERVICE_URL as string;
   if (!requestAddress) {
     throw new Error(
-      "REACT_APP_ACCESS_TOKEN_SERVICE_URL is not configured, cannot login"
+      "VITE_REACT_APP_ACCESS_TOKEN_SERVICE_URL is not configured, cannot login"
     );
   }
 
