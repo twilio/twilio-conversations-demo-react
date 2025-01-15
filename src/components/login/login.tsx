@@ -88,8 +88,10 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
             color="colorTextInverse"
           />
         </Box>
-        <div style={styles.loginTitle}>Twilio Conversations</div>
-        <div style={styles.subTitle}>Demo experience</div>
+        <div style={styles.loginTitle}>SMS Lead Manager</div>
+        <div style={styles.subTitle}>
+          Engage your leads with automated SMS campaigns
+        </div>
 
         {mode === "login" ? (
           <>
