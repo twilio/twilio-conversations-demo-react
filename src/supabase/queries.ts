@@ -1,4 +1,4 @@
-import { supabase } from '../supabase';
+import { supabase } from "../supabase";
 
 interface BusinessSettings {
   business_name: string;
@@ -6,13 +6,15 @@ interface BusinessSettings {
 }
 
 export const getUserSettings = async () => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('No user found');
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("No user found");
 
   const { data, error } = await supabase
-    .from('users')
-    .select('business_name, twilio_phone_number')
-    .eq('id', user.id)
+    .from("users")
+    .select("business_name, twilio_phone_number")
+    .eq("id", user.id)
     .single();
 
   if (error) throw error;
@@ -20,18 +22,20 @@ export const getUserSettings = async () => {
 };
 
 export const updateUserSettings = async (settings: BusinessSettings) => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('No user found');
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("No user found");
 
   const { error } = await supabase
-    .from('users')
+    .from("users")
     .update({
       business_name: settings.business_name,
       twilio_phone_number: settings.twilio_phone_number,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
-    .eq('id', user.id);
+    .eq("id", user.id);
 
   if (error) throw error;
   return true;
-}; 
+};

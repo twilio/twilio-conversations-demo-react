@@ -35,14 +35,21 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (props) => {
   const dispatch = useDispatch();
   const toaster = useToaster();
 
-  const [friendlyName, setFriendlyName] = useState(props.user?.friendlyName ?? "");
+  const [friendlyName, setFriendlyName] = useState(
+    props.user?.friendlyName ?? ""
+  );
   const [businessSettings, setBusinessSettings] = useState({
     business_name: "",
     twilio_phone_number: DEFAULT_PHONE,
   });
 
-  const { updateTimeFormat, updateLocal } = bindActionCreators(actionCreators, dispatch);
-  const use24hTimeFormat = useSelector((state: AppState) => state.use24hTimeFormat);
+  const { updateTimeFormat, updateLocal } = bindActionCreators(
+    actionCreators,
+    dispatch
+  );
+  const use24hTimeFormat = useSelector(
+    (state: AppState) => state.use24hTimeFormat
+  );
   const local = useSelector((state: AppState) => state.local);
   const [on, setOn] = useState(use24hTimeFormat);
   const [selectedLocal, setSelectedLocal] = useState(local);
@@ -83,11 +90,11 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (props) => {
     try {
       // Save friendly name
       await updateFriendlyName(friendlyName, props.user);
-      
+
       // Save time format and locale
       updateTimeFormat(on);
       updateLocal(selectedLocal);
-      
+
       // Save business settings
       await updateUserSettings({
         business_name: businessSettings.business_name,
@@ -98,7 +105,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (props) => {
         message: "Settings saved successfully",
         variant: "success",
       });
-      
+
       props.handleClose();
     } catch (error) {
       console.error("Error saving settings:", error);
@@ -201,18 +208,12 @@ const UserProfileModal: React.FC<UserProfileModalProps> = (props) => {
       modalFooter={
         <ModalFooter>
           <ModalFooterActions justify="start">
-            <Button
-              variant="secondary"
-              onClick={props.handleClose}
-            >
+            <Button variant="secondary" onClick={props.handleClose}>
               {cancel}
             </Button>
           </ModalFooterActions>
           <ModalFooterActions>
-            <Button
-              variant="primary"
-              onClick={handleSaveAll}
-            >
+            <Button variant="primary" onClick={handleSaveAll}>
               {save}
             </Button>
           </ModalFooterActions>
