@@ -12,7 +12,7 @@ ReactDOM.render(
   <Box style={styles.app}>
     <React.StrictMode>
       <Provider store={store}>
-        <Theme.Provider theme="dark">
+        <Theme.Provider theme="default">
           <Box style={styles.app}>
             <App />
           </Box>
