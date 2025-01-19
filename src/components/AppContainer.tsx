@@ -57,7 +57,11 @@ async function handleParticipantsUpdate(
   updateParticipants(result, participant.conversation.sid);
 }
 
-const AppContainer: React.FC = () => {
+interface AppContainerProps {
+  onLogout: () => void;
+}
+
+const AppContainer: React.FC<AppContainerProps> = ({ onLogout }) => {
   /* eslint-disable */
   const [connectionState, setConnectionState] = useState<ConnectionState>();
   const [client, setClient] = useState<Client>();

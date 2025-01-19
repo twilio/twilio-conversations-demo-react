@@ -7,17 +7,25 @@ import {
 } from "firebase/messaging";
 import { Client, PushNotification } from "@twilio/conversations";
 
-let app: FirebaseApp;
-let messaging: Messaging;
+let app: FirebaseApp | null = null;
+let messaging: Messaging | null = null;
 let initialized = false;
 
-try {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  app = initializeApp((window as any).firebaseConfig);
-  messaging = getMessaging(app);
-  initialized = true;
-} catch {
-  console.warn("Couldn't initialize firebase app");
+// Only initialize if we have the config
+const firebaseConfig = (window as any).firebaseConfig;
+if (firebaseConfig) {
+  try {
+    app = initializeApp(firebaseConfig);
+    messaging = getMessaging(app);
+    initialized = true;
+    console.log("Firebase initialized successfully");
+  } catch (error) {
+    console.warn("Firebase initialization failed:", error);
+  }
+} else {
+  console.warn(
+    "Firebase config not found. Push notifications will be disabled."
+  );
 }
 
 export const initFcmServiceWorker = async (): Promise<void> => {
@@ -38,30 +46,34 @@ export const initFcmServiceWorker = async (): Promise<void> => {
 export const subscribeFcmNotifications = async (
   convoClient: Client
 ): Promise<void> => {
-  if (!initialized) {
+  if (!initialized || !messaging) {
     return;
   }
 
-  const permission = await Notification.requestPermission();
-  if (permission !== "granted") {
-    console.log("FcmNotifications: can't request permission:", permission);
-    return;
-  }
-
-  const fcmToken = await getToken(messaging);
-  if (!fcmToken) {
-    console.log("FcmNotifications: can't get fcm token");
-    return;
-  }
-
-  console.log("FcmNotifications: got fcm token", fcmToken);
-  await convoClient.setPushRegistrationId("fcm", fcmToken);
-  onMessage(messaging, (payload) => {
-    console.log("FcmNotifications: push received", payload);
-    if (convoClient) {
-      convoClient.handlePushNotification(payload);
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      console.log("FcmNotifications: can't request permission:", permission);
+      return;
     }
-  });
+
+    const fcmToken = await getToken(messaging);
+    if (!fcmToken) {
+      console.log("FcmNotifications: can't get fcm token");
+      return;
+    }
+
+    console.log("FcmNotifications: got fcm token", fcmToken);
+    await convoClient.setPushRegistrationId("fcm", fcmToken);
+    onMessage(messaging, (payload) => {
+      console.log("FcmNotifications: push received", payload);
+      if (convoClient) {
+        convoClient.handlePushNotification(payload);
+      }
+    });
+  } catch (error) {
+    console.warn("Failed to subscribe to FCM notifications:", error);
+  }
 };
 
 export const showNotification = (pushNotification: PushNotification): void => {
@@ -69,21 +81,28 @@ export const showNotification = (pushNotification: PushNotification): void => {
     return;
   }
 
-  // TODO: remove when new version of sdk will be released
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const notificationTitle = pushNotification.data.conversationTitle || "";
+  try {
+    // TODO: remove when new version of sdk will be released
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const notificationTitle = pushNotification.data.conversationTitle || "";
 
-  const notificationOptions = {
-    body: pushNotification.body ?? "",
-    icon: "favicon.ico",
-  };
+    const notificationOptions = {
+      body: pushNotification.body ?? "",
+      icon: "favicon.ico",
+    };
 
-  const notification = new Notification(notificationTitle, notificationOptions);
-  notification.onclick = (event) => {
-    console.log("notification.onclick", event);
-    event.preventDefault(); // prevent the browser from focusing the Notification's tab
-    // TODO: navigate to the corresponding conversation
-    notification.close();
-  };
+    const notification = new Notification(
+      notificationTitle,
+      notificationOptions
+    );
+    notification.onclick = (event) => {
+      console.log("notification.onclick", event);
+      event.preventDefault(); // prevent the browser from focusing the Notification's tab
+      // TODO: navigate to the corresponding conversation
+      notification.close();
+    };
+  } catch (error) {
+    console.warn("Failed to show notification:", error);
+  }
 };
