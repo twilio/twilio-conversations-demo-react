@@ -29,3 +29,30 @@ export enum Content {
   AddSMS = "Add SMS participant",
   AddWhatsApp = "Add WhatsApp participant",
 }
+
+export type MenuElement = {
+  id: string;
+  label: string;
+  onClick?: () => void;
+  customComponent?: React.ReactNode | ((props: unknown) => React.ReactNode);
+  enabled?: boolean;
+  hideOnClick?: boolean;
+};
+
+export enum Reactions {
+  HEART = "heart",
+  THUMBS_UP = "thumbs_up",
+  LAUGH = "laugh",
+  SAD = "sad",
+  POUTING = "pouting",
+  THUMBS_DOWN = "thumbs_down",
+}
+
+export type ReactionsType = {
+  [Reactions.HEART]?: string[];
+  [Reactions.THUMBS_DOWN]?: string[];
+  [Reactions.THUMBS_UP]?: string[];
+  [Reactions.SAD]?: string[];
+  [Reactions.POUTING]?: string[];
+  [Reactions.LAUGH]?: string[];
+};
