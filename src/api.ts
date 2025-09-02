@@ -232,7 +232,7 @@ export async function getMessageStatus(
   });
 
   if (message.aggregatedDeliveryReceipt) {
-    const receipt = message.aggregatedDeliveryReceipt; // paginated backend query every time
+    const receipt = message.aggregatedDeliveryReceipt;
 
     if (receipt?.read === "some" || receipt?.read === "all") {
       statuses[MessageStatus.Read] += 1;
