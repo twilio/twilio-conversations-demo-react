@@ -149,7 +149,7 @@ const ConversationsList: React.FC = () => {
                 updateParticipants
               );
               //update unread messages
-              updateUnreadMessages(convo.sid, 0);
+              // updateUnreadMessages(convo.sid, 0);
               //set messages to be read
               const lastMessage =
                 messages[convo.sid].length &&

@@ -232,26 +232,32 @@ export async function getMessageStatus(
   });
 
   if (message.aggregatedDeliveryReceipt) {
-    const sdkMessage = getSdkMessageObject(message);
-    const receipts = await sdkMessage.getDetailedDeliveryReceipts(); // paginated backend query every time
+    const receipt = message.aggregatedDeliveryReceipt; // paginated backend query every time
 
-    receipts.forEach((receipt) => {
-      if (receipt.status === "read") {
-        statuses[MessageStatus.Read] += 1;
-      }
+    if (receipt?.read === "some" || receipt?.read === "all") {
+      statuses[MessageStatus.Read] += 1;
+      return statuses;
+    }
 
-      if (receipt.status === "delivered") {
-        statuses[MessageStatus.Delivered] += 1;
-      }
+    if (receipt?.delivered === "some" || receipt?.delivered === "all") {
+      statuses[MessageStatus.Delivered] += 1;
+      return statuses;
+    }
 
-      if (receipt.status === "failed" || receipt.status === "undelivered") {
-        statuses[MessageStatus.Failed] += 1;
-      }
+    if (
+      receipt?.failed === "some" ||
+      receipt?.failed === "all" ||
+      receipt?.undelivered === "some" ||
+      receipt?.undelivered === "all"
+    ) {
+      statuses[MessageStatus.Failed] += 1;
+      return statuses;
+    }
 
-      if (receipt.status === "sent" || receipt.status === "queued") {
-        statuses[MessageStatus.Sending] += 1;
-      }
-    });
+    if (receipt?.sent === "some" || receipt?.sent === "all") {
+      statuses[MessageStatus.Sending] += 1;
+      return statuses;
+    }
   }
 
   return statuses;
