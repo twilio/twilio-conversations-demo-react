@@ -105,7 +105,6 @@ const ConversationView: React.FC<SingleConvoProps> = (
   useEffect(() => {
     if (myMessage && !props.typingInfo.length) {
       getMessageStatus(myMessage, props.participants).then((status) => {
-        console.log("status", status);
         if (status === MessageStatus.Read) {
           setLastMsgStatus(MessageStatus.Read);
           return;
