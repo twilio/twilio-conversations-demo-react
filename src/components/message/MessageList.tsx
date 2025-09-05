@@ -94,7 +94,6 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
   });
 
   useEffect(() => {
-    console.log("messages, lastReadIndex");
     if (lastReadIndex === -1 || horizonMessageCount) {
       return;
     }
