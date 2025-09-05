@@ -1,11 +1,13 @@
 import axios from "axios";
 import {
-  Conversation,
-  Message,
-  Participant,
-  Media,
+  AggregatedDeliveryReceipt,
   Client,
+  Conversation,
+  DeliveryAmount,
+  Media,
+  Message,
   Paginator,
+  Participant,
   User,
 } from "@twilio/conversations";
 
@@ -21,7 +23,6 @@ import {
 } from "./constants";
 import { NotificationsType } from "./store/reducers/notificationsReducer";
 import { successNotification, unexpectedErrorNotification } from "./helpers";
-import { getSdkMessageObject } from "./conversations-objects";
 import { ReduxParticipant } from "./store/reducers/participantsReducer";
 
 type ParticipantResponse = ReturnType<typeof Conversation.prototype.add>;
@@ -181,41 +182,25 @@ export async function getToken(
   }
 }
 
-export async function getMessageStatus(
-  message: ReduxMessage,
-  channelParticipants: ReduxParticipant[]
-): Promise<{
+const getChatParticipantStatuses = (
+  channelParticipants: ReduxParticipant[],
+  message: ReduxMessage
+): {
   [MessageStatus.Delivered]?: number;
   [MessageStatus.Read]?: number;
   [MessageStatus.Failed]?: number;
   [MessageStatus.Sending]?: number;
-}> {
-  // FIXME should be: return statuses[message.sid];
-  // after this modification:
-  // message.on("updated", ({ message, updateReasons }) => {
-  // if reason includes "deliveryReceipt" {
-  //   // paginate detailed receipts
-  //   const receipts = await message.getDetailedDeliveryReceipts(); // paginated backend query every time
-  // }
-  // });
-
+} => {
   const statuses = {
-    [MessageStatus.Delivered]: 0,
-    [MessageStatus.Read]: 0,
     [MessageStatus.Failed]: 0,
+    [MessageStatus.Read]: 0,
+    [MessageStatus.Delivered]: 0,
     [MessageStatus.Sending]: 0,
   };
 
-  if (message.index === -1) {
-    return Promise.resolve({
-      ...statuses,
-      [MessageStatus.Sending]: 1,
-    });
-  }
-
   channelParticipants.forEach((participant) => {
     if (
-      participant.identity == localStorage.getItem("username") ||
+      participant.identity === localStorage.getItem("username") ||
       participant.type !== "chat"
     ) {
       return;
@@ -231,36 +216,83 @@ export async function getMessageStatus(
     }
   });
 
+  return statuses;
+};
+
+const getAggregatedMessageStatus = (aggregatedDelivery: {
+  total: number;
+  sent: DeliveryAmount;
+  delivered: DeliveryAmount;
+  read: DeliveryAmount;
+  failed: DeliveryAmount;
+}): MessageStatus => {
+  if (aggregatedDelivery.failed !== "none") {
+    return MessageStatus.Failed;
+  }
+  if (aggregatedDelivery.read === "all") {
+    return MessageStatus.Read;
+  }
+  if (aggregatedDelivery.delivered === "all") {
+    return MessageStatus.Delivered;
+  }
+  if (aggregatedDelivery.sent === "all") {
+    return MessageStatus.Sent;
+  }
+  return MessageStatus.Sent;
+};
+
+const getFinalMessageStatus = (
+  channelParticipants: ReduxParticipant[],
+  message: ReduxMessage
+): MessageStatus => {
+  // If we have aggregated delivery data (for non-chat participants), use it first
   if (message.aggregatedDeliveryReceipt) {
-    const receipt = message.aggregatedDeliveryReceipt; // paginated backend query every time
+    const aggregatedStatus = getAggregatedMessageStatus(
+      message.aggregatedDeliveryReceipt
+    );
 
-    if (receipt?.read === "some" || receipt?.read === "all") {
-      statuses[MessageStatus.Read] += 1;
-      return statuses;
-    }
-
-    if (receipt?.delivered === "some" || receipt?.delivered === "all") {
-      statuses[MessageStatus.Delivered] += 1;
-      return statuses;
-    }
-
-    if (
-      receipt?.failed === "some" ||
-      receipt?.failed === "all" ||
-      receipt?.undelivered === "some" ||
-      receipt?.undelivered === "all"
-    ) {
-      statuses[MessageStatus.Failed] += 1;
-      return statuses;
-    }
-
-    if (receipt?.sent === "some" || receipt?.sent === "all") {
-      statuses[MessageStatus.Sending] += 1;
-      return statuses;
+    // If aggregated data shows failure or issues, return that immediately
+    if (aggregatedStatus === MessageStatus.Failed) {
+      return aggregatedStatus;
     }
   }
 
-  return statuses;
+  // Get chat participant statuses
+  const chatStatuses = getChatParticipantStatuses(channelParticipants, message);
+  const totalChatParticipants = Object.values(chatStatuses).reduce(
+    (sum, count) => sum + count,
+    0
+  );
+
+  // If no chat participants, fall back to aggregated status
+  if (totalChatParticipants === 0) {
+    return message.aggregatedDeliveryReceipt
+      ? getAggregatedMessageStatus(message.aggregatedDeliveryReceipt)
+      : MessageStatus.Sent;
+  }
+
+  // If all chat participants have read the message
+  if (chatStatuses[MessageStatus.Read] === totalChatParticipants) {
+    return MessageStatus.Read;
+  }
+
+  // Default to sent if we have any participant data
+  return MessageStatus.Sent;
+};
+
+export async function getMessageStatus(
+  message: ReduxMessage,
+  channelParticipants: ReduxParticipant[]
+): Promise<MessageStatus> {
+  // FIXME should be: return statuses[message.sid];
+  // after this modification:
+  // message.on("updated", ({ message, updateReasons }) => {
+  // if reason includes "deliveryReceipt" {
+  //   // paginate detailed receipts
+  //   const receipts = await message.getDetailedDeliveryReceipts(); // paginated backend query every time
+  // }
+  // });
+  return getFinalMessageStatus(channelParticipants, message);
 }
 
 export const removeParticipant = async (
