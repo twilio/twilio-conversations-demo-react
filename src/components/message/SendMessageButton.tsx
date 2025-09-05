@@ -13,6 +13,7 @@ const SendMessageButton: React.FC<SendMessageButtonProps> = (
   return (
     <Box style={styles.buttonWrapper}>
       <Button
+        disabled={props.message.length === 0}
         variant="primary"
         onClick={() => {
           props.onClick();

@@ -128,7 +128,7 @@ const MessageItem: React.FC<MessageItemProps> = (props: MessageItemProps) => {
   };
 
   let metaItems = [
-    <ChatMessageMetaItem key={0}>
+    <ChatMessageMetaItem key={`${message.sid}_margin_0`}>
       <Reactions
         showAddReactionButton={!isOutbound}
         reactions={attributes.reactions}
@@ -182,10 +182,10 @@ const MessageItem: React.FC<MessageItemProps> = (props: MessageItemProps) => {
         />
       )}
     </ChatMessageMetaItem>,
-    <MetaItemWithMargin key={1}>
+    <MetaItemWithMargin key={`${message.sid}_margin_1`}>
       <MessageStatus message={message} channelParticipants={participants} />
     </MetaItemWithMargin>,
-    <MetaItemWithMargin key={2}>
+    <MetaItemWithMargin key={`${message.sid}_margin_2`}>
       {isOutbound
         ? `${getAuthorFriendlyName(message)}・${getMessageTime(
             message,
@@ -268,7 +268,9 @@ const MessageItem: React.FC<MessageItemProps> = (props: MessageItemProps) => {
         <ChatMessageMeta
           aria-label={`said by ${getAuthorFriendlyName(message)}`}
         >
-          {metaItems}
+          {metaItems.map((item) => {
+            return item;
+          })}
         </ChatMessageMeta>
       </ChatMessage>
     </div>

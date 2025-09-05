@@ -25,17 +25,25 @@ interface MessageInputProps {
 
 interface EnterKeyPluginProps {
   onEnterKeyPress: () => void;
+  message: string;
 }
 
 const EnterKeyPlugin = (props: EnterKeyPluginProps) => {
-  const { onEnterKeyPress } = props;
+  const { onEnterKeyPress, message } = props;
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
     return editor.registerCommand(
       KEY_ENTER_COMMAND,
-      () => {
-        onEnterKeyPress();
+      (event: KeyboardEvent | null) => {
+        if (event) {
+          event.preventDefault();
+          const messageTrimmed = message.trim();
+          if (!messageTrimmed) {
+            return true;
+          }
+          onEnterKeyPress();
+        }
         return true;
       },
       COMMAND_PRIORITY_LOW
@@ -95,7 +103,7 @@ const MessageInput: React.FC<MessageInputProps> = (
         >
           <ClearEditorPlugin />
           <MessagePropPlugin message={message} />
-          <EnterKeyPlugin onEnterKeyPress={onEnterKeyPress} />
+          <EnterKeyPlugin message={message} onEnterKeyPress={onEnterKeyPress} />
         </ChatComposer>
       </Box>
       {props.assets.length > 0 && (
