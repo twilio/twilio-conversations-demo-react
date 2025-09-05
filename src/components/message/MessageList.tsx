@@ -108,6 +108,19 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
 
   // Updates the user list based on message authors to be able to get friendly names
   useEffect(() => {
+    messages.forEach((message) => {
+      const participant = message.participantSid
+        ? participantsBySid.get(message.participantSid)
+        : null;
+      if (participant && participant.identity) {
+        if (!users[participant.identity]) {
+          const sdkParticipant = getSdkParticipantObject(participant);
+          sdkParticipant.getUser().then((sdkUser) => {
+            updateUser(sdkUser);
+          });
+        }
+      }
+    });
     setFirstMessagePerDay(getFirstMessagePerDate(messages));
   }, [messages]);
 
