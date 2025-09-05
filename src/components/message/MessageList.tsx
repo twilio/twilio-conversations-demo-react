@@ -120,8 +120,8 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
           });
         }
       }
-      setFirstMessagePerDay(getFirstMessagePerDate(messages));
     });
+    setFirstMessagePerDay(getFirstMessagePerDate(messages));
   }, [messages]);
 
   useEffect(() => {

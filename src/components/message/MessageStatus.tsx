@@ -15,15 +15,6 @@ type MessageStatusProps = {
   channelParticipants: ReduxParticipant[];
 };
 
-type MessageStatuses = {
-  [MessageStatusType.Delivered]?: number;
-  [MessageStatusType.Read]?: number;
-  [MessageStatusType.Failed]?: number;
-  [MessageStatusType.Sending]?: number;
-  [MessageStatusType.None]?: number;
-  [MessageStatusType.Sent]?: number;
-};
-
 const statusStyle = {
   display: "inline-block",
   verticalAlign: "middle",
@@ -32,19 +23,19 @@ const statusStyle = {
 const statusIconStyle = {};
 
 const MessageStatus: React.FC<MessageStatusProps> = (props) => {
-  const [status, setStatus] = useState<MessageStatuses>({});
+  const [status, setStatus] = useState<MessageStatusType>();
 
   useEffect(() => {
     getMessageStatus(props.message, props.channelParticipants).then(
-      (receipt) => {
-        setStatus(receipt);
+      (newStatus) => {
+        setStatus(newStatus);
       }
     );
   }, [props.channelParticipants, props.message]);
 
   return (
     <>
-      {status[MessageStatusType.Delivered] ? (
+      {status === MessageStatusType.Delivered ? (
         <>
           <DeliveredIcon
             style={{ ...statusStyle, ...statusIconStyle }}
@@ -70,7 +61,7 @@ const MessageStatus: React.FC<MessageStatusProps> = (props) => {
           )}
         </>
       ) : null}
-      {status[MessageStatusType.Sending] ? (
+      {status === MessageStatusType.Sent ? (
         <>
           <SendingIcon style={{ ...statusStyle, ...statusIconStyle }} />
         </>
@@ -81,7 +72,7 @@ const MessageStatus: React.FC<MessageStatusProps> = (props) => {
         </>
       ) : null}
 
-      {status[MessageStatusType.Failed] ? (
+      {status === MessageStatusType.Failed ? (
         <>
           <FailedIcon
             style={{ ...statusStyle, ...statusIconStyle }}
@@ -93,7 +84,7 @@ const MessageStatus: React.FC<MessageStatusProps> = (props) => {
         </>
       ) : null}
 
-      {status[MessageStatusType.Read] ? (
+      {status === MessageStatusType.Read ? (
         <>
           <ReadIcon
             style={{ ...statusStyle, ...statusIconStyle }}
