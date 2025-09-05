@@ -178,10 +178,10 @@ const MessageList: React.FC<MessageListProps> = (props: MessageListProps) => {
     >
       <ChatLog {...getRootProps()} element="MY_CUSTOM_CHATLOG">
         <input {...getInputProps()} />
-        {messages.map((message) => {
+        {messages.map((message, index) => {
           return (
             <MessageItem
-              key={message.sid}
+              key={`${message.sid}_${index}`}
               message={message}
               conversationAttachments={conversationAttachments}
               onDownloadAttachments={onDownloadAttachments}

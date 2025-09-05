@@ -7,7 +7,7 @@ import { browsersOrb } from "./orbs/browsers";
 const config = new Config();
 config.importOrb(browsersOrb);
 
-const workflow = new Workflow("workflow");
+const workflow = new Workflow("dynamic_workflow");
 
 workflow.addJob(runAutomationTests(config), {
   context: ["rtd-react-demo-testing"],
