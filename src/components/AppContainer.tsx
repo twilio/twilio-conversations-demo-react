@@ -117,7 +117,7 @@ const AppContainer: React.FC = () => {
     });
   }, []);
   useEffect(() => {
-    const client = new Client(token);
+    const client = new Client(token, { logLevel: "trace" });
     setClient(client);
 
     const fcmInit = async () => {

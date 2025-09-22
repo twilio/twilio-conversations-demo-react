@@ -8,31 +8,17 @@ import { Box, Spinner } from "@twilio-paste/core";
 import Login from "./login/login";
 import AppContainer from "./AppContainer";
 import { actionCreators, AppState } from "../store";
-import { getToken } from "../api";
 
 function App(): ReactElement {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const { login } = bindActionCreators(actionCreators, dispatch);
   const token = useSelector((state: AppState) => state.token);
 
-  const username = localStorage.getItem("username") ?? "";
-  const password = localStorage.getItem("password") ?? "";
-
   useEffect(() => {
-    if (username.length > 0 && password.length > 0) {
-      getToken(username, password)
-        .then((token) => {
-          login(token);
-        })
-        .catch(() => {
-          localStorage.setItem("username", "");
-          localStorage.setItem("password", "");
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
+    const token =
+      "REPLACE_WITH_TOKEN"; 
+    login(token);
   }, []);
 
   const setToken = (token: string) => {
@@ -40,7 +26,7 @@ function App(): ReactElement {
     setLoading(false);
   };
 
-  if ((!token && !loading) || !username || !password) {
+  if (!token && !loading) {
     return <Login setToken={setToken} />;
   }
 
