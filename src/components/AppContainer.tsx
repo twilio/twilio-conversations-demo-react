@@ -131,6 +131,7 @@ const AppContainer: React.FC = () => {
     });
 
     client.on("conversationJoined", (conversation) => {
+      console.log('[conversationJoined]', conversation.sid, conversation);
       upsertConversation(conversation);
 
       conversation.on("typingStarted", (participant) => {
@@ -176,7 +177,7 @@ const AppContainer: React.FC = () => {
       }
     });
     client.on("userUpdated", async (event) => {
-       console.log("[userUpdated]", event);
+      console.log("[userUpdated]", event);
       await updateUser(event.user);
     });
     client.on("participantLeft", async (participant) => {
@@ -196,6 +197,7 @@ const AppContainer: React.FC = () => {
       );
     });
     client.on("participantJoined", async (participant) => {
+      console.log("[participantJoined]", participant.sid, participant);
       await handlePromiseRejection(
         async () => handleParticipantsUpdate(participant, updateParticipants),
         addNotifications
