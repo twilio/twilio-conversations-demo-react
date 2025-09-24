@@ -169,21 +169,26 @@ const AppContainer: React.FC = () => {
       }, addNotifications);
     });
     client.on("messageAdded", async (message: Message) => {
+      console.log("[messageAdded]", message);
       await upsertMessage(message, upsertMessages, updateUnreadMessages);
       if (message.author === localStorage.getItem("username")) {
         clearAttachments(message.conversation.sid, "-1");
       }
     });
     client.on("userUpdated", async (event) => {
+       console.log("[userUpdated]", event);
       await updateUser(event.user);
     });
     client.on("participantLeft", async (participant) => {
+      console.log("[participantLeft]", participant.sid, participant);
       await handlePromiseRejection(
         async () => handleParticipantsUpdate(participant, updateParticipants),
         addNotifications
       );
     });
     client.on("participantUpdated", async (event) => {
+      console.log("[participantUpdated]", event);
+
       await handlePromiseRejection(
         async () =>
           handleParticipantsUpdate(event.participant, updateParticipants),
