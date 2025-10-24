@@ -4984,18 +4984,18 @@
   resolved "https://registry.yarnpkg.com/@twilio-paste/visual-picker/-/visual-picker-2.0.3.tgz#66f429fbd410c0872e83541e6303cf57c7a6d059"
   integrity sha512-56hf6iMjiR0O9RPrzJLMycu84sM8wsZtO4ixelqmVFQl4VfbTR02CxRl2O2NUbDNvajoqBxOTxBiToQM8iP54w==
 
-"@twilio/conversations@2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@twilio/conversations/-/conversations-2.4.0.tgz#b92c73f3e5fd6d00c5c384952c2f013fa67686bb"
-  integrity sha512-YYrkN+c1gRUor+sWC87B3OktlY7qPPrZLikIEBBI0R4rdowksLJgGPbDg57FrIhgLZTPrCHJGqUApvQKF0aMhQ==
+"@twilio/conversations@2.6.4":
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/@twilio/conversations/-/conversations-2.6.4.tgz#82736bfa3b1b4184c5fb45acdc941ca51119faf5"
+  integrity sha512-kssiiohoNRaYA3mYVyvQQqtmHtDeAEXVlv6v3IxFDxWolJeEZWRdZ7qoYT4S4il6geNdZEUXHmRZtRo8ZaFeWw==
   dependencies:
     "@babel/runtime" "^7.17.0"
-    "@twilio/declarative-type-validator" "^0.2.5"
-    "@twilio/deprecation-decorator" "^0.2.3"
-    "@twilio/mcs-client" "^0.6.5"
-    "@twilio/notifications" "^2.0.4"
-    "@twilio/operation-retrier" "^4.0.13"
-    "@twilio/replay-event-emitter" "^0.3.5"
+    "@twilio/declarative-type-validator" "^0.2.12"
+    "@twilio/deprecation-decorator" "^0.2.10"
+    "@twilio/mcs-client" "^0.6.12"
+    "@twilio/notifications" "^2.0.11"
+    "@twilio/operation-retrier" "^4.0.20"
+    "@twilio/replay-event-emitter" "^0.3.12"
     core-js "^3.17.3"
     iso8601-duration "=1.2.0"
     isomorphic-form-data "^2.0.0"
@@ -5004,7 +5004,7 @@
     platform "^1.3.6"
     quick-lru "^5.1.1"
     twilio-sync "~3.1.0"
-    twilsock "~0.12.2"
+    twilsock "^0.13.11"
     uuid "^3.4.0"
     xmlhttprequest "^1.8.0"
 
@@ -5016,52 +5016,52 @@
     "@babel/runtime" "^7.14.5"
     core-js "^3.17.3"
 
-"@twilio/declarative-type-validator@^0.2.10", "@twilio/declarative-type-validator@^0.2.5":
-  version "0.2.10"
-  resolved "https://registry.yarnpkg.com/@twilio/declarative-type-validator/-/declarative-type-validator-0.2.10.tgz#bf2f5e23006fe40e7d7394756550431f31f19f57"
-  integrity sha512-q3ep+qsctZ0u+xr1U6/kjs4RlIJ/u8+wHyUQkrNCoVtjgnCV938P0RP7OUkW/fYt/vLhfy0Nnzo1G0bBbn9o/w==
+"@twilio/declarative-type-validator@^0.2.12":
+  version "0.2.12"
+  resolved "https://registry.yarnpkg.com/@twilio/declarative-type-validator/-/declarative-type-validator-0.2.12.tgz#e25eccb26286d009e0aa3f928a76cb15baf2209c"
+  integrity sha512-962ghl5AJ74pJv+sGfeLAyJfTtSuhPHLpViI+0Dq4avl7xL9hBlmBM1BDYM0vWZOGZHuF77V/nXW0cflT1xvWg==
   dependencies:
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
 
-"@twilio/deprecation-decorator@^0.2.3":
-  version "0.2.8"
-  resolved "https://registry.yarnpkg.com/@twilio/deprecation-decorator/-/deprecation-decorator-0.2.8.tgz#d27c748dc89b211551b868f777c3307f72ec6c1f"
-  integrity sha512-kDWN6sxOisTMQXQL0JgvzqGjNZIUj+hdZ1eZtm/5z6EMb14xuoi6qSXb//0x6Yn02zSrr6c7K8YKDrUawDRabQ==
+"@twilio/deprecation-decorator@^0.2.10":
+  version "0.2.10"
+  resolved "https://registry.yarnpkg.com/@twilio/deprecation-decorator/-/deprecation-decorator-0.2.10.tgz#4315cfa416573ebaf6b799986dab3fbe6dea8809"
+  integrity sha512-N5uY7oqShjv4HAB6aERIOhFTTYrC27yN8WLxfCKhfKY2VbKmf0WGu+puLfLKw8MdnBDLqEm4oEp9kOik+cLslA==
   dependencies:
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
     loglevel "1.8.0"
 
-"@twilio/mcs-client@^0.6.5":
-  version "0.6.10"
-  resolved "https://registry.yarnpkg.com/@twilio/mcs-client/-/mcs-client-0.6.10.tgz#05e6a2e6af845f36494436ebd72e96b856e4a9bb"
-  integrity sha512-MrZtvxyChUXUpcHG+BR/hY3u573/HsBtMMrTQE4HRvy3v9ZYY0RhHrECqW2TRw0iA3R9quk0CNrz357fjg8I+w==
+"@twilio/mcs-client@^0.6.12":
+  version "0.6.12"
+  resolved "https://registry.yarnpkg.com/@twilio/mcs-client/-/mcs-client-0.6.12.tgz#1dec0651f446e4623deb1879ef1b7951a79ccf17"
+  integrity sha512-M5LJ/AQMEXo1VK54WTIkm6AXFiwR3KHhEaiYaowwIZ8MMIqJg89ZvOIOBWKXoIJ87JqhP+Kb0cGpVr5i11L9fA==
   dependencies:
     "@babel/runtime" "^7.17.0"
-    "@twilio/declarative-type-validator" "^0.2.10"
-    "@twilio/operation-retrier" "^4.0.18"
+    "@twilio/declarative-type-validator" "^0.2.12"
+    "@twilio/operation-retrier" "^4.0.20"
     core-js "^3.17.3"
     loglevel "^1.8.0"
     xmlhttprequest "^1.8.0"
 
-"@twilio/notifications@^2.0.4":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@twilio/notifications/-/notifications-2.0.9.tgz#72d44ab0d7605ab01498caddc84955e07527c9b3"
-  integrity sha512-sHuiIwSPx9xMo6y2l1p+lISs7kWt299B7AOsFqhoetgQr/Pz2PePwKLDruch9OWtW8ZNnT/vOpoz7qbN15vvmA==
+"@twilio/notifications@^2.0.11":
+  version "2.0.11"
+  resolved "https://registry.yarnpkg.com/@twilio/notifications/-/notifications-2.0.11.tgz#9858f3d84385ba60aff0b8eaecca944bbeb87a9d"
+  integrity sha512-slS2YzZHYCE1pwNjSP73rQzNW4HRHHcJ0qhN8FZ83D2OZiI1bt5js2TX2X6qmeqcHjvlkxuemtsOAVYNaUytew==
   dependencies:
     "@babel/runtime" "^7.17.0"
-    "@twilio/declarative-type-validator" "^0.2.10"
-    "@twilio/operation-retrier" "^4.0.18"
+    "@twilio/declarative-type-validator" "^0.2.12"
+    "@twilio/operation-retrier" "^4.0.20"
     core-js "^3.17.3"
     loglevel "^1.8.0"
-    twilsock "~0.12.2"
+    twilsock "^0.13.11"
     uuid "^3.4.0"
 
-"@twilio/operation-retrier@^4.0.13", "@twilio/operation-retrier@^4.0.18":
-  version "4.0.18"
-  resolved "https://registry.yarnpkg.com/@twilio/operation-retrier/-/operation-retrier-4.0.18.tgz#2d7a1cc0c2da877ff4077a4a670546f1493254d0"
-  integrity sha512-vG3i41XEa4lyC3+8FRFbjYBPZQftkI1WrJTtTDBf85N2UzZ8brqrUp9EbSdQmny1/zIvoZ18AswQrvBDLtNEvA==
+"@twilio/operation-retrier@^4.0.20":
+  version "4.0.20"
+  resolved "https://registry.yarnpkg.com/@twilio/operation-retrier/-/operation-retrier-4.0.20.tgz#a8eeaad46c99d8fd28d77c5dda0cab69d59f5b2a"
+  integrity sha512-B7CFp3cayqg8ASP7SIGdmsmbxns9dK080ShNgGUFe2TCqHcBhpxLojjM1w8bwPlUkT/arAQ20CLPAKgwFZWEPw==
   dependencies:
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
@@ -5074,10 +5074,10 @@
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
 
-"@twilio/replay-event-emitter@^0.3.5":
-  version "0.3.10"
-  resolved "https://registry.yarnpkg.com/@twilio/replay-event-emitter/-/replay-event-emitter-0.3.10.tgz#998c0b24be2f7260c9675b8dd1a922a37fb75e82"
-  integrity sha512-GaT5ihN3eJvIgCV81ggvLgtNwMtD2pBR4hMrFE/dlqN73FsNw01bawLSMIofOdRj8ydEPgvSTJHVCIjBWKHQvg==
+"@twilio/replay-event-emitter@^0.3.12":
+  version "0.3.12"
+  resolved "https://registry.yarnpkg.com/@twilio/replay-event-emitter/-/replay-event-emitter-0.3.12.tgz#bf509882cbbdad5ed632bc972928cbb9060eec80"
+  integrity sha512-vk/1NfYeNoL6jvENWHikiV/LIlmPHGj8OOif+tNSQDFEJt0mXK+uVJ6R85OQWJw1K3rNs2cFhNGEp/b6/lWMKA==
   dependencies:
     "@babel/runtime" "^7.17.0"
     core-js "^3.17.3"
@@ -13554,7 +13554,7 @@ twilio-sync@~3.1.0:
     twilsock "^0.12.2"
     uuid "^3.4.0"
 
-twilsock@^0.12.2, twilsock@~0.12.2:
+twilsock@^0.12.2:
   version "0.12.2"
   resolved "https://registry.yarnpkg.com/twilsock/-/twilsock-0.12.2.tgz#bc6331b14a80fb8a7d8022d2cb4a809cd6834b6f"
   integrity sha512-7G59f2TCEnxcY2ZBCzaZOPmMDoxDrK9lMTiA7UvuiKca37Dljbdlu2EHI3+d7gU1JHkH5GNCmyxqJzSbZodwXA==
@@ -13569,6 +13569,22 @@ twilsock@^0.12.2, twilsock@~0.12.2:
     platform "^1.3.6"
     uuid "^3.4.0"
     ws "^5.2.3"
+
+twilsock@^0.13.11:
+  version "0.13.11"
+  resolved "https://registry.yarnpkg.com/twilsock/-/twilsock-0.13.11.tgz#80b947cad89ab6123f1bf6a459e206cb85b3c1fc"
+  integrity sha512-iEU+ndAqttSi5yehUSfrfKCynBaXQzTxhYPF1zexPafHdAkC50UVXuUxtIXPoRF6TAStwsOc6Ex7CQAkoVdnhQ==
+  dependencies:
+    "@babel/runtime" "^7.17.0"
+    "@twilio/declarative-type-validator" "^0.2.12"
+    "@twilio/operation-retrier" "^4.0.20"
+    core-js "^3.17.3"
+    iso8601-duration "=1.2.0"
+    javascript-state-machine "^3.1.0"
+    loglevel "^1.8.0"
+    platform "^1.3.6"
+    uuid "^3.4.0"
+    ws "^8.18.1"
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
@@ -14365,6 +14381,11 @@ ws@^8.13.0:
   version "8.13.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.13.0.tgz#9a9fb92f93cf41512a0735c8f4dd09b8a1211cd0"
   integrity sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==
+
+ws@^8.18.1:
+  version "8.18.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.18.3.tgz#b56b88abffde62791c639170400c93dcb0c95472"
+  integrity sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==
 
 xml-name-validator@^3.0.0:
   version "3.0.0"
