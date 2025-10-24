@@ -104,20 +104,20 @@ const ConversationView: React.FC<SingleConvoProps> = (
 
   useEffect(() => {
     if (myMessage && !props.typingInfo.length) {
-      getMessageStatus(myMessage, props.participants).then((statuses) => {
-        if (statuses[MessageStatus.Read]) {
+      getMessageStatus(myMessage, props.participants).then((status) => {
+        if (status === MessageStatus.Read) {
           setLastMsgStatus(MessageStatus.Read);
           return;
         }
-        if (statuses[MessageStatus.Delivered]) {
+        if (status === MessageStatus.Delivered) {
           setLastMsgStatus(MessageStatus.Delivered);
           return;
         }
-        if (statuses[MessageStatus.Failed]) {
+        if (status === MessageStatus.Failed) {
           setLastMsgStatus(MessageStatus.Failed);
           return;
         }
-        if (statuses[MessageStatus.Sending]) {
+        if (status === MessageStatus.Sending) {
           setLastMsgStatus(MessageStatus.Sending);
           return;
         }

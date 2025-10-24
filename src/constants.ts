@@ -19,6 +19,10 @@ export const CONVERSATION_MESSAGES = {
   CREATED: "Conversation created.",
   NAME_CHANGED: "Conversation name changed.",
   LEFT: "You left the conversation.",
+  MESSAGE_DELETED: "Message Deleted.",
+  MESSAGE_DELETE_FAILED: "Failed to delete message. Error: ",
+  MESSAGE_EDITED: "Message edited.",
+  MESSAGE_EDIT_FAILED: "Failed to edit message. Error: ",
 };
 
 export const PARTICIPANT_MESSAGES = {
