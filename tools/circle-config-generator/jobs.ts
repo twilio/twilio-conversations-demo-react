@@ -14,7 +14,7 @@ const runAutomationTests = (config: Config) => {
         "sudo apt-get update; sudo apt-get install -y libu2f-udev libvulkan1",
     }), // prepare chrome installation
     new reusable.ReusedCommand(browsersOrb.commands.install_chrome, {
-      chrome_version: "111.0.5563.146",
+      chrome_version: "latest",
     }),
     new reusable.ReusedCommand(browsersOrb.commands.install_chromedriver),
     new commands.Run({ command: "./AutomationTests/scripts/decrypt.sh" }),
