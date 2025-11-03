@@ -4,11 +4,11 @@ const browsersOrb = new orb.OrbImport(
   "browser-tools",
   "circleci",
   "browser-tools",
-  "volatile"
+  "2.3.2"
 );
 
 browsersOrb.commands.install_chrome = new orb.OrbRef(
-  "install-chrome",
+  "install_chrome",
   new parameters.CustomParametersList<types.parameter.literals.CommandParameterLiteral>(
     [
       new parameters.CustomParameter<types.parameter.literals.CommandParameterLiteral>(
@@ -21,7 +21,7 @@ browsersOrb.commands.install_chrome = new orb.OrbRef(
 );
 
 browsersOrb.commands.install_chromedriver = new orb.OrbRef(
-  "install-chromedriver",
+  "install_chromedriver",
   new parameters.CustomParametersList<types.parameter.literals.CommandParameterLiteral>(
     []
   ),
