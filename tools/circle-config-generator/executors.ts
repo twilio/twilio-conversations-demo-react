@@ -1,7 +1,7 @@
 import { executors } from "@circleci/circleci-config-sdk";
 
 const nodeExecutor = new executors.DockerExecutor(
-  "cimg/node:lts-browsers",
+  "cimg/node:20.19.3-browsers",
   "medium"
 );
 
