@@ -18,5 +18,8 @@
         "wdio": "wdio run wdio.conf.js",
         "decrypt": ". ./scripts/decrypt.sh",
         "encrypt": ". ./scripts/encrypt.sh"
+    },
+    "config": {
+        "detect_chromedriver_version": "true"
     }
 }
