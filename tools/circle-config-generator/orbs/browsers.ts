@@ -12,7 +12,7 @@ browsersOrb.commands.install_chrome = new orb.OrbRef(
   new parameters.CustomParametersList<types.parameter.literals.CommandParameterLiteral>(
     [
       new parameters.CustomParameter<types.parameter.literals.CommandParameterLiteral>(
-        "chrome-version",
+        "chrome_version",
         "string"
       ),
     ]
