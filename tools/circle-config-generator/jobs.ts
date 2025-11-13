@@ -14,7 +14,7 @@ const runAutomationTests = (config: Config) => {
         "sudo apt-get update; sudo apt-get install -y libu2f-udev libvulkan1",
     }), // prepare chrome installation
     new reusable.ReusedCommand(browsersOrb.commands.install_chrome, {
-      "chrome-version": "111.0.5563.146",
+      chrome_version: "latest",
     }),
     new reusable.ReusedCommand(browsersOrb.commands.install_chromedriver),
     new commands.Run({ command: "./AutomationTests/scripts/decrypt.sh" }),
@@ -25,8 +25,7 @@ const runAutomationTests = (config: Config) => {
     new commands.Run({ command: "yarn build:wdio" }),
     // Last, run test harness
     new commands.Run({
-      command:
-        "./AutomationTests/scripts/run-tests.sh",
+      command: "./AutomationTests/scripts/run-tests.sh",
     }),
   ]);
   config.addJob(job);
